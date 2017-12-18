@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.PointInfoPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.PointInfoPO">
+            <id property="id" column="analoginput_id" jdbcType="INTEGER" />
+            <result property="measurementtypeId" column="measurementtype_id" jdbcType="NUMERIC" />
+            <result property="equipmentcontainerId" column="equipmentcontainer_id" jdbcType="NUMERIC" />
+            <result property="equipmentcontainerTableid" column="equipmentcontainer_tableid" jdbcType="NUMERIC" />
+            <result property="powerStationId" column="power_station_id" jdbcType="NUMERIC" />
+            <result property="descriptionType" column="description_type" jdbcType="VARCHAR" />
+            <result property="measurementtypeName" column="measurementtype_name" jdbcType="VARCHAR" />
+            <result property="pointEnglishName" column="point_english_name" jdbcType="VARCHAR" />
+            <result property="measurementtypeDescription" column="measurementtype_description" jdbcType="VARCHAR" />
+            <result property="equipmentcontainerName" column="equipmentcontainer_name" jdbcType="VARCHAR" />
+            <result property="equipmentcontainerNameEn" column="equipmentcontainer_name_en" jdbcType="VARCHAR" />
+
+	</resultMap>
+	<resultMap id="equipmentsresult" type="com.yunengzhe.PVMTS.domain.vo.EquipmentInfoVO">
+            <result property="equipmentId" column="equipmentcontainer_id" jdbcType="NUMERIC" />
+            <result property="equipmentTableId" column="equipmentcontainer_tableid" jdbcType="NUMERIC" />
+            <result property="equipmentcontainerName" column="equipmentcontainer_name" jdbcType="VARCHAR" />
+            <result property="equipmentcontainerNameEn" column="equipmentcontainer_name_en" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="base_field">
+		analoginput_id,measurementtype_id,equipmentcontainer_id,equipmentcontainer_tableid,power_station_id,description_type,measurementtype_name,measurementtype_description,equipmentcontainer_name,point_english_name,equipmentcontainer_name_en
+	</sql>
+	
+	<sql id="other-condition">
+			<if test= "id != null ">	and analoginput_id = #{id,jdbcType=NUMERIC }</if>
+            <if test= "measurementtypeId != null ">	and measurementtype_id = #{measurementtypeId,jdbcType=NUMERIC }</if>
+            <if test= "equipmentcontainerId != null ">	and equipmentcontainer_id  in (${equipmentcontainerId })</if>
+            <if test= "equipmentcontainerTableid != null ">	and equipmentcontainer_tableid = #{equipmentcontainerTableid,jdbcType=NUMERIC }</if>
+            <if test= "powerStationId != null ">	and power_station_id = #{powerStationId,jdbcType=NUMERIC }</if>
+            <if test= "descriptionType != null ">	and description_type = #{descriptionType,jdbcType=VARCHAR }</if>
+            <if test= "measurementtypeName != null ">	and measurementtype_name = #{measurementtypeName,jdbcType=VARCHAR }</if>
+            <if test= "measurementtypeDescription != null ">	and measurementtype_description = #{measurementtypeDescription,jdbcType=VARCHAR }</if>
+            <if test= "equipmentcontainerName != null ">	and equipmentcontainer_name = #{equipmentcontainerName,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+ 			<if test= "id != null ">	and analoginput_id = #{id,jdbcType=NUMERIC }</if>
+            <if test= "measurementtypeId != null ">	and measurementtype_id = #{measurementtypeId,jdbcType=NUMERIC }</if>
+            <if test= "equipmentcontainerId != null ">	and equipmentcontainer_id in (${equipmentcontainerId })</if>
+            <if test= "equipmentcontainerTableid != null ">	and equipmentcontainer_tableid = #{equipmentcontainerTableid,jdbcType=NUMERIC }</if>
+            <if test= "powerStationId != null ">	and power_station_id = #{powerStationId,jdbcType=NUMERIC }</if>
+            <if test= "descriptionType != null ">	and description_type like "%"#{descriptionType}"%"</if>
+            <if test= "measurementtypeName != null ">	and measurementtype_name like "%"#{measurementtypeName}"%"</if>
+            <if test= "measurementtypeDescription != null ">	and measurementtype_description like "%"#{measurementtypeDescription}"%"</if>
+            <if test= "equipmentcontainerName != null ">	and equipmentcontainer_name like "%"#{equipmentcontainerName}"%"</if>
+            <if test= "measureName != null ">	and  (equipmentcontainer_name like "%"#{measureName}"%" 
+            									or measurementtype_description like "%"#{measureName}"%")</if>
+         	<if test= "searchPoint != null ">	and  (equipmentcontainer_name like "%"#{searchPoint}"%" 
+         									or measurementtype_description like "%"#{searchPoint}"%"
+         									or measurementtype_name like "%"#{searchPoint}"%")</if>
+            									
+
+ 	</sql>
+	 	<sql id="one-equal-condition">
+	 		<if test= "id != null ">	and analoginput_id = #{id,jdbcType=NUMERIC }</if>
+            <if test= "measurementtypeId != null ">	or measurementtype_id = #{measurementtypeId,jdbcType=NUMERIC }</if>
+            <if test= "equipmentcontainerId != null ">	or equipmentcontainer_id in (${equipmentcontainerId })</if>
+            <if test= "equipmentcontainerTableid != null ">	or equipmentcontainer_tableid = #{equipmentcontainerTableid,jdbcType=NUMERIC }</if>
+            <if test= "powerStationId != null ">	or power_station_id = #{powerStationId,jdbcType=NUMERIC }</if>
+            <if test= "descriptionType != null ">	or description_type = #{descriptionType,jdbcType=VARCHAR }</if>
+            <if test= "measurementtypeName != null ">	or measurementtype_name = #{measurementtypeName,jdbcType=VARCHAR }</if>
+            <if test= "measurementtypeDescription != null ">	or measurementtype_description = #{measurementtypeDescription,jdbcType=VARCHAR }</if>
+            <if test= "equipmentcontainerName != null ">	or equipmentcontainer_name = #{equipmentcontainerName,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_point_info
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_point_info  
+		<where>
+			<if test="_parameter != null">
+				analoginput_id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	<select id="selectEquipmentByPowerStationId" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_point_info  
+		WHERE power_station_id =#{powerStationId,jdbcType=INTEGER}
+		AND equipmentcontainer_tableid &lt;&gt; 0 group by equipmentcontainer_name
+	</select>
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_point_info  where analoginput_id in (${_parameter})
+	</select>		
+	<select id="selectEquipments" resultMap="equipmentsresult" >
+		SELECT DISTINCT
+			equipmentcontainer_id,
+			equipmentcontainer_tableid,
+			equipmentcontainer_name,
+			equipmentcontainer_name_en
+		FROM
+			pvmts_point_info
+		WHERE 1=1
+            <if test= "powerStationId != null ">	
+            and power_station_id = #{powerStationId,jdbcType=NUMERIC }
+            </if>
+			<if test= "equipmentcontainerTableid != null ">	
+			and equipmentcontainer_tableid in (${equipmentcontainerTableid })
+			</if>
+	</select>
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.PointInfoPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_point_info( analoginput_id,measurementtype_id,equipmentcontainer_id,equipmentcontainer_tableid,power_station_id,description_type,measurementtype_name,measurementtype_description,equipmentcontainer_name ) values (#{id,jdbcType=INTEGER},#{measurementtypeId,jdbcType=NUMERIC},#{equipmentcontainerId,jdbcType=NUMERIC},#{equipmentcontainerTableid,jdbcType=NUMERIC},#{powerStationId,jdbcType=NUMERIC},#{descriptionType,jdbcType=VARCHAR},#{measurementtypeName,jdbcType=VARCHAR},#{measurementtypeDescription,jdbcType=VARCHAR},#{equipmentcontainerName,jdbcType=VARCHAR} )
+	</insert>
+
+  
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_point_info( analoginput_id,measurementtype_id,equipmentcontainer_id,equipmentcontainer_tableid,power_station_id,description_type,measurementtype_name,measurementtype_description,equipmentcontainer_name ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.measurementtypeId,jdbcType=NUMERIC},#{item.equipmentcontainerId,jdbcType=NUMERIC},#{item.equipmentcontainerTableid,jdbcType=NUMERIC},#{item.powerStationId,jdbcType=NUMERIC},#{item.descriptionType,jdbcType=VARCHAR},#{item.measurementtypeName,jdbcType=VARCHAR},#{item.measurementtypeDescription,jdbcType=VARCHAR},#{item.equipmentcontainerName,jdbcType=VARCHAR} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.PointInfoPO">
+		update pvmts_point_info set measurementtype_id=#{measurementtypeId,jdbcType=NUMERIC},equipmentcontainer_id=#{equipmentcontainerId,jdbcType=NUMERIC},equipmentcontainer_tableid=#{equipmentcontainerTableid,jdbcType=NUMERIC},power_station_id=#{powerStationId,jdbcType=NUMERIC},description_type=#{descriptionType,jdbcType=VARCHAR},measurementtype_name=#{measurementtypeName,jdbcType=VARCHAR},measurementtype_description=#{measurementtypeDescription,jdbcType=VARCHAR},equipmentcontainer_name=#{equipmentcontainerName,jdbcType=VARCHAR} where null=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.PointInfoPO">
+		update pvmts_point_info
+        <set>
+            <if test="measurementtypeId != null "> 
+                measurementtype_id = #{measurementtypeId,jdbcType=NUMERIC},
+            </if>
+            <if test="equipmentcontainerId != null "> 
+                equipmentcontainer_id = #{equipmentcontainerId,jdbcType=NUMERIC},
+            </if>
+            <if test="equipmentcontainerTableid != null "> 
+                equipmentcontainer_tableid = #{equipmentcontainerTableid,jdbcType=NUMERIC},
+            </if>
+            <if test="powerStationId != null "> 
+                power_station_id = #{powerStationId,jdbcType=NUMERIC},
+            </if>
+            <if test="descriptionType != null "> 
+                description_type = #{descriptionType,jdbcType=VARCHAR},
+            </if>
+            <if test="measurementtypeName != null "> 
+                measurementtype_name = #{measurementtypeName,jdbcType=VARCHAR},
+            </if>
+            <if test="measurementtypeDescription != null "> 
+                measurementtype_description = #{measurementtypeDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="equipmentcontainerName != null "> 
+                equipmentcontainer_name = #{equipmentcontainerName,jdbcType=VARCHAR},
+            </if>
+        </set>
+         where null=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_point_info where analoginput_id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.PointInfoPO">
+		delete from pvmts_point_info
+		<where>
+			<if test="id != null">
+				analoginput_id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

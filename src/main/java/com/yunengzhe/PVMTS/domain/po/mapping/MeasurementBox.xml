@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.MeasurementBoxPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.MeasurementBoxPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="name" column="name" jdbcType="VARCHAR" />
+            <result property="framid" column="framid" jdbcType="NUMERIC" />
+            <result property="inverterId" column="inverter_id" jdbcType="NUMERIC" />
+
+	</resultMap>
+	<resultMap id="resultinfo" type="com.yunengzhe.PVMTS.domain.vo.longi.MeasurementBoxAndInverterVO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="name" column="name" jdbcType="VARCHAR" />
+            <result property="englishname" column="englishname" jdbcType="VARCHAR" />
+            <result property="powerStationId" column="framid" jdbcType="NUMERIC" />
+            <result property="inverterId" column="inverter_id" jdbcType="NUMERIC" />
+            <result property="inverterName" column="inverter_name" jdbcType="VARCHAR" />
+            <result property="inverterSerialNumber" column="inverter_serial_number" jdbcType="VARCHAR" />
+            <result property="inverterModel" column="inverter_model" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="base_field">
+		id,name,framid,inverter_id
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "name != null ">	and name = #{name,jdbcType=VARCHAR }</if>
+            <if test= "framid != null ">	and framid = #{framid,jdbcType=NUMERIC }</if>
+            <if test= "inverterId != null ">	and inverter_id = #{inverterId,jdbcType=NUMERIC }</if>
+            <if test= "thirdUserid !=null and framid != null">and inverter_id in (SELECT equipment_id FROM `pvmts_thirduser_equipment` WHERE equipment_type=3 AND power_station_id=#{framid,jdbcType=NUMERIC } AND user_id=#{thirdUserid,jdbcType=NUMERIC })</if>
+		
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "name != null ">	and name like "%"#{name}"%"</if>
+            <if test= "framid != null ">	and framid = #{framid,jdbcType=NUMERIC }</if>
+            <if test= "inverterId != null ">	and inverter_id = #{inverterId,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "name != null ">	or name = #{name,jdbcType=VARCHAR }</if>
+            <if test= "framid != null ">	or framid = #{framid,jdbcType=NUMERIC }</if>
+            <if test= "inverterId != null ">	or inverter_id = #{inverterId,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from mc_measurement_box
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from mc_measurement_box  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from mc_measurement_box  where id in (${_parameter})
+	</select>		
+	
+	<select id="selectByInverterIds" resultMap="resultinfo" >
+		select
+		t1.id,t1.name,t1.englishname,t1.framid,t1.inverter_id,t2.name AS inverter_name,t2.serial_number AS inverter_serial_number,
+		t2.model AS inverter_model
+		from mc_measurement_box t1 LEFT JOIN mc_inverter t2 ON t1.inverter_id = t2.ID  
+		where t1.inverter_id in (${_parameter}) order by t2.sequence asc
+	</select>
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.MeasurementBoxPO" useGeneratedKeys="true" keyProperty="id">
+		insert into mc_measurement_box( id,name,framid,inverter_id ) values (#{id,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{framid,jdbcType=NUMERIC},#{inverterId,jdbcType=NUMERIC} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into mc_measurement_box( id,name,framid,inverter_id ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.framid,jdbcType=NUMERIC},#{item.inverterId,jdbcType=NUMERIC} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.MeasurementBoxPO">
+		update mc_measurement_box set name=#{name,jdbcType=VARCHAR},framid=#{framid,jdbcType=NUMERIC},inverter_id=#{inverterId,jdbcType=NUMERIC} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.MeasurementBoxPO">
+		update mc_measurement_box
+        <set>
+            <if test="name != null "> 
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="framid != null "> 
+                framid = #{framid,jdbcType=NUMERIC},
+            </if>
+            <if test="inverterId != null "> 
+                inverter_id = #{inverterId,jdbcType=NUMERIC},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from mc_measurement_box where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.MeasurementBoxPO">
+		delete from mc_measurement_box
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

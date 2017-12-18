@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--缺陷故障反馈表处理 -->
+<mapper namespace="faultRecForm">
+  <!--加载故障信息  -->
+  <resultMap type="java.util.HashMap" id="listMap">
+		<result property="PRONAME" column="PRONAME"/>
+		<result property="PROID" column="PROID"/>
+		<result property="FORMNUM" column="FORMNUM"/>
+		<result property="EVENTID" column="EVENTID"/>
+		<result property="FAULTID" column="FAULTID"/>
+		<result property="CENTERID" column="CENTERID"/>
+		<result property="FAULTID" column="FAULTID"/>
+		<result property="FORM_FLOW_NUM" column="FORM_FLOW_NUM"/><!-- 调度中心流水号 -->
+		<result property="FORMFLOWNUM" column="FORMFLOWNUM"/><!-- 故障反馈流水号 -->
+		<result property="ANALYSIS_DATE" column="ANALYSIS_DATE"/>
+		<result property="ANALYSIS_NAME" column="ANALYSIS_NAME"/>
+    </resultMap>
+  <select id="loadData" parameterType="java.lang.String" resultMap="listMap">
+	  	SELECT DISTINCT
+	      M.ID AS EVENTID,
+	      B.NAME AS PRONAME, 
+	      B.ID AS PROID, 
+	      M.Archieve_Num AS FORMNUM,
+	      C.SUMMARY AS RECORDSUMMARY,
+	      C.REMARKS AS RECORDREMARK,
+	      C.IS_SEND_PEOPLE AS ISNEEDPEOPLE,
+	      C.ID AS CENTERID,
+	      MT.ID AS FAULTID,
+	      C.FORM_FLOW_NUM,
+	      MT.FORM_FLOW_NUM AS FORMFLOWNUM,
+	      C.ANALYSIS_USER_ID,
+	      TO_CHAR(C.ANALYSIS_DATE,'yyyy-MM-dd hh24:mi:ss') AS ANALYSIS_DATE ,
+	      MU.REALNAME AS ANALYSIS_NAME
+  	    FROM MT_EVENT M
+	 		LEFT JOIN MT_PROJECT B
+	    	ON M.PRO_ID = B.ID
+	    	LEFT JOIN MT_FAULT_ANALYSIS C
+   			ON M.ID=C.EVENT_ID
+   			LEFT JOIN MT_USER MU ON MU.ID=C.ANALYSIS_USER_ID
+   			LEFT JOIN MT_FAULT MT ON C.PROCESS_ID=MT.PROCESS_ID
+    WHERE 1 = 1
+     <if test="_parameter != null and _parameter !=''" >
+			and C.PROCESS_ID= #{_parameter}
+	 </if>
+  </select>
+</mapper>

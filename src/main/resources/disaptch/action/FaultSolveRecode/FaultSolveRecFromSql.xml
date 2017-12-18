@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="faultSolveRecFrom">
+    <resultMap type="java.util.HashMap" id="baseInfoMapAndExperAdvice">
+    	<id property="id" column="id" />
+    	<result property="flownum" column="flownum" />
+    	<result property="archieve_num" column="archieve_num" />
+    	<result property="pro_name" column="pro_name" />
+    	<result property="record_user_name" column="record_user_name" />
+    	<result property="record_name" column="record_name" />
+    	<result property="experience_advice" column="experience_advice" />
+    	<result property="remarks" column="remarks" />
+    </resultMap>
+    
+	<select id="queryBaseInfo" parameterType="java.util.HashMap" resultMap="baseInfoMapAndExperAdvice">
+		<!-- select mfsr.form_flow_num flownum, mfsr.event_id eventid, mp.name pro_name, mu.name record_name, mfsr.experience_advice, mfsr.remarks
+			from mt_fault_solve_record mfsr, mt_event me, mt_project mp, mt_user mu
+				where mfsr.event_id = me.id
+						and me.pro_id = mp.id
+						and mu.id = mfsr.record_user_id
+						and mfsr.processId = #{id}
+						 -->
+		select mfsr.form_flow_num flownum, me.archieve_num archieve_num, 
+				mp.name pro_name, mfsr.experience_advice, mfsr.remarks,
+				to_char(mfsr.record_date,'yyyy-mm-dd hh24:mi:ss') record_date
+		from mt_fault_solve_record mfsr, mt_event me, mt_project mp
+	        where mfsr.event_id = me.id
+	          	and me.pro_id = mp.id
+				and mfsr.process_Id = #{id}
+	</select>
+	<select id="queryBaseInfoView" parameterType="java.util.HashMap" resultMap="baseInfoMapAndExperAdvice">
+		<!-- select mfsr.form_flow_num flownum, mfsr.event_id eventid, mp.name pro_name, mu.name record_name, mfsr.experience_advice, mfsr.remarks
+			from mt_fault_solve_record mfsr, mt_event me, mt_project mp, mt_user mu
+				where mfsr.event_id = me.id
+						and me.pro_id = mp.id
+						and mu.id = mfsr.record_user_id
+						and mfsr.processId = #{id}
+						 -->
+		select mfsr.form_flow_num flownum, me.archieve_num archieve_num, 
+				mp.name pro_name, mfsr.experience_advice, mfsr.remarks, mu.name record_user_name,
+				to_char(mfsr.record_date,'yyyy-mm-dd hh24:mi:ss') record_date
+		from mt_fault_solve_record mfsr, mt_event me, mt_project mp, mt_user mu
+	        where mfsr.event_id = me.id
+	          	and me.pro_id = mp.id
+	          	and mu.id = mfsr.record_user_id
+				and mfsr.process_Id = #{id}
+	</select>
+	<select id="queryActualInfo" parameterType="java.util.HashMap" resultType="mtFaultDev">
+		<!-- select mfd.*, mdm.name dev_model_name, mdt.name dev_type_name, mu.name record_name
+			from mt_fault_dev mfd, mt_fault_solve_record mfsr, mt_fault mf, 
+					mt_dev_model mdm, mt_dev_type mdt, mt_user mu
+				where mfsr.fault_id = mf.id
+					and mfsr.record_user_id = mu.id
+					and mf.id = mfd.fault_id
+					and mdm.id = mfd.dev_model
+					and mdt.id = mdm.type_id  
+					and mfsr.processId = #{id}
+					 -->
+		select mfd.*, mdm.name dev_model_name, mdt.name dev_type_name, mu.realname record_name
+			from mt_fault_dev mfd, mt_fault mf,  
+					mt_dev_model mdm, mt_dev_type mdt, 
+					mt_fault_solve_record mfsr LEFT JOIN mt_user mu ON mu.id  =  mfsr.record_user_id
+				where mfsr.fault_id = mf.id
+					and mf.id = mfd.fault_id
+					and mdm.id = mfd.dev_model
+					and mdt.id = mfd.dev_type
+					and mfsr.process_Id in (${id})
+	</select>
+	
+	<select id="queryActualInfoMultil" parameterType="java.util.HashMap" resultType="mtFaultDev">
+		select mfd.*, mdm.name dev_model_name, mdt.name dev_type_name, mu.realname record_name
+			from mt_fault_dev mfd, mt_fault_solve_record mfsr, mt_fault mf,  
+					mt_dev_model mdm, mt_dev_type mdt, mt_user mu
+				where mfsr.fault_id = mf.id
+					and mf.id = mfd.fault_id
+					and mfsr.record_user_id = mu.id
+					and mdm.id = mfd.dev_model
+					and mdt.id = mdm.type_id   
+					and mfsr.process_Id in (${id})
+	</select>
+	
+	<!-- <select id="queryFaultDisExper" parameterType="java.util.Map" resultType="faultSolveRec">
+		select experience_advice, remarks from mt_fault_solve_record 
+	</select> -->
+	
+	<update id="updateFaultSolveRec" parameterType="java.util.Map">
+		update mt_fault_solve_record
+			set experience_advice = #{experience_advice,jdbcType=VARCHAR},<!-- 不用写引号 -->
+				remarks = #{remarks,jdbcType=VARCHAR},
+				record_date = to_date('${record_date}', 'yyyy-mm-dd hh24:mi:ss'),
+				record_user_id = #{record_user_id}
+			where process_id = #{processId}
+	</update>
+
+	<update id="updateFaultDev" parameterType="java.util.Map">
+		<!-- update mt_fault_solve_record
+			set experience_advice = #{experience_advice,jdbcType=VARCHAR},不用写引号
+				remarks = #{remarks,jdbcType=VARCHAR}
+			where id = 1 -->
+			<!-- <foreach item="item" collection="list" separator="union all">
+			select ${item.pro_id}, ${item.user_id}, ${item.role_id}, sysdate, null from dual 
+		</foreach> -->
+			update mt_fault_dev
+			set solution = #{solution,jdbcType=VARCHAR},<!-- 不用写引号 -->
+				solve_result = #{solve_result,jdbcType=VARCHAR},
+				solve_remark = #{solve_remark,jdbcType=VARCHAR}
+			where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

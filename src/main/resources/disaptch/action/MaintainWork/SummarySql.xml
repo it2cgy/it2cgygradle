@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="summary">
+    <resultMap type="java.util.HashMap" id="queryUniteMap">
+    	<id property="id" column="id" />
+    	<result property="pro_name" column="pro_name" />
+    	<result property="archieve_num" column="archieve_num" />
+    	<result property="user_name" column="user_name" />
+    	<result property="form_flow_num" column="form_flow_num" />
+    	<result property="record_date" column="record_date" />
+    	<result property="arrive_date" column="arrive_date" />
+    	<result property="leave_date" column="leave_date" />
+    	<result property="summary" column="summary" />
+    	<result property="exam_opinion" column="exam_opinion" />
+    	<result property="exam_result" column="exam_result" />
+    </resultMap>
+	<select id="queryBaseInfo" resultMap="queryUniteMap">
+		select ms.id, mp.name pro_name, me.archieve_num, ms.form_flow_num, ms.summary,
+			to_char(ms.arrive_date,'yyyy-mm-dd hh24:mi:ss') arrive_date, 
+			to_char(ms.leave_date,'yyyy-mm-dd hh24:mi:ss') leave_date
+			from mt_summary ms, mt_event me, mt_project mp
+				where ms.event_id = me.id
+					and me.pro_id = mp.id
+					and ms.process_id = #{id}
+	</select>
+	<select id="showBaseInfo" resultMap="queryUniteMap">
+		select ms.id, mp.name pro_name, mu.name user_name, me.archieve_num, ms.form_flow_num,
+			to_char(ms.record_date,'yyyy-mm-dd hh24:mi:ss') record_date,
+			to_char(ms.arrive_date,'yyyy-mm-dd hh24:mi:ss') arrive_date, 
+			to_char(ms.leave_date,'yyyy-mm-dd hh24:mi:ss') leave_date, ms.summary
+				from mt_summary ms, mt_event me, mt_project mp, mt_user mu
+					where ms.event_id = me.id
+						and me.pro_id = mp.id
+						and ms.record_user_id = mu.id
+						and ms.process_id = #{processId}
+	</select>
+	
+    <select id="showExamOpinion" resultMap="queryUniteMap">
+    	select id, exam_opinion, exam_result 
+    		from mt_summary 
+    	   		where process_id = #{processId}
+    </select>
+	
+	<update id="updateBaseInfo">
+		update mt_summary ms
+			set ms.record_user_id = ${record_user_id},
+				ms.record_date = to_date('${record_date}', 'yyyy-mm-dd hh24:mi:ss'),
+				ms.arrive_date = to_date('${arrive_date}', 'yyyy-mm-dd hh24:mi:ss'),
+				ms.leave_date = to_date('${leave_date}', 'yyyy-mm-dd hh24:mi:ss'),
+				ms.summary = '${summary}'
+			where ms.id = ${id}
+	</update>
+	
+	<update id="updateCenterDate">
+		update mt_summary ms
+			set ms.exam_opinion = '${exam_opinion}',
+				ms.exam_result = ${exam_result},
+				ms.exam_time = sysdate,
+				ms.exam_user_id = ${exam_user_id}
+			where ms.id = ${id}
+			<!--  
+			
+			update mt_summary ms
+			set ms.exam_option = #{exam_option,jdbcType=VARCHAR},
+				ms.exam_result = #{exam_result,jdbcType=INTEGER},
+				ms.exam_time = sysdate,
+				ms.exam_user_id = #{exam_user_id,jdbcType=INTEGER}
+			where ms.id = #{id,jdbcType=INTEGER}
+			
+			
+			-->
+	</update>
+	
+	<!-- #{record_date,jdbcType=DATE},
+				ms.arrive_date = #{arrive_date,jdbcType=DATE},
+				ms.leave_date = #{leave_date,jdbcType=DATE}, 
+				update mt_summary ms
+			set ms.record_user_id = #{record_user_id,jdbcType=INTEGER},
+				ms.record_date = to_date('${record_date}', 'yyyy-mm-dd hh24:mi:ss'),
+				ms.arrive_date = to_date('${arrive_date}', 'yyyy-mm-dd hh24:mi:ss'),
+				ms.leave_date = to_date('${leave_date}', 'yyyy-mm-dd hh24:mi:ss'),
+				ms.summary = #{summary,jdbcType=VARCHAR}
+			where ms.id = #{id,jdbcType=INTEGER} 
+				
+				-->
+</mapper>

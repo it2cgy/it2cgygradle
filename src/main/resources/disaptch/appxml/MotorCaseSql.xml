@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="motorCaseapp">
+         <!-- 获取列表信息 -->
+       	<resultMap type="java.util.HashMap" id="cheakeidMap">
+          	<result property="pname" column="pname"/>
+			<result property="process_id" column="process_id"/>
+			<result property="name" column="name"/>
+			<result property="archieve_num" column="archieve_num"/>
+	        <result property="form_flow_num_in_book" column="form_flow_num_in_book"/>
+	        <result property="record_date" column="record_date"/>
+	    </resultMap>
+
+         <select id="selectbyuid"   parameterType="java.util.HashMap"  resultMap="cheakeidMap" >
+  	                   SELECT 
+  	                      p.name pname,
+						  c.process_id process_id,
+					      ur.REALNAME name,
+			              e.ARCHIEVE_NUM archieve_num,
+			              c.form_flow_num_in_book form_flow_num_in_book,
+						  c.record_date record_date
+						FROM
+						  MT_PROJECT p 
+						  LEFT JOIN MT_EVENT e ON E .PRO_ID = p.ID
+						  LEFT JOIN MT_CASE c ON c.event_id = e.ID
+		                  LEFT JOIN MT_USER ur on ur.id = c.record_user_id
+						  WHERE 1=1 and c.id is not null and e.STATE='1'
+			   <if test="name != null and name != ''">
+						and p.name = '${pname}'
+			   </if>		  
+               <if test="formFlowNumInBook != null and formFlowNumInBook != ''">
+						and form_flow_num_in_book like '%${formFlowNumInBook}%'
+				</if>
+				<if test="uname != null and uname != ''">
+						and ur.REALNAME like '%${uname}%'
+				</if>  
+				<if test="startDate != null and startDate != ''">
+					    and record_date &gt; to_date('${startDate}', 'yyyy-mm-dd hh24:mi:ss')
+				</if>
+				<if test="endDate != null and endDate != ''">
+					    and record_date &lt; to_date('${endDate}', 'yyyy-mm-dd hh24:mi:ss')+1
+				</if>
+				<if test="id != null and id != ''">
+				        and  ur.id = ${id}
+			    </if>
+	
+  	</select>
+  	
+  	
+  	
+  	
+</mapper>
+

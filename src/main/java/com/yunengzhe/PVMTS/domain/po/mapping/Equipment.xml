@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.EquipmentPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.EquipmentPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="equipmentType" column="equipment_type" jdbcType="VARCHAR" />
+            <result property="equipmentModel" column="equipment_model" jdbcType="VARCHAR" />
+            <result property="equipmentNumber" column="equipment_number" jdbcType="VARCHAR" />
+            <result property="factory" column="factory" jdbcType="VARCHAR" />
+            <result property="powerstationid" column="powerstationid" jdbcType="NUMERIC" />
+            <result property="producedDate" column="produced_date" />
+            <result property="factoryDate" column="factory_date" />
+            <result property="lifetime" column="lifetime" jdbcType="NUMERIC" />
+            <result property="serviceExpense" column="service_expense" jdbcType="NUMERIC" />
+            <result property="price" column="price" jdbcType="NUMERIC" />
+            <result property="deprecition" column="deprecition" jdbcType="NUMERIC" />
+            <result property="remark" column="remark" jdbcType="VARCHAR" />
+            <result property="userId" column="user_id" jdbcType="NUMERIC" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="nickname"  column="nickname" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,equipment_type,equipment_model,equipment_number,factory,powerstationid,produced_date,factory_date,lifetime,service_expense,price,deprecition,remark,user_id,create_time,update_time
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "equipmentType != null ">	and equipment_type = #{equipmentType,jdbcType=VARCHAR }</if>
+            <if test= "equipmentModel != null ">	and equipment_model = #{equipmentModel,jdbcType=VARCHAR }</if>
+            <if test= "equipmentNumber != null ">	and equipment_number = #{equipmentNumber,jdbcType=VARCHAR }</if>
+            <if test= "factory != null ">	and factory = #{factory,jdbcType=VARCHAR }</if>
+            <if test= "powerstationid != null ">	and powerstationid = #{powerstationid,jdbcType=VARCHAR }</if>
+            <if test= "producedDate != null ">	and produced_date = #{producedDate }</if>
+            <if test= "factoryDate != null ">	and factory_date = #{factoryDate }</if>
+            <if test= "lifetime != null ">	and lifetime = #{lifetime,jdbcType=NUMERIC }</if>
+            <if test= "serviceExpense != null ">	and service_expense = #{serviceExpense,jdbcType=NUMERIC }</if>
+            <if test= "price != null ">	and price = #{price,jdbcType=NUMERIC }</if>
+            <if test= "deprecition != null ">	and deprecition = #{deprecition,jdbcType=NUMERIC }</if>
+            <if test= "remark != null ">	and remark = #{remark,jdbcType=VARCHAR }</if>
+            <if test= "userId != null ">	and user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "equipmentType != null ">	and equipment_type like "%"#{equipmentType}"%"</if>
+            <if test= "equipmentModel != null ">	and equipment_model like "%"#{equipmentModel}"%"</if>
+            <if test= "equipmentNumber != null ">	and equipment_number like "%"#{equipmentNumber}"%"</if>
+            <if test= "factory != null ">	and factory like "%"#{factory}"%"</if>
+            <if test= "powerstationid != null ">	and powerstationid like "%"#{powerstationid}"%"</if>
+            <if test= "producedDate != null ">	and produced_date = #{producedDate }</if>
+            <if test= "factoryDate != null ">	and factory_date = #{factoryDate }</if>
+            <if test= "lifetime != null ">	and lifetime = #{lifetime,jdbcType=NUMERIC }</if>
+            <if test= "serviceExpense != null ">	and service_expense = #{serviceExpense,jdbcType=NUMERIC }</if>
+            <if test= "price != null ">	and price = #{price,jdbcType=NUMERIC }</if>
+            <if test= "deprecition != null ">	and deprecition = #{deprecition,jdbcType=NUMERIC }</if>
+            <if test= "remark != null ">	and remark like "%"#{remark}"%"</if>
+            <if test= "userId != null ">	and user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "equipmentType != null ">	or equipment_type = #{equipmentType,jdbcType=VARCHAR }</if>
+            <if test= "equipmentModel != null ">	or equipment_model = #{equipmentModel,jdbcType=VARCHAR }</if>
+            <if test= "equipmentNumber != null ">	or equipment_number = #{equipmentNumber,jdbcType=VARCHAR }</if>
+            <if test= "factory != null ">	or factory = #{factory,jdbcType=VARCHAR }</if>
+            <if test= "powerstationid != null ">	or powerstationid = #{powerstationid,jdbcType=VARCHAR }</if>
+            <if test= "producedDate != null ">	or produced_date = #{producedDate }</if>
+            <if test= "factoryDate != null ">	or factory_date = #{factoryDate }</if>
+            <if test= "lifetime != null ">	or lifetime = #{lifetime,jdbcType=NUMERIC }</if>
+            <if test= "serviceExpense != null ">	or service_expense = #{serviceExpense,jdbcType=NUMERIC }</if>
+            <if test= "price != null ">	or price = #{price,jdbcType=NUMERIC }</if>
+            <if test= "deprecition != null ">	or deprecition = #{deprecition,jdbcType=NUMERIC }</if>
+            <if test= "remark != null ">	or remark = #{remark,jdbcType=VARCHAR }</if>
+            <if test= "userId != null ">	or user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_equipment_info
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_equipment_info  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_equipment_info  where id in (${_parameter})
+	</select>		
+	<!-- 根据搜索条件分页查询 -->	
+	<select id="findBySourse" resultMap="result" >
+		select
+		p.id,p.equipment_type,p.equipment_model,p.equipment_number,p.factory,p.powerstationid,p.create_time,p.update_time,p.user_id,m.name powerstationname,m.englishname,u.nickname
+		from pvmts_equipment_info p left join mt_project m on m.id=p.powerstationid  left join pvmts_user u on p.user_id=u.id 
+		<if test= "third != null ">	
+		  LEFT JOIN pvmts_third_equipments t ON p.equipment_number = t.number
+        </if>
+		where 1=1
+        <if test= "powerstationid != null ">
+        	and powerstationid = #{powerstationid,jdbcType=VARCHAR}
+        </if>
+		<if test= "sourse != null ">	
+		  and (p.equipment_type like "%"#{sourse}"%" 
+          or p.equipment_model like "%"#{sourse}"%" 
+          or p.equipment_number like "%"#{sourse}"%" 
+          or p.factory  like "%"#{sourse}"%" 
+          or m.name  like "%"#{sourse}"%")
+        </if>
+        <if test= "third != null ">	
+		  AND t.number is not null
+        </if>
+          order by create_time desc limit #{startRow},#{pageSize}
+	</select>		
+	<!-- 根据搜索条件查询总条数-->	
+	<select id="getCount" resultType="int" >
+		select
+		count(p.id)
+		from pvmts_equipment_info p left join mt_project m on m.id=p.powerstationid   
+		<if test= "third != null ">	
+		  LEFT JOIN pvmts_third_equipments t ON p.equipment_number = t.number
+        </if>
+		where 1=1
+		 <if test= "powerstationid != null ">
+        	and powerstationid = #{powerstationid,jdbcType=VARCHAR}
+        </if>
+		<if test= "sourse != null ">	
+		  and (p.equipment_type like "%"#{sourse}"%" 
+          or p.equipment_model like "%"#{sourse}"%" 
+          or p.equipment_number like "%"#{sourse}"%" 
+          or p.factory  like "%"#{sourse}"%" 
+          or m.name  like "%"#{sourse}"%")
+        </if>
+        <if test= "third != null ">	
+		  AND t.number is not null
+        </if>
+	</select>		
+	<!-- 验证编号是否相同-->	
+	<select id="checkEquipmentNumber" resultMap="result" >
+	select <include refid="base_field" />
+		from pvmts_equipment_info  where equipment_number =  #{equipmentNumber,jdbcType=VARCHAR} 
+		 <if test= "id != null ">
+        	and id &lt;&gt; #{id} 
+        </if>
+	</select>		
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.EquipmentPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_equipment_info( id,equipment_type,equipment_model,equipment_number,factory,powerstationid,produced_date,factory_date,lifetime,service_expense,price,deprecition,remark,user_id,create_time,update_time ) values (#{id,jdbcType=INTEGER},#{equipmentType,jdbcType=VARCHAR},#{equipmentModel,jdbcType=VARCHAR},#{equipmentNumber,jdbcType=VARCHAR},#{factory,jdbcType=VARCHAR},#{powerstationid,jdbcType=VARCHAR},#{producedDate},#{factoryDate},#{lifetime,jdbcType=NUMERIC},#{serviceExpense,jdbcType=NUMERIC},#{price,jdbcType=NUMERIC},#{deprecition,jdbcType=NUMERIC},#{remark,jdbcType=VARCHAR},#{userId,jdbcType=NUMERIC},NOW(),NOW())
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_equipment_info( id,equipment_type,equipment_model,equipment_number,factory,powerstationid,produced_date,factory_date,lifetime,service_expense,price,deprecition,remark,user_id,create_time,update_time ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.equipmentType,jdbcType=VARCHAR},#{item.equipmentModel,jdbcType=VARCHAR},#{item.equipmentNumber,jdbcType=VARCHAR},#{item.factory,jdbcType=VARCHAR},#{item.powerstationid,jdbcType=VARCHAR},#{item.producedDate},#{item.factoryDate},#{item.lifetime,jdbcType=NUMERIC},#{item.serviceExpense,jdbcType=NUMERIC},#{item.price,jdbcType=NUMERIC},#{item.deprecition,jdbcType=NUMERIC},#{item.remark,jdbcType=VARCHAR},#{item.userId,jdbcType=NUMERIC},NOW(),NOW() )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.EquipmentPO">
+		update pvmts_equipment_info set equipment_type=#{equipmentType,jdbcType=VARCHAR},equipment_model=#{equipmentModel,jdbcType=VARCHAR},equipment_number=#{equipmentNumber,jdbcType=VARCHAR},factory=#{factory,jdbcType=VARCHAR},powerstationid=#{powerstationid,jdbcType=VARCHAR},produced_date=#{producedDate},factory_date=#{factoryDate},lifetime=#{lifetime,jdbcType=NUMERIC},service_expense=#{serviceExpense,jdbcType=NUMERIC},price=#{price,jdbcType=NUMERIC},deprecition=#{deprecition,jdbcType=NUMERIC},remark=#{remark,jdbcType=VARCHAR},user_id=#{userId,jdbcType=NUMERIC},update_time=NOW() where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.EquipmentPO">
+		update pvmts_equipment_info
+        <set>
+            <if test="equipmentType != null "> 
+                equipment_type = #{equipmentType,jdbcType=VARCHAR},
+            </if>
+            <if test="equipmentModel != null "> 
+                equipment_model = #{equipmentModel,jdbcType=VARCHAR},
+            </if>
+            <if test="equipmentNumber != null "> 
+                equipment_number = #{equipmentNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="factory != null "> 
+                factory = #{factory,jdbcType=VARCHAR},
+            </if>
+            <if test="powerstationid != null "> 
+                powerstationid = #{powerstationid,jdbcType=VARCHAR},
+            </if>
+            <if test="producedDate != null "> 
+                produced_date = #{producedDate},
+            </if>
+            <if test="factoryDate != null "> 
+                factory_date = #{factoryDate},
+            </if>
+            <if test="lifetime != null "> 
+                lifetime = #{lifetime,jdbcType=NUMERIC},
+            </if>
+            <if test="serviceExpense != null "> 
+                service_expense = #{serviceExpense,jdbcType=NUMERIC},
+            </if>
+            <if test="price != null "> 
+                price = #{price,jdbcType=NUMERIC},
+            </if>
+            <if test="deprecition != null "> 
+                deprecition = #{deprecition,jdbcType=NUMERIC},
+            </if>
+            <if test="remark != null "> 
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null "> 
+                user_id = #{userId,jdbcType=NUMERIC},
+            </if>
+                update_time = NOW(),
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_equipment_info where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.EquipmentPO">
+		delete from pvmts_equipment_info
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="monitorInterver">
+	<resultMap type="java.util.HashMap" id="monitorMap">
+		<result property="ACOUTVA_ID" column="ACOUTVA_ID"/>
+		<result property="ACOUTVB_ID" column="ACOUTVB_ID"/>
+		<result property="ACOUTVC_ID" column="ACOUTVC_ID"/>
+		<result property="ACOUTIA_ID" column="ACOUTIA_ID"/>
+		<result property="ACOUTIB_ID" column="ACOUTIB_ID"/>
+		<result property="ACOUTIC_ID" column="ACOUTIC_ID"/>
+		<result property="MPPT1P_ID" column="MPPT1P_ID"/>
+		<result property="MPPT2P_ID" column="MPPT2P_ID"/>
+		<result property="MPPT3P_ID" column="MPPT3P_ID"/>
+		<result property="ITP_ID" column="ITP_ID"/>
+		<result property="INP_ID" column="INP_ID"/>
+		<result property="ITPOWER_ID" column="ITPOWER_ID"/>
+		<result property="ITTEMP_ID" column="ITTEMP_ID"/>
+		<result property="DGENCAP_ID" column="DGENCAP_ID"/>
+		<result property="MGENCAP_ID" column="MGENCAP_ID"/>
+		<result property="YGENCAP_ID" column="YGENCAP_ID"/>
+		<result property="ALLGENCAP_ID" column="ALLGENCAP_ID"/>
+		
+		<result property="TRANRAD_ID" column="TRANRAD_ID"/>
+		<result property="ENVTEM_ID" column="ENVTEM_ID"/>
+		<result property="ENVHUM_ID" column="ENVHUM_ID"/>
+		<result property="PACKTEMP_ID" column="PACKTEMP_ID"/>
+		<result property="WINDSP_ID" column="WINDSP_ID"/>
+		<result property="WINDDIR_ID" column="WINDDIR_ID"/>
+		
+		<result property="DCINVPV1_ID" column="DCINVPV1_ID"/>
+		<result property="DCINVPV2_ID" column="DCINVPV2_ID"/>
+		<result property="DCINVPV3_ID" column="DCINVPV3_ID"/>
+		<result property="DCINIPV1_ID" column="DCINIPV1_ID"/>
+		<result property="DCINIPV2_ID" column="DCINIPV2_ID"/>
+		<result property="DCINIPV3_ID" column="DCINIPV3_ID"/>
+		
+		<result property="ACOUTPA_ID" column="ACOUTPA_ID"/>
+		<result property="ACOUTPB_ID" column="ACOUTPB_ID"/>
+		<result property="ACOUTPC_ID" column="ACOUTPC_ID"/>
+		<result property="ACHZ_ID" column="ACHZ_ID"/>
+	</resultMap>
+	<!-- 加载页面初始化数据 -->
+	<select id="loadData" parameterType="java.util.HashMap" resultMap="monitorMap">
+		SELECT T1.SNDVALUE AS ACOUTVA_ID,
+		       T2.SNDVALUE AS ACOUTVB_ID,
+		       T3.SNDVALUE AS ACOUTVC_ID,
+		       T4.SNDVALUE AS ACOUTIA_ID,
+		       T5.SNDVALUE AS ACOUTIB_ID,
+		       T6.SNDVALUE AS ACOUTIC_ID,
+		       T7.SNDVALUE AS MPPT1P_ID,
+		       T8.SNDVALUE AS MPPT2P_ID,
+		       T9.SNDVALUE AS MPPT3P_ID,
+		       T10.SNDVALUE AS ITP_ID,
+		       T11.SNDVALUE AS INP_ID,
+		       T12.SNDVALUE AS ITPOWER_ID,
+		       T13.SNDVALUE AS ITTEMP_ID,
+		       T14.SNDVALUE AS DGENCAP_ID,
+		       T15.SNDVALUE AS MGENCAP_ID,
+		       T16.SNDVALUE AS YGENCAP_ID,
+		       T17.SNDVALUE AS ALLGENCAP_ID,
+		       M1.SNDVALUE AS TRANRAD_ID,
+		       M2.SNDVALUE AS ENVTEM_ID,
+		       M3.SNDVALUE AS ENVHUM_ID,
+		       M4.SNDVALUE AS PACKTEMP_ID,
+		       M5.SNDVALUE AS WINDSP_ID,
+		       M6.SNDVALUE AS WINDDIR_ID,
+		       T18.SNDVALUE AS DCINVPV1_ID,
+	           T19.SNDVALUE AS DCINVPV2_ID,
+	           T20.SNDVALUE AS DCINVPV3_ID,
+	           T21.SNDVALUE AS DCINIPV1_ID,
+	           T22.SNDVALUE AS DCINIPV2_ID,
+	           T23.SNDVALUE AS DCINIPV3_ID,
+	           T1.SNDVALUE*T4.SNDVALUE AS ACOUTPA_ID,
+          	   T2.SNDVALUE*T5.SNDVALUE AS ACOUTPB_ID,
+               T3.SNDVALUE*T6.SNDVALUE AS ACOUTPC_ID,
+               T24.SNDVALUE AS ACHZ_ID
+		  FROM MC_ITINFO T
+		  LEFT JOIN MC_POINT T1
+		    ON T.ACOUTVA_ID = T1.PID
+		  LEFT JOIN MC_POINT T2
+		    ON T.ACOUTVB_ID = T2.PID
+		  LEFT JOIN MC_POINT T3
+		    ON T.ACOUTVC_ID = T3.PID
+		  LEFT JOIN MC_POINT T4 
+		    ON T.ACOUTIA_ID = T4.PID
+		  LEFT JOIN MC_POINT T5
+		    ON T.ACOUTIB_ID = T5.PID
+		  LEFT JOIN MC_POINT T6
+		    ON T.ACOUTIC_ID = T6.PID
+		  LEFT JOIN MC_POINT T7
+		    ON T.MPPT1P_ID = T7.PID
+		  LEFT JOIN MC_POINT T8
+		    ON T.MPPT2P_ID = T8.PID
+		  LEFT JOIN MC_POINT T9
+		    ON T.MPPT3P_ID = T9.PID
+		  LEFT JOIN MC_POINT T10
+		    ON T.ITP_ID = T10.PID
+		  LEFT JOIN MC_POINT T11
+		    ON T.INP_ID = T11.PID
+		  LEFT JOIN MC_POINT T12
+		    ON T.ITPOWER_ID = T12.PID
+		  LEFT JOIN MC_POINT T13
+		    ON T.ITTEMP_ID = T13.PID
+		  LEFT JOIN MC_POINT T14
+		    ON T.DGENCAP_ID = T14.PID
+		  LEFT JOIN MC_POINT T15
+		    ON T.MGENCAP_ID = T15.PID
+		  LEFT JOIN MC_POINT T16
+		    ON T.YGENCAP_ID = T16.PID
+		  LEFT JOIN MC_POINT T17
+		    ON T.ALLGENCAP_ID = T17.PID
+		  LEFT JOIN MC_METEORINFO M
+		    ON T.FARMID = M.FARMID
+		  LEFT JOIN MC_POINT M1
+		    ON M.TRANRAD_ID = M1.PID
+		  LEFT JOIN MC_POINT M2
+		    ON M.ENVTEM_ID = M2.PID
+		  LEFT JOIN MC_POINT M3
+		    ON M.ENVHUM_ID = M3.PID
+		  LEFT JOIN MC_POINT M4
+		    ON M.PACKTEMP_ID = M4.PID
+		  LEFT JOIN MC_POINT M5
+		    ON M.WINDSP_ID = M5.PID
+		  LEFT JOIN MC_POINT M6
+		    ON M.WINDDIR_ID = M6.PID
+		  LEFT JOIN MC_POINT T18
+	        ON T18.PID=T.DCINVPV1_ID 
+	      LEFT JOIN MC_POINT T19
+	        ON T19.PID=T.DCINVPV2_ID
+	      LEFT JOIN MC_POINT T20
+	        ON T20.PID=T.DCINVPV3_ID
+	      LEFT JOIN MC_POINT T21
+	        ON T21.PID=T.DCINIPV1_ID
+	      LEFT JOIN MC_POINT T22
+	        ON T22.PID=T.DCINIPV2_ID
+	      LEFT JOIN MC_POINT T23
+	        ON T23.PID=T.DCINIPV3_ID
+	      LEFT JOIN MC_POINT T24
+     	    ON T24.PID=T.ACHZ_ID
+	  WHERE 1=1
+	   <if test="farmid != null and farmid !=''" >
+			AND T.FARMID= ${farmid}
+		</if>
+	  	<if test="iid != null and iid !=''" >
+			AND T.IID=${iid}
+		</if>
+	  			
+  
+	</select>
+	
+	
+	<resultMap type="java.util.HashMap" id="alarmMap">
+		<result property="T1" column="T1"/>
+		<result property="T2" column="T2"/>
+		<result property="T3" column="T3"/>
+	</resultMap>
+	<!-- 加载报警数量-->
+	<select id="loadCount" parameterType="java.util.HashMap" resultMap="alarmMap">
+		 	SELECT SUM(T1) AS T1,SUM(T2) AS T2,SUM(T3) AS T3 FROM(
+				SELECT COUNT(*) AS T1,0 AS T2,0 AS T3 FROM MC_ALARMINFO T  WHERE T.STATE=1 AND T.ALARMLEVEL=1
+				UNION ALL
+				SELECT 0 AS T1,COUNT(*) AS T2,0 AS T3 FROM MC_ALARMINFO T  WHERE T.STATE=1 AND T.ALARMLEVEL=2
+				UNION ALL
+				SELECT 0 AS T1,0 AS T2,COUNT(*) AS T3 FROM MC_ALARMINFO T  WHERE T.STATE=1 AND T.ALARMLEVEL=3
+			)
+	</select>
+
+
+</mapper>

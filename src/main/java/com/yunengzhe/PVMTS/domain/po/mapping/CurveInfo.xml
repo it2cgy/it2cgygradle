@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.CurveInfoPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.CurveInfoPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="powerStationId" column="power_station_id" jdbcType="NUMERIC" />
+            <result property="name" column="name" jdbcType="VARCHAR" />
+            <result property="timeSpan" column="time_span" jdbcType="NUMERIC" />
+            <result property="firstYaxisName" column="first_yaxis_name" jdbcType="VARCHAR" />
+            <result property="secondYaxisName" column="second_yaxis_name" jdbcType="VARCHAR" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="type" column="type" jdbcType="NUMERIC" />
+            <result property="createuser" column="createuser" jdbcType="NUMERIC" />
+            <result property="nickname" column="nickname" jdbcType="VARCHAR" />
+			<result property="updateuser" column="updateuser" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="resultvo" type="com.yunengzhe.PVMTS.domain.vo.CurveDetailVO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="powerStationId" column="power_station_id" jdbcType="NUMERIC" />
+            <result property="name" column="name" jdbcType="VARCHAR" />
+            <result property="timeSpan" column="time_span" jdbcType="NUMERIC" />
+            <result property="firstYaxisName" column="first_yaxis_name" jdbcType="VARCHAR" />
+            <result property="secondYaxisName" column="second_yaxis_name" jdbcType="VARCHAR" />
+            <result property="type" column="type" jdbcType="NUMERIC" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="nickname" column="nickname" />
+            <result property="updateuser" column="updateuser" />
+		    <collection property="pointList" resultMap="resultpointvo" />
+	</resultMap>
+	<resultMap id="resultpointvo" type="com.yunengzhe.PVMTS.domain.vo.CurvePointDetailVO">
+            <result property="analoginputId" column="analoginput_id" jdbcType="NUMERIC" />
+            <result property="equipmentName" column="description_type" jdbcType="VARCHAR" />
+            <result property="equipmentNumber" column="equipmentcontainer_name" jdbcType="VARCHAR" />
+            <result property="equipmentNameEn" column="description_type_en" jdbcType="VARCHAR" />
+            <result property="equipmentNumberEn" column="equipmentcontainer_name_en" jdbcType="VARCHAR" />
+            <result property="pointEnglishName" column="point_english_name" jdbcType="VARCHAR" />
+            <result property="pointName" column="point_name" jdbcType="VARCHAR" />
+            <result property="yaxisType" column="yaxis_type" jdbcType="NUMERIC" />
+            <result property="colorCode" column="color_code" jdbcType="VARCHAR" />
+	</resultMap>
+	
+
+	<sql id="base_field">
+		t.id,t.power_station_id,t.name,time_span,t.first_yaxis_name,t.second_yaxis_name,t.create_time,t.update_time,t.type,t.createuser,t1.nickname,t2.username as updateuser
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "powerStationId != null ">	and t.power_station_id = #{powerStationId,jdbcType=NUMERIC }</if>
+            <if test= "name != null ">	and t.name = #{name,jdbcType=VARCHAR }</if>
+            <if test= "timeSpan != null ">	and t.time_span = #{timeSpan,jdbcType=NUMERIC }</if>
+            <if test= "type != null ">	and t.type = #{type,jdbcType=NUMERIC }</if>
+            <if test= "firstYaxisName != null ">	and t.first_yaxis_name = #{firstYaxisName,jdbcType=VARCHAR }</if>
+            <if test= "secondYaxisName != null ">	and t.second_yaxis_name = #{secondYaxisName,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	and t.create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and t.update_time = #{updateTime }</if>
+			<if test= "uids != null ">	and t.createuser in (${uids })</if>
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "powerStationId != null ">	and t.power_station_id = #{powerStationId,jdbcType=NUMERIC }</if>
+            <if test= "name != null ">	and t.name like "%"#{name}"%"</if>
+            <if test= "timeSpan != null ">	and t.time_span = #{timeSpan,jdbcType=NUMERIC }</if>
+            <if test= "type != null ">	and t.type = #{type,jdbcType=NUMERIC }</if>
+            <if test= "firstYaxisName != null ">	and t.first_yaxis_name like "%"#{firstYaxisName}"%"</if>
+            <if test= "secondYaxisName != null ">	and t.second_yaxis_name like "%"#{secondYaxisName}"%"</if>
+            <if test= "createTime != null ">	and t.create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and t.update_time = #{updateTime }</if>
+            <if test="createuser != null">and t.createuser = #{createuser,jdbcType=NUMERIC }</if>
+            <if test= "uids != null ">	and t.createuser in (${uids })</if>
+            
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "powerStationId != null ">	or t.power_station_id = #{powerStationId,jdbcType=NUMERIC }</if>
+            <if test= "name != null ">	or t.name = #{name,jdbcType=VARCHAR }</if>
+            <if test= "timeSpan != null ">	or t.time_span = #{timeSpan,jdbcType=NUMERIC }</if>
+            <if test= "type != null ">	or t.type = #{type,jdbcType=NUMERIC }</if>
+            <if test= "firstYaxisName != null ">	or t.first_yaxis_name = #{firstYaxisName,jdbcType=VARCHAR }</if>
+            <if test= "secondYaxisName != null ">	or t.second_yaxis_name = #{secondYaxisName,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	or t.create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or t.update_time = #{updateTime }</if>
+            <if test= "uids != null ">	or t.createuser in (${uids })</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_curve_info t
+		LEFT JOIN pvmts_user t1 ON t.createuser = t1.id
+		LEFT JOIN pvmts_user t2 ON t.updateuser = t2.id
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	<select id="selectCurveDetail" resultMap="resultvo">
+	SELECT
+		t1.id,
+		t1.power_station_id,
+		t1. NAME,
+		t1.time_span,
+		t1.first_yaxis_name,
+		t1.second_yaxis_name,
+		t1.create_time,
+		t1.update_time,
+		t1.type,
+		t2.analoginput_id,
+		t2. NAME AS point_name,
+		t2.color_code,
+		t2.yaxis_type,
+		t3.point_english_name,
+		t3.equipmentcontainer_name,
+		t3.description_type,
+		t3.equipmentcontainer_name_en,
+		t3.description_type_en,
+		t4.nickname,
+		t5.nickname as updateuser
+	FROM
+		pvmts_curve_info t1
+	LEFT JOIN pvmts_curve_point_info t2 ON t1.id = t2.curve_id
+	LEFT JOIN pvmts_point_info t3 ON t2.analoginput_id = t3.analoginput_id
+	LEFT JOIN pvmts_user t4 ON t1.createuser = t4.id
+	LEFT JOIN pvmts_user t5 on t1.updateuser = t5.id
+	WHERE
+		t1.id IN (${_parameter})
+	ORDER BY
+		t1.create_time DESC
+	</select>
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_curve_info t
+		LEFT JOIN pvmts_user t1 ON t.createuser = t1.id
+		LEFT JOIN pvmts_user t2 ON t.updateuser = t2.id
+		<where>
+			<if test="_parameter != null">
+				t.id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+			from pvmts_curve_info t
+		LEFT JOIN pvmts_user t1 ON t.createuser = t1.id 
+		LEFT JOIN pvmts_user t2 ON t.updateuser = t2.id
+		 where t.id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.CurveInfoPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_curve_info( id,power_station_id,name,time_span,first_yaxis_name,second_yaxis_name,create_time,update_time,type,createuser ) values (#{id,jdbcType=INTEGER},#{powerStationId,jdbcType=NUMERIC},#{name,jdbcType=VARCHAR},#{timeSpan,jdbcType=NUMERIC},#{firstYaxisName,jdbcType=VARCHAR},#{secondYaxisName,jdbcType=VARCHAR},#{createTime},#{updateTime},#{type,jdbcType=NUMERIC},#{createuser,jdbcType=NUMERIC} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_curve_info( id,power_station_id,name,time_span,first_yaxis_name,second_yaxis_name,create_time,update_time,type ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.powerStationId,jdbcType=NUMERIC},#{item.name,jdbcType=VARCHAR},#{item.timeSpan,jdbcType=NUMERIC},#{item.firstYaxisName,jdbcType=VARCHAR},#{item.secondYaxisName,jdbcType=VARCHAR},#{item.createTime},#{item.updateTime},#{type,jdbcType=NUMERIC},#{item.createuser,jdbcType=NUMERIC} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.CurveInfoPO">
+		update pvmts_curve_info set power_station_id=#{powerStationId,jdbcType=NUMERIC},name=#{name,jdbcType=VARCHAR},time_span=#{timeSpan,jdbcType=NUMERIC},first_yaxis_name=#{firstYaxisName,jdbcType=VARCHAR},second_yaxis_name=#{secondYaxisName,jdbcType=VARCHAR},create_time=#{createTime},update_time=#{updateTime},type=#{type,jdbcType=NUMERIC},updateuser=#{updateuser,jdbcType=NUMERIC}  where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.CurveInfoPO">
+		update pvmts_curve_info
+        <set>
+            <if test="powerStationId != null "> 
+                power_station_id = #{powerStationId,jdbcType=NUMERIC},
+            </if>
+            <if test="name != null "> 
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="timeSpan != null "> 
+                time_span = #{timeSpan,jdbcType=NUMERIC},
+            </if>
+            <if test="type != null "> 
+                type = #{type,jdbcType=NUMERIC},
+            </if>
+            <if test="firstYaxisName != null "> 
+                first_yaxis_name = #{firstYaxisName,jdbcType=VARCHAR},
+            </if>
+            <if test="secondYaxisName != null "> 
+                second_yaxis_name = #{secondYaxisName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+            <if test="updateUserId != null "> 
+                updateuser = #{updateUserId},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_curve_info where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.CurveInfoPO">
+		delete from pvmts_curve_info
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

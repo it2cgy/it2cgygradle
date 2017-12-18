@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.RulesInfoPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.RulesInfoPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="companyId" column="company_id" jdbcType="NUMERIC" />
+            <result property="name" column="name" jdbcType="VARCHAR" />
+            <result property="version" column="version" jdbcType="VARCHAR" />
+            <result property="publisherId" column="publisher_id" jdbcType="NUMERIC" />
+            <result property="publishTime" column="publish_time" />
+            <result property="fileName" column="file_name" jdbcType="VARCHAR" />
+            <result property="fileUrl" column="file_url" jdbcType="VARCHAR" />
+            <result property="publishStatus" column="publish_status" jdbcType="NUMERIC" />
+            <result property="remarks" column="remarks" jdbcType="VARCHAR" />
+            <result property="ruleStatus" column="rule_status" jdbcType="NUMERIC" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,company_id,name,version,publisher_id,publish_time,file_name,file_url,publish_status,remarks,rule_status,create_time,update_time
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "companyId != null ">	and company_id = #{companyId,jdbcType=NUMERIC }</if>
+            <if test= "name != null ">	and name = #{name,jdbcType=VARCHAR }</if>
+            <if test= "version != null ">	and version = #{version,jdbcType=VARCHAR }</if>
+            <if test= "publisherId != null ">	and publisher_id = #{publisherId,jdbcType=NUMERIC }</if>
+            <if test= "publishTime != null ">	and publish_time = #{publishTime }</if>
+            <if test= "fileName != null ">	and file_name = #{fileName,jdbcType=VARCHAR }</if>
+            <if test= "fileUrl != null ">	and file_url = #{fileUrl,jdbcType=VARCHAR }</if>
+            <if test= "publishStatus != null ">	and publish_status = #{publishStatus,jdbcType=NUMERIC }</if>
+            <if test= "remarks != null ">	and remarks = #{remarks,jdbcType=VARCHAR }</if>
+            <if test= "ruleStatus != null ">	and rule_status = #{ruleStatus,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "companyId != null ">	and company_id = #{companyId,jdbcType=NUMERIC }</if>
+            <if test= "name != null ">	and name like "%"#{name}"%"</if>
+            <if test= "version != null ">	and version like "%"#{version}"%"</if>
+            <if test= "publisherId != null ">	and publisher_id = #{publisherId,jdbcType=NUMERIC }</if>
+            <if test= "publishTime != null ">	and publish_time = #{publishTime }</if>
+            <if test= "fileName != null ">	and file_name like "%"#{fileName}"%"</if>
+            <if test= "fileUrl != null ">	and file_url like "%"#{fileUrl}"%"</if>
+            <if test= "publishStatus != null ">	and publish_status = #{publishStatus,jdbcType=NUMERIC }</if>
+            <if test= "remarks != null ">	and remarks like "%"#{remarks}"%"</if>
+            <if test= "ruleStatus != null ">	and rule_status = #{ruleStatus,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "companyId != null ">	or company_id = #{companyId,jdbcType=NUMERIC }</if>
+            <if test= "name != null ">	or name = #{name,jdbcType=VARCHAR }</if>
+            <if test= "version != null ">	or version = #{version,jdbcType=VARCHAR }</if>
+            <if test= "publisherId != null ">	or publisher_id = #{publisherId,jdbcType=NUMERIC }</if>
+            <if test= "publishTime != null ">	or publish_time = #{publishTime }</if>
+            <if test= "fileName != null ">	or file_name = #{fileName,jdbcType=VARCHAR }</if>
+            <if test= "fileUrl != null ">	or file_url = #{fileUrl,jdbcType=VARCHAR }</if>
+            <if test= "publishStatus != null ">	or publish_status = #{publishStatus,jdbcType=NUMERIC }</if>
+            <if test= "remarks != null ">	or remarks = #{remarks,jdbcType=VARCHAR }</if>
+            <if test= "ruleStatus != null ">	or rule_status = #{ruleStatus,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_rules_info
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_rules_info  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_rules_info  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.RulesInfoPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_rules_info( id,company_id,name,version,publisher_id,publish_time,file_name,file_url,publish_status,remarks,rule_status,create_time,update_time ) values (#{id,jdbcType=INTEGER},#{companyId,jdbcType=NUMERIC},#{name,jdbcType=VARCHAR},#{version,jdbcType=VARCHAR},#{publisherId,jdbcType=NUMERIC},#{publishTime},#{fileName,jdbcType=VARCHAR},#{fileUrl,jdbcType=VARCHAR},#{publishStatus,jdbcType=NUMERIC},#{remarks,jdbcType=VARCHAR},#{ruleStatus,jdbcType=NUMERIC},#{createTime},#{updateTime} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_rules_info( id,company_id,name,version,publisher_id,publish_time,file_name,file_url,publish_status,remarks,rule_status,create_time,update_time ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.companyId,jdbcType=NUMERIC},#{item.name,jdbcType=VARCHAR},#{item.version,jdbcType=VARCHAR},#{item.publisherId,jdbcType=NUMERIC},#{item.publishTime},#{item.fileName,jdbcType=VARCHAR},#{item.fileUrl,jdbcType=VARCHAR},#{item.publishStatus,jdbcType=NUMERIC},#{item.remarks,jdbcType=VARCHAR},#{item.ruleStatus,jdbcType=NUMERIC},#{item.createTime},#{item.updateTime} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.RulesInfoPO">
+		update pvmts_rules_info set company_id=#{companyId,jdbcType=NUMERIC},name=#{name,jdbcType=VARCHAR},version=#{version,jdbcType=VARCHAR},publisher_id=#{publisherId,jdbcType=NUMERIC},publish_time=#{publishTime},file_name=#{fileName,jdbcType=VARCHAR},file_url=#{fileUrl,jdbcType=VARCHAR},publish_status=#{publishStatus,jdbcType=NUMERIC},remarks=#{remarks,jdbcType=VARCHAR},rule_status=#{ruleStatus,jdbcType=NUMERIC},create_time=#{createTime},update_time=#{updateTime} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="updateToDelelete">
+		update pvmts_rules_info set rule_status=1,update_time=now() where id in (${_parameter})
+	</update>
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.RulesInfoPO">
+		update pvmts_rules_info
+        <set>
+            <if test="companyId != null "> 
+                company_id = #{companyId,jdbcType=NUMERIC},
+            </if>
+            <if test="name != null "> 
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="version != null "> 
+                version = #{version,jdbcType=VARCHAR},
+            </if>
+            <if test="publisherId != null "> 
+                publisher_id = #{publisherId,jdbcType=NUMERIC},
+            </if>
+            <if test="publishTime != null "> 
+                publish_time = #{publishTime},
+            </if>
+            <if test="fileName != null "> 
+                file_name = #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="fileUrl != null "> 
+                file_url = #{fileUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="publishStatus != null "> 
+                publish_status = #{publishStatus,jdbcType=NUMERIC},
+            </if>
+            <if test="remarks != null "> 
+                remarks = #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="ruleStatus != null "> 
+                rule_status = #{ruleStatus,jdbcType=NUMERIC},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_rules_info where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.RulesInfoPO">
+		delete from pvmts_rules_info
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

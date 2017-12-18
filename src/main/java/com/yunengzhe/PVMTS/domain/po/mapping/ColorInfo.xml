@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.ColorInfoPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.ColorInfoPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="colorCode" column="color_code" jdbcType="VARCHAR" />
+            <result property="name" column="name" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,color_code,name
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "colorCode != null ">	and color_code = #{colorCode,jdbcType=VARCHAR }</if>
+            <if test= "name != null ">	and name = #{name,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "colorCode != null ">	and color_code like "%"#{colorCode}"%"</if>
+            <if test= "name != null ">	and name like "%"#{name}"%"</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "colorCode != null ">	or color_code = #{colorCode,jdbcType=VARCHAR }</if>
+            <if test= "name != null ">	or name = #{name,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_color_info
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_color_info  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_color_info  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.ColorInfoPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_color_info( id,color_code,name ) values (#{id,jdbcType=INTEGER},#{colorCode,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_color_info( id,color_code,name ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.colorCode,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.ColorInfoPO">
+		update pvmts_color_info set color_code=#{colorCode,jdbcType=VARCHAR},name=#{name,jdbcType=VARCHAR} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.ColorInfoPO">
+		update pvmts_color_info
+        <set>
+            <if test="colorCode != null "> 
+                color_code = #{colorCode,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null "> 
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_color_info where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.ColorInfoPO">
+		delete from pvmts_color_info
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

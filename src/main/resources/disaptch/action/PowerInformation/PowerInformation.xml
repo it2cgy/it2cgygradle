@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="powerinfo">
+	<!-- 返回数据列 -->
+    <resultMap type="java.util.HashMap" id="listMap">
+		<result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="install_capacity" column="install_capacity"/>
+        <result property="invest_firm_name" column="invest_firm_name"/>
+        <result property="owner_firm_name" column="owner_firm_name"/>
+        <result property="invest_firm_contact_name" column="invest_firm_contact_name"/>
+        <result property="invest_firm_contact_position" column="invest_firm_contact_position"/>
+        <result property="invest_firm_contact_mobile" column="invest_firm_contact_mobile"/>
+        <result property="ower_firm_contact_name" column="owner_firm_contact_name"/>
+        <result property="ower_firm_contact_position" column="owner_firm_contact_position"/>
+        <result property="ower_firm_contact_mobile" column="owner_firm_contact_mobile"/>
+        <result property="maintainer_name" column="maintainer_name"/>
+        <result property="maintainer_mobile" column="maintainer_mobile"/>
+        <result property="provinceid" column="province_id"/>
+        <result property="cityid" column="city_id"/>
+        <result property="countyid" column="county_id"/>
+        <result property="location" column="location"/>
+    </resultMap>
+    <!-- 插入字段列  -->
+   	<sql id="colList" >
+	   	id, code, name, type, location, lng, lat, roof_type, build_area, build_ground_area,
+	   	pro_available_area, install_capacity, image, invest_firm_name, invest_firm_contact_name,
+	   	invest_firm_contact_position, invest_firm_contact_mobile, owner_firm_name,
+	   	owner_firm_contact_name, owner_firm_contact_position, owner_firm_contact_mobile,
+	   	operator_name, operator_mobile, maintainer_name, maintainer_mobile, last_opreate_time,
+	   	description,province_id,city_id,county_id,company_id
+  	</sql>
+    
+   	<!-- 根据条件查询电站的基本信息 -->
+	<select id="loadData" parameterType="java.util.HashMap" resultMap="listMap">
+		SELECT  DISTINCT t.id,t.name,t.code,t.install_capacity,t.invest_firm_name,t.owner_firm_name,t.invest_firm_contact_name,t.invest_firm_contact_position,t.invest_firm_contact_mobile,
+		    t.owner_firm_contact_name,t.owner_firm_contact_position,t.owner_firm_contact_mobile,t.maintainer_mobile,t.maintainer_name,t.location,t.province_id,t.city_id,t.county_id FROM MT_PROJECT t,
+		    MT_USER a 
+		WHERE 
+		    t.COMPANY_ID=a.COMPANY_ID
+		    and t.company_id = #{companyId}
+		<if test="powername != null and powername !=''" ><!-- 电站名称 -->
+			and t.name  LIKE '%${powername}%'
+		</if>
+		<if test="powercapacity != null and powercapacity !=''" ><!-- 电站容量 -->
+			and t.install_capacity= ${powercapacity}
+		</if>
+		<if test="firmname != null and firmname !=''" ><!-- 投资单位名称 -->
+			and t.invest_firm_name LIKE '%${investfirmname}%'
+		</if>
+		<if test="maintainername != null and maintainername !=''" ><!-- 运维人员 -->
+			and t.maintainer_name LIKE '%${maintainername}%'
+		</if>
+		<if test="id != null and id !=''" ><!-- 业主单位名称 -->
+			and t.id = ${id}
+		</if>
+		<if test="userId != null and userId !=''" ><!-- 业主单位名称 -->
+			and a.id= ${userId}
+		</if>
+		order by t.id
+	</select>
+	
+	<!-- 查询符合 条件的电站信息总数 -->
+	<select id="getCountData" parameterType="java.util.HashMap" resultMap="listMap">
+		SELECT t.id,t.name,t.code,t.install_capacity,t.invest_firm_name,t.owner_firm_name FROM MT_PROJECT t
+		where 1 =1
+		    and company_id = ${companyId}
+		<if test="powername != null and powername !=''" ><!-- 电站名称 -->
+			and t.name  LIKE '%${powername}%'
+		</if>
+		<if test="powercapacity != null and powercapacity !=''" ><!-- 电站容量 -->
+			and t.install_capacity= ${powercapacity}
+		</if>
+		<if test="firmname != null and firmname !=''" ><!-- 投资单位名称 -->
+			and t.invest_firm_name LIKE '%${firmname}%'
+		</if>
+		<if test="maintainername != null and maintainername !=''" ><!-- 业主单位名称 -->
+			and t.owner_firm_name LIKE '%${maintainername}%'
+		</if>
+	</select>
+	
+	 <resultMap type="java.util.HashMap" id="cheakcodeMap">
+		<result property="id" column="id"/>
+    </resultMap>
+    
+	<select id="checkid"  resultMap="cheakcodeMap">
+  		
+				
+				SELECT
+					md.id id
+				FROM
+					MT_PROJECT md
+				WHERE
+					1 = 1
+				                
+				<if test="_parameter != null and _parameter !=''" >
+					and  md.id = #{_parameter}
+				</if>
+								
+		
+  	</select>
+	
+	<!-- 
+	<insert id="saveData" parameterType="java.util.HashMap">
+	  INSERT INTO MT_PROJECT()
+	</insert> -->
+	<select id="getSeqValue" resultType="java.lang.Integer">  
+        select seq_mt_pro_id.nextval as id from dual  
+    </select>
+	
+	<insert id="addele" parameterType="mtProject">
+		insert into mt_project (<include refid="colList"/>) values(
+			#{id,jdbcType=INTEGER},
+			#{code,jdbcType=VARCHAR},
+			#{name,jdbcType=VARCHAR},
+			#{type,jdbcType=DOUBLE},
+			#{location,jdbcType=VARCHAR},
+			#{lng,jdbcType=DOUBLE},
+			#{lat,jdbcType=DOUBLE},
+			#{roof_type,jdbcType=DOUBLE},
+			#{build_area,jdbcType=DOUBLE},
+			#{build_ground_area,jdbcType=DOUBLE},
+			#{pro_available_area,jdbcType=DOUBLE},
+			#{install_capacity,jdbcType=DOUBLE},
+			#{image,jdbcType=VARCHAR},
+			#{invest_firm_name,jdbcType=VARCHAR},
+			#{invest_firm_contact_name,jdbcType=VARCHAR},
+			#{invest_firm_contact_position,jdbcType=VARCHAR},
+			#{invest_firm_contact_mobile,jdbcType=VARCHAR},
+			#{owner_firm_name,jdbcType=VARCHAR},
+			#{owner_firm_contact_name,jdbcType=VARCHAR},
+			#{owner_firm_contact_position,jdbcType=VARCHAR},
+			#{owner_firm_contact_mobile,jdbcType=VARCHAR},
+			#{operator_name,jdbcType=VARCHAR},
+			#{operator_mobile,jdbcType=VARCHAR},
+			#{maintainer_name,jdbcType=VARCHAR},
+			#{maintainer_mobile,jdbcType=VARCHAR},
+			SYSDATE,<!-- 由系统自动生成 -->
+			#{description,jdbcType=VARCHAR},
+			#{province_id,jdbcType=VARCHAR},
+			#{city_id,jdbcType=VARCHAR},
+			#{county_id,jdbcType=VARCHAR},
+			#{company_id}
+		)
+	</insert>
+	<insert id="saveProjectUserMap">
+		insert into R_MT_PRO_USER_ROLE (pro_id, user_id, role_id, grant_time) 
+			VALUES(#{pro_id}, #{user_id}, #{role_id}, sysdate)
+	</insert>
+	
+	<update id="updateData" parameterType="mtProject">  
+        update mt_project set 
+        name= #{name,jdbcType=VARCHAR},
+		code= #{code,jdbcType=VARCHAR},
+		install_capacity=#{install_capacity,jdbcType=DOUBLE},
+		invest_firm_name=#{invest_firm_name,jdbcType=VARCHAR},
+		invest_firm_contact_name=#{invest_firm_contact_name,jdbcType=VARCHAR},
+		invest_firm_contact_position=#{invest_firm_contact_position,jdbcType=VARCHAR},
+		invest_firm_contact_mobile=#{invest_firm_contact_mobile,jdbcType=VARCHAR},
+		owner_firm_name=#{owner_firm_name,jdbcType=VARCHAR},
+		owner_firm_contact_name=#{owner_firm_contact_name,jdbcType=VARCHAR},
+		owner_firm_contact_position=#{owner_firm_contact_position,jdbcType=VARCHAR},
+		owner_firm_contact_mobile=#{owner_firm_contact_mobile,jdbcType=VARCHAR},
+		maintainer_mobile=#{maintainer_mobile,jdbcType=VARCHAR},
+		maintainer_name=#{maintainer_name,jdbcType=VARCHAR},
+		province_id=#{province_id,jdbcType=VARCHAR},
+		city_id=#{city_id,jdbcType=VARCHAR},
+		county_id=#{county_id,jdbcType=VARCHAR},
+		location=#{location,jdbcType=VARCHAR}
+		where id=#{id,jdbcType=INTEGER}
+    </update>  
+    
+	<!-- 根据ID删除电站信息 -->
+	<delete id="delDataById"  parameterType="java.util.List" >
+	    DELETE FROM MT_PROJECT T WHERE T.ID IN 
+	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")"> 
+        #{item} 
+   	    </foreach>
+	</delete>
+	
+	<!-- 根据PRO_ID删除电站用户映射表信息 -->
+	<!--
+	<delete id="delProjectUserMap"  parameterType="java.util.List" >
+	    DELETE FROM R_MT_PRO_USER_ROLE T WHERE T.PRO_ID IN 
+	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")"> 
+        #{item} 
+   	    </foreach>
+	</delete> -->
+	
+	
+	<!-- 省市县三级联动 START -->
+    <resultMap type="java.util.HashMap" id="provinceMap">
+		<result property="PROVINCEID"   column="PROVINCEID"/>
+	    <result property="PROVINCENAME" column="PROVINCENAME"/>
+    </resultMap>
+        <resultMap type="java.util.HashMap" id="cityMap">
+		<result property="CITYID"   column="CITYID"/>
+	    <result property="CITYNAME" column="CITYNAME"/>
+    </resultMap>
+        <resultMap type="java.util.HashMap" id="countyMap">
+		<result property="COUNTYID"   column="COUNTYID"/>
+	    <result property="COUNTYNAME" column="COUNTYNAME"/>
+    </resultMap>
+	<!-- 加载省份信息 -->
+	<select id="loadProvince" parameterType="java.util.HashMap" resultMap="provinceMap">
+		SELECT PROVINCE_ID AS PROVINCEID,PROVINCE_NAME AS PROVINCENAME FROM PROVINCE ORDER BY ID
+	</select>
+	<!-- 加载城市信息 -->
+	<select id="loadCity" parameterType="java.util.HashMap" resultMap="cityMap">
+		SELECT CITY_ID AS CITYID,CITY_NAME AS CITYNAME FROM CITY 
+		<if test="id != null and id !=''" >
+			WHERE PARENT_ID=${id}
+		</if>
+		ORDER BY ID
+	</select>
+	<!-- 加载区县信息 -->
+	<select id="loadCounty" parameterType="java.util.HashMap" resultMap="countyMap">
+		SELECT COUNTY_ID AS COUNTYID,COUNTY_NAME AS COUNTYNAME FROM COUNTY 
+		<if test="id != null and id !=''" >
+			WHERE PARENT_ID=${id}
+		</if>
+		ORDER BY ID
+	</select>
+	<!-- END -->
+	
+	
+</mapper>

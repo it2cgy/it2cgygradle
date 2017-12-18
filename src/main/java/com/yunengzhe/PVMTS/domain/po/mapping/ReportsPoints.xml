@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.ReportsPointsPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.ReportsPointsPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="analoginputId" column="analoginputId" jdbcType="NUMERIC" />
+            <result property="analoginputColor" column="analoginputColor" jdbcType="VARCHAR" />
+            <result property="analoginputName" column="analoginputName" jdbcType="VARCHAR" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="reportid" column="reportid" jdbcType="NUMERIC" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,analoginputId,analoginputColor,analoginputName,create_time,update_time,reportid
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "analoginputId != null ">	and analoginputId = #{analoginputId,jdbcType=NUMERIC }</if>
+            <if test= "analoginputColor != null ">	and analoginputColor = #{analoginputColor,jdbcType=VARCHAR }</if>
+            <if test= "analoginputName != null ">	and analoginputName = #{analoginputName,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+            <if test= "reportid != null ">	and reportid = #{reportid,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "analoginputId != null ">	and analoginputId = #{analoginputId,jdbcType=NUMERIC }</if>
+            <if test= "analoginputColor != null ">	and analoginputColor like "%"#{analoginputColor}"%"</if>
+            <if test= "analoginputName != null ">	and analoginputName like "%"#{analoginputName}"%"</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+            <if test= "reportid != null ">	and reportid = #{reportid,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "analoginputId != null ">	or analoginputId = #{analoginputId,jdbcType=NUMERIC }</if>
+            <if test= "analoginputColor != null ">	or analoginputColor = #{analoginputColor,jdbcType=VARCHAR }</if>
+            <if test= "analoginputName != null ">	or analoginputName = #{analoginputName,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+            <if test= "reportid != null ">	or reportid = #{reportid,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_report_points
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_report_points  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_report_points  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.ReportsPointsPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_report_points( id,analoginputId,analoginputColor,analoginputName,create_time,update_time,reportid ) values (#{id,jdbcType=INTEGER},#{analoginputId,jdbcType=NUMERIC},#{analoginputColor,jdbcType=VARCHAR},#{analoginputName,jdbcType=VARCHAR},#{createTime},#{updateTime},#{reportid,jdbcType=NUMERIC} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_report_points( id,analoginputId,analoginputColor,analoginputName,create_time,update_time,reportid ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.analoginputId,jdbcType=NUMERIC},#{item.analoginputColor,jdbcType=VARCHAR},#{item.analoginputName,jdbcType=VARCHAR},#{item.createTime},#{item.updateTime},#{item.reportid,jdbcType=NUMERIC} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.ReportsPointsPO">
+		update pvmts_report_points set analoginputId=#{analoginputId,jdbcType=NUMERIC},analoginputColor=#{analoginputColor,jdbcType=VARCHAR},analoginputName=#{analoginputName,jdbcType=VARCHAR},create_time=#{createTime},update_time=#{updateTime},reportid=#{reportid,jdbcType=NUMERIC} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.ReportsPointsPO">
+		update pvmts_report_points
+        <set>
+            <if test="analoginputId != null "> 
+                analoginputId = #{analoginputId,jdbcType=NUMERIC},
+            </if>
+            <if test="analoginputColor != null "> 
+                analoginputColor = #{analoginputColor,jdbcType=VARCHAR},
+            </if>
+            <if test="analoginputName != null "> 
+                analoginputName = #{analoginputName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+            <if test="reportid != null "> 
+                reportid = #{reportid,jdbcType=NUMERIC},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_report_points where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.ReportsPointsPO">
+		delete from pvmts_report_points
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+		
+		
+			
+	<select id="getPointsList" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_report_points t where t.reportid in (${_parameter})
+	</select>	
+</mapper>
+

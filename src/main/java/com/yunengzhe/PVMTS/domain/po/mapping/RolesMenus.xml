@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.RolesMenusPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.RolesMenusPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="roleId" column="role_id" jdbcType="NUMERIC" />
+            <result property="menuId" column="menu_id" jdbcType="NUMERIC" />
+            <result property="handlePremission" column="handle_premission" jdbcType="NUMERIC" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,role_id,menu_id,handle_premission,create_time,update_time
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "roleId != null ">	and role_id = #{roleId,jdbcType=NUMERIC }</if>
+            <if test= "menuId != null ">	and menu_id = #{menuId,jdbcType=NUMERIC }</if>
+            <if test= "handlePremission != null ">	and handle_premission = #{handlePremission,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "roleId != null ">	and role_id = #{roleId,jdbcType=NUMERIC }</if>
+            <if test= "menuId != null ">	and menu_id = #{menuId,jdbcType=NUMERIC }</if>
+            <if test= "handlePremission != null ">	and handle_premission = #{handlePremission,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "roleId != null ">	or role_id = #{roleId,jdbcType=NUMERIC }</if>
+            <if test= "menuId != null ">	or menu_id = #{menuId,jdbcType=NUMERIC }</if>
+            <if test= "handlePremission != null ">	or handle_premission = #{handlePremission,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_roles_menu
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_roles_menu  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_roles_menu  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.RolesMenusPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_roles_menu( id,role_id,menu_id,handle_premission,create_time,update_time ) values (#{id,jdbcType=INTEGER},#{roleId,jdbcType=NUMERIC},#{menuId,jdbcType=NUMERIC},#{handlePremission,jdbcType=NUMERIC},#{createTime},#{updateTime} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_roles_menu( id,role_id,menu_id,handle_premission,create_time,update_time ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.roleId,jdbcType=NUMERIC},#{item.menuId,jdbcType=NUMERIC},#{item.handlePremission,jdbcType=NUMERIC},#{item.createTime},#{item.updateTime} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.RolesMenusPO">
+		update pvmts_roles_menu set role_id=#{roleId,jdbcType=NUMERIC},menu_id=#{menuId,jdbcType=NUMERIC},handle_premission=#{handlePremission,jdbcType=NUMERIC},create_time=#{createTime},update_time=#{updateTime} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.RolesMenusPO">
+		update pvmts_roles_menu
+        <set>
+            <if test="roleId != null "> 
+                role_id = #{roleId,jdbcType=NUMERIC},
+            </if>
+            <if test="menuId != null "> 
+                menu_id = #{menuId,jdbcType=NUMERIC},
+            </if>
+            <if test="handlePremission != null "> 
+                handle_premission = #{handlePremission,jdbcType=NUMERIC},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_roles_menu where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.RolesMenusPO">
+		delete from pvmts_roles_menu
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+	<resultMap id="resultIds" type="java.lang.String">
+            <result property="ids" column="ids" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="findRoleMenuList" resultMap="resultIds"  parameterType="java.lang.Integer">
+		SELECT
+			GROUP_CONCAT(t.id) AS ids
+		FROM
+			pvmts_roles_menu t
+		<where>
+			<if test="_parameter != null">
+				t.roleId = #{roleId,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>		
+	<select id="getRoleMenuList" resultMap="result"  parameterType="java.util.HashMap">
+		select * from pvmts_roles_menu t 
+		<where>
+			<if test="roleIds != null">
+				t.role_id in (#{roleIds,jdbcType=VARCHAR})
+			</if>
+			<if test="menuId != null">
+				and t.menu_id =#{menuId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>		
+	
+</mapper>
+

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.WorkOrderFaultPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.WorkOrderFaultPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="workorderId" column="workorderId" jdbcType="NUMERIC" />
+            <result property="faultId" column="faultId" jdbcType="NUMERIC" />
+            <result property="isSolve" column="isSolve" jdbcType="NUMERIC" />
+ 			<result property="fault_message" column="fault_message" jdbcType="NUMERIC" />
+	</resultMap>
+
+	<sql id="base_field">
+		t1.id,t1.workorderId,t1.faultId,t1.isSolve,t2.fault_message
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "workorderId != null ">	and workorderId = #{workorderId,jdbcType=VARCHAR }</if>
+            <if test= "faultId != null ">	and faultId = #{faultId,jdbcType=NUMERIC }</if>
+            <if test= "isSolve != null ">	and isSolve = #{isSolve,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "workorderId != null ">	and workorderId = #{workorderId,jdbcType=VARCHAR }</if>
+            <if test= "faultId != null ">	and faultId = #{faultId,jdbcType=NUMERIC }</if>
+            <if test= "isSolve != null ">	and isSolve = #{isSolve,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "workorderId != null ">	or workorderId = #{workorderId,jdbcType=VARCHAR }</if>
+            <if test= "faultId != null ">	or faultId = #{faultId,jdbcType=NUMERIC }</if>
+            <if test= "isSolve != null ">	or isSolve = #{isSolve,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_fault t1 LEFT JOIN pvmts_fault_info t2 ON t1.faultId = t2.id
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by t1.${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_fault t1 LEFT JOIN pvmts_fault_info t2 ON t1.faultId = t2.id
+		<where>
+			<if test="_parameter != null">
+				t1.id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_fault t1 LEFT JOIN pvmts_fault_info t2 ON t1.faultId = t2.id  where t1.id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.WorkOrderFaultPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_workorder_fault( id,workorderId,faultId,isSolve ) values (#{id,jdbcType=INTEGER},#{workorderId,jdbcType=VARCHAR},#{faultId,jdbcType=NUMERIC},#{isSolve,jdbcType=NUMERIC} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_workorder_fault( id,workorderId,faultId,isSolve ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.workorderId,jdbcType=VARCHAR},#{item.faultId,jdbcType=NUMERIC},#{item.isSolve,jdbcType=NUMERIC} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.WorkOrderFaultPO">
+		update pvmts_workorder_fault set workorderId=#{workorderId,jdbcType=VARCHAR},faultId=#{faultId,jdbcType=NUMERIC},isSolve=#{isSolve,jdbcType=NUMERIC} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.WorkOrderFaultPO">
+		update pvmts_workorder_fault
+        <set>
+            <if test="workorderId != null "> 
+                workorderId = #{workorderId,jdbcType=VARCHAR},
+            </if>
+            <if test="faultId != null "> 
+                faultId = #{faultId,jdbcType=NUMERIC},
+            </if>
+            <if test="isSolve != null "> 
+                isSolve = #{isSolve,jdbcType=NUMERIC},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_workorder_fault where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.WorkOrderFaultPO">
+		delete from pvmts_workorder_fault
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

@@ -1,0 +1,636 @@
+html,body{
+	width:100%;
+	height:100%;
+	position: relative;
+	background: #0b172d;
+}
+.page-sidebar-wrapper .page-sidebar.navbar-collapse{
+	padding-top:0;
+}
+.anchorBL{
+	display:none;
+}
+.dotted{
+	height: 0;
+	position: absolute;
+    top: 12px;
+    left: 0;
+    right: 0;
+    margin-bottom: 24px;
+	border:2px dotted #354b6d;
+}
+.content{
+	padding-top: 36px;
+}
+/* .totalEle{
+	width: 90%;
+	height: 150px;
+	margin:19px 30px 0 20px;
+	text-align: center;
+	color: #a5cce8;
+	background: url(common/backgroundImg/bg1.png) no-repeat left top;
+	background-size: 100% 100%;
+} */
+.totalEleList{
+	text-align:center;
+	border-right:1px solid #15223B;
+	font-size:12px;
+	margin-top: 32px;
+}
+.totalEleList dt img{
+	float:none;
+    margin: 4px auto;
+}
+ .electData{
+	height: 36px;
+	font-size: 24px;
+	letter-spacing: 2px;
+	color:#db5a6b;
+	margin: 5px 0;
+} 
+.yellowColor{
+	color:#f79720;
+}
+.ynzDataBox .yellowColor{
+	color:#a8b038;
+}
+.ynzDataBox .reseda{
+	color:#3ca38e;
+}
+.ynzDataBox .green{
+	color:#48bac7;
+}
+.deepyellowColor{
+	color:#c19519;
+}
+.installCapaity{
+	width: 90%;
+	height: 190px;
+	color: #a5cce8;
+	margin: 19px 30px 0 20px;
+	position: relative;
+	background: url(common/backgroundImg/bg2.png) no-repeat left top;
+	background-size: 100% 100%;
+}
+.ratioBox{
+	 width: 33%;
+	height: 136px;
+	float: left;
+	margin: 17px 0 0 30px; 
+}
+.ratioBox img{
+	width: 100%;
+}
+.title_ynz h2 {
+    line-height: 80px;
+}
+.indexDisplay{
+	display:none;
+}
+.stationDate{
+	width: 50%;
+	overflow-y: auto;
+	height: 116px;
+	float: right;
+    margin-top: 29px;
+	margin-right: 15px;
+	
+}
+.stationDate li{
+	height:36px;
+	margin-bottom: 4px;
+	line-height: 36px;
+	color: #83a5be;
+	overflow: hidden;
+	background: #0e223c;
+}
+.stationDate .redColor{
+	color:#db5a6b;
+}
+.stationDate .purpleColor{
+	color: #8c97cb;
+}
+.stationName span{
+	margin-left: 10px;
+}
+.stationDate em{
+	display: inline-block;
+	width:38%;
+	float: right;
+}
+.list i{
+	display: inline-block;
+	width:10px;
+	height:10px;
+	float: left;
+	margin:13px;
+}
+.purpleColor i{
+	background: #8c97cb;
+}
+
+.todyEle,
+.ynz-todyEle{
+	width: 90%;
+	height:346px;
+	position:relative;
+	margin: 24px 20px 0; 
+	background:url(common/backgroundImg/bg7.png) no-repeat left top;
+	background-size: 100% 100%;
+}
+/* .ynz-todyEle{
+	width: 90%;
+	height:346px;
+	margin: 41px 20px 0;
+	position:relative;
+	background:url(common/backgroundImg/bg7.png) no-repeat left top;
+	background-size: 100% 100%;
+} */
+.todyEleEchart,
+.totalPower{
+	width: 100%;
+	height: 97%;
+    margin-top: 3%;
+    padding-top: 32px;
+    
+}
+.todyEleEchart img{
+	width: 100%;
+	height: auto;
+}
+.tanchange{
+	height: 40px;
+	position: absolute;
+	top: -19px;
+	left: 50%;
+    margin-left: -143px;
+	margin-bottom: 28px;
+}
+.tanchange li{
+	float: left;
+	width: 136px;
+	height:39px;
+	cursor: pointer;	
+	line-height: 39px;
+	text-align: center;
+	margin-right:7px;
+	background: url(common/backgroundImg/titleImg2.png) no-repeat center;
+	background-size:100%;
+}
+.tanchange li a{
+	color: #4f6f91;
+}
+.tanchange .activeLi a{
+	color: #a2caea;
+}
+/*地图模式*/
+.bgMap{
+	margin-top: 20px;
+	width: 100%;
+	height: 98%;
+	/*display: none;*/
+}
+/*图表模式*/
+.module{
+	display: none;
+}
+.module_picTable{
+	display: none;
+}
+.picTable{
+	background:#0c1c33;
+	margin-top: 18px;
+    padding-top: 1px;
+}
+.search{
+	width: 54%;
+	height:35px;
+	margin: 22px auto 20px;
+	border:1px solid #2b3f57;
+	border-radius: 15px!important;
+	-webkit-border-radius: 15px!important;
+	-moz-border-radius: 15px!important;
+}
+.txt{
+	width: 87%;
+	height: 33px;
+	border:0;
+	background: none;
+	padding-left: 20px;
+	float: left;
+	color: #fff;
+    font-size: 14px;
+}
+.btn{
+	border: 0;
+	float: left;
+	width:40px;
+	height:33px;
+	background:url(common/backgroundImg/searchBtn.png) no-repeat center;
+}
+.stationList{
+	width: 48%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 360px;
+    float: left;
+    margin-left: 1%;
+    margin-right: 1%;
+    background: #0e223c;
+    margin-bottom: 10px;
+}
+.systemPer{
+	margin-left:30px;
+}
+.stationList:last-child{
+	/* margin-left: 0;
+	margin-right: 0; */
+}
+.stationList h3{
+	text-align: center;
+	height:40px;
+	line-height: 40px;
+	background:#24446e;
+	font-size: 14px;
+	color:#8bb1d0;
+	overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stationList .pjCon{
+	height: 176px;
+	position:relative;
+    color: #8BB1D0;
+	padding: 17px 0 15px 14px;
+}
+.stationList .pjCon .pjsleftL{
+	width:35%;
+	height: 142px;
+	float: left;
+	padding:8px 0;
+}
+.pjsleftB{
+	width:65%;
+	float:right;
+    white-space: pre;
+}
+
+.pjsleftB .companyName em{
+	display:inline-block;
+	width:60%;
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre;
+}
+ @media  screen and (min-width: 1400px){ 
+ 	.pjsleftB .companyName em{
+ 		width:66%;
+ 	}	
+ }
+  @media  screen and (max-width: 1500px){ 
+	  .pjsleftB .companyName em{
+	 		width:60%;
+	 	}
+  }
+.stationList .pjsleftL img{
+	width:100%;
+	height:100%;
+}
+.stationList .pjsleftL dd{
+	color:#80a1ba;
+	font-size: 14px;
+	min-height:36px;
+	height:auto!important;
+	height:36px;
+}
+
+.companyName em{
+	top:14px;
+	line-height: 14px!important;
+}
+.stationList dl dd span{
+	display: inline-block;
+	width: 22%;
+	text-align: right;
+	line-height: 45px;
+	margin-right: 8px;
+	margin-left: 8px;
+	
+}
+.stationList ul{
+	height: 143px;
+	padding-left: 15px;
+	padding-top: 5px;
+	border:1px solid #162d4b;
+	box-sizing: border-box;
+	overflow: hidden;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-moz-box-sizing: border-box;		
+}
+.stationList ul li{
+	height: 26px;
+	line-height: 26px;
+	color:#81a4be;	
+}
+.stationList ul li span{
+	float: left;
+	width:50%;
+	text-align: left;
+}
+.stationList ul li em{
+	float: left;
+	width:102px;
+	text-align: left;
+}
+.stationList ul li b{
+	float: left;
+}
+/*列表模式*/
+.leftRightCon .weatherMess{
+	margin-top: 18px;
+	margin-left: 30px;
+}
+.weatherMess .basicTitle{
+	margin-top:8px!important;
+}
+ 
+.weather{
+	width:40%;
+	float: left;
+	margin-top: 9px;
+	text-align: center;
+	font-size: 14px;
+	color:#8dafc9;
+	line-height: 30px;	
+}
+.weatherMess .time{
+	margin-top:10px;
+}
+.weatherImg{
+	/*width:140px;*/
+	width: 100%;
+	text-align: center;
+    margin: 26px auto 3px;
+}
+.weatherImg img{
+	float: none;
+    display: block;
+    max-width: 100%;
+    margin: 0 auto;
+}
+.dataWeather{
+	font-size: 18px;
+	color:#41a5b5;
+}
+.twobox{
+	position: relative;
+	width: 90%;
+    padding: 5px;
+	/* overflow: hidden; */
+	margin: 26px 0 26px 30px;
+	padding-top: 20px;
+	height:200px;	
+	background: url(common/backgroundImg/bg1.png) no-repeat left top;
+	background-size: 100% 100%;
+}
+.ynzDataBox{
+	padding:5px;
+}
+.ynzDataBox dt{
+    margin: 29px 0 0 16px;
+    width: 45px;
+    font-weight: 100;
+    font-size: 12px;
+    color: #5d778e;
+    float: left;
+}
+.twobox .tit{
+	font-size:12px;
+}
+.twobox dl{
+	width:100%;
+	height:76px;
+	float: left;
+	text-align: center;
+	color:#a5cce8;
+	background:#0d1d35;
+}
+
+.twobox dl:last-child{
+	margin-right: 0;
+}
+.twobox dl em{
+	font-size:20px;
+	font-weight: 900;
+	color:#b8c03a;
+}
+.twobox ddl .yellow{
+	color:#ca9b17;
+}
+.ynzDataBox dd{
+	margin-bottom:12px;
+}
+.ynzDataBox .ynz-data{
+	margin:24px 0;
+}
+.mainCon{
+    height: 788px;
+}
+.mainCon .tanchange{
+	margin-left:-196.5px;
+	top:-18px;
+}
+.page-sidebar .nav-item{
+	height:40px!important;
+	line-height:20px!important;
+	border-bottom:1px solid #182d49!important;
+}
+.page-sidebar .nav-item:last-child{
+	border-bottom:0!important;
+}
+.page-sidebar .page-sidebar-menu>li:hover>a{
+	background:#3f73ae;
+	color:#fff;
+}
+.powerStationIcon{
+    overflow-y: auto;
+   	height: 360px;
+}
+.mapTitle{
+	 margin:0 0 5px 0;
+	 padding:0.2em 0;
+	 font-size:16px;
+	 width: 209px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.alarmNum{
+	 display:inline-block;
+	 border-radius:5px!important;
+	 -webkit-border-radius:5px!important;
+	 -moz-border-radius:5px!important;
+	 color:#fff;
+	 width:80px;
+	 height:20px;
+	 line-height:20px;
+	 font-size:13px;
+	 text-align:center;
+	 background:#E5004F;
+}
+.imgDemo{
+	float:right;
+	width:79px;
+	height:90px;
+	margin:0px;
+	margin-top:27px;
+}
+.mapTable{
+	font-size: 12px;
+    line-height: 23px;	
+}
+@media only screen and (min-width: 1629px) and (max-width: 1893px) {
+	.stationDate {
+    	width: 60%;
+	}
+	.ratioBox{
+		margin: 49px -2px 0 0px;
+	}
+	.mainCon .tanchange{
+		margin-left: -251px;
+    	top: -18px;
+	}
+	.ynz-todyEle .tanchange{
+		margin-left: -163px;
+	}
+}
+@media only screen and (min-width: 1500px) and (max-width: 1628px) {
+	.stationList dl dt {
+	    width: 30%;
+	    height: 145px;
+	}
+	.stationList dl dd span{
+		margin-left: 10px;
+	}
+	.stationList ul{
+		padding-left: 34px;
+	}
+	.list i{
+		margin: 13px 7px;
+	}
+	.stationDate em{
+		text-align: right;
+    	padding-right: 5px;
+	}
+	.search{
+		width: 70%;
+	}
+	.userImg {
+	    margin-left: 2px;
+	}
+	.installCapaity .stationDate{
+		width:45%;
+	}
+	.mainCon .tanchange {
+	    margin-left: -258.5px;
+	}
+	.time {
+    	width: 59%;
+    	margin-left:2px;
+	}
+}
+@media only screen and (min-width: 1300px) and (max-width: 1499px) {
+	.stationList dl dd span{
+		width: 30%;
+		margin-right: 4px;/* 
+		margin-left: -12px; */
+	}
+	.stationList ul{
+	    padding-left: 22px;
+	}
+	.ratioBox{
+		width: 34%;
+		margin:14px 0 0;
+	}
+	.stationDate{
+		width: 61%;
+	}
+	.list i {
+	    margin: 13px 3px 0 0;
+	}
+	.search{
+		width: 71%;
+	}
+
+	.stationDate em{
+		width:51px;
+		text-align:center;
+	}
+	.installCapaity .basicTitle,
+	.systemPer .basicTitle{
+		font-size:12px;
+	}
+	.ynzDataBox .ynz-data {
+    	margin: 24px 0;
+	}
+	.weatherMess .basicTitle {
+	    margin-top: 6px;
+	}
+	.time {
+		width: 59%;
+		margin-left:2px;
+	}
+	.time dt {
+	    height: 39px;
+	    line-height: 50px;
+	    font-size: 16px;
+	}
+	.time dd {
+    	font-size: 12px;
+	}
+}
+
+.ynzDataBox dt img{
+	display:block;
+	float:none;
+}
+@media  screen and (max-width: 1680px){ 
+	.mainCon .tanchange {
+	    margin-left: -196px;
+	}
+	.ynz-todyEle .tanchange {
+	    margin-left: -140px;
+	}
+}
+
+@media  screen and (max-width: 1600px){    
+	.mainCon .tanchange {
+    	margin-left: -199.5px;
+	}   
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

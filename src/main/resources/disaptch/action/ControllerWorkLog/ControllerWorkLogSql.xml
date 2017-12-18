@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="controllerWorkLog">
+	<resultMap type="java.util.Map" id="BaseDataMap">
+		<result  property="form_flow_num" column="form_flow_num" />
+		<result  property="archieve_num" column="archieve_num" />
+		<result  property="pro_name" column="pro_name" />
+		<result  property="record_date" column="record_date" />
+		<result  property="feedback_usertype" column="feedback_usertype" />
+		<result  property="feedback_username" column="feedback_username" />
+		<result  property="feedback_date" column="feedback_date" />
+		<result  property="record_user_name" column="record_user_name" />
+		<result  property="plan_arrive_date" column="plan_arrive_date" />
+		<result  property="maintainer_leader_name" column="maintainer_leader_name" />
+		<result  property="maintainer_name" column="maintainer_name" />
+		<result  property="arrive_date" column="arrive_date" />
+		<result  property="leave_date" column="leave_date" />
+		<result  property="workLog_remarks" column="remarks" />
+		<result  property="sheet_id" column="sheet_id" />
+	</resultMap>
+	<resultMap type="java.util.Map" id="getProcessIdMap">
+		<result property="process_id" column="process_id"/>
+	</resultMap>
+	<select id="queryBaseInfo" resultMap="BaseDataMap">
+		select * from
+			(select * from  
+				(select mcw.form_flow_num, me.archieve_num, mp.name pro_name, mcw.remarks,
+							mur.name feedback_usertype, mf.feedback_username, mu.realname record_user_name,
+							to_char(mf.feedback_date,'yyyy-mm-dd hh24:mi:ss') feedback_date,
+							to_char(mcw.record_date,'yyyy-mm-dd hh24:mi:ss') record_date
+					from mt_center_worklog mcw, mt_event me, mt_project mp, mt_fault mf, mt_user mu, mt_userrole mur, mt_sheet_list msl
+						 where mcw.event_id = me.id 
+								and mf.event_id = me.id
+								and me.pro_id = mp.id 
+								and mcw.record_user_id = mu.id
+								and mf.feedback_usertype = mur.id
+								and msl.worklog_id=mcw.id
+								and msl.sheet_id = #{id}
+						 order by mf.id )
+				where rownum &lt; 2) ta,
+			(select * from 
+				(select to_char(mws.plan_arrive_date,'yyyy-mm-dd hh24:mi:ss') plan_arrive_date, mws.fault_maintainer maintainer_name,
+							mu_0.realname maintainer_leader_name 
+					from mt_center_worklog mcw, mt_event me,mt_sheet_list msl, mt_worksheet mws LEFT JOIN mt_user mu_0 ON mws.fault_maintainer_leader = mu_0.id
+						where mcw.event_id = me.id
+								and mws.event_id = me.id
+								and msl.worklog_id=mcw.id
+								and msl.sheet_id = #{id}
+						order by mws.id )
+				where rownum &lt; 2) tb,
+			(select msl.sheet_id, to_char(MIN(ms.arrive_date),'yyyy-mm-dd hh24:mi:ss') arrive_date,    
+				 	to_char(MAX(ms.leave_date), 'yyyy-mm-dd hh24:mi:ss') leave_date    
+				 from mt_center_worklog mcw, mt_event me, mt_summary ms, mt_sheet_list msl  
+				      where mcw.event_id = me.id       
+								and ms.event_id = me.id      
+								and msl.worklog_id=mcw.id   
+								and msl.sheet_id = #{id}
+							GROUP BY msl.sheet_id
+			) tc
+					
+	</select>
+	<!-- <select id="getNaintainerLeaderName" resultMap="BaseDataMap">
+		select mu_0.name maintainer_leader_name 
+			from mt_worksheet mws, mt_user mu_0
+				where mws.fault_maintainer_leader = mu_0.id 
+						and mws.process_id = #{id}
+	</select> -->
+		<!-- 
+		select mcw.form_flow_num, me.archieve_num, mp.name pro_name,
+			mu_0.name user_name, mur.name feedback_usertype, mf.feedback_username, ms.arrive_date, ms.leave_date, mws.plan_arrive_date,
+			mu_1.name maintainer_leader_name, mu_2.name maintainer_name 
+	from mt_center_worklog mcw, mt_event me, mt_project mp, mt_fault mf, mt_user mu_0, 
+			mt_user mu_1, mt_user mu_2, mt_userrole mur, mt_summary ms, mt_worksheet mws
+		where mcw.event_id = me.id
+			and ms.event_id = me.id
+			and mws.event_id = me.id
+			and me.pro_id = mp.id 
+			and mcw.record_user_id = mu_0.id
+			and mf.event_id = me.id
+			and mf.feedback_usertype = mur.id
+			and mws.fault_maintainer_leader = mu_1.id
+			and mws.fault_maintainer = mu_2.id
+      and mcw.id = 1
+		 -->
+		 
+
+	<select id="querySheetList" resultType="sheetList">
+		select DISTINCT msl.sheet_id, msl.form_flow_num, mst.name sheet_name, msl.sheet_type, 
+	      	to_char(msl.record_date,'yyyy-mm-dd hh24:mi:ss') record_date,
+	      	msl.sheet_id, mu.realname record_name, mst.url,  msl.remarks
+	    from mt_sheet_list msl, mt_sheet_list tmsl, mt_sheet_type mst, mt_user mu
+	     	where msl.sheet_type = mst.id
+	        	and mu.id = msl.record_user_id 
+				and tmsl.worklog_id = msl.worklog_id
+	        	and tmsl.sheet_id=937527
+				order by msl.sheet_type
+	</select>
+	<!-- to_date('${item.source_time}', 'yyyy-mm-dd'), to_date('${record_date}', 'yyyy-mm-dd hh24:mi:ss')-->
+	<update id="updateWorkLog">
+		update mt_center_worklog
+			set remarks = #{remarks},
+			record_date = sysdate
+		   where id in (select worklog_id from mt_sheet_list msl where msl.sheet_id = #{id})	
+	</update>
+	
+	<select id="getFaultProcessId" resultMap="getProcessIdMap">
+		SELECT a.process_id FROM MT_WORKFLOW_ITEM a, MT_WORKFLOW_ITEM b 
+			WHERE a.protype = 1 
+				AND a.form_id = b.form_id
+				AND b.process_id = #{id}
+	</select>
+</mapper>

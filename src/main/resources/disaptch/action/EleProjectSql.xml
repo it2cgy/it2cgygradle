@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="eleProject">
+    <resultMap type="java.util.HashMap" id="">
+		<result property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+	<sql id="colList" >
+    	id, code, name, type, location, lng, lat, roof_type, build_area, build_ground_area,
+    	pro_available_area, install_capacity, image, invest_firm_name, invest_firm_contact_name,
+    	invest_firm_contact_position, invest_firm_contact_mobile, owner_firm_name,
+    	owner_firm_contact_name, owner_firm_contact_position, owner_firm_contact_mobile,
+    	operator_name, operator_mobile, maintainer_name, maintainer_mobile, last_opreate_time,
+    	description
+  	</sql>
+	<insert id="addele" parameterType="mtProject">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select seq_mt_pro_id.nextval as id from dual  
+    	</selectKey>
+		insert into mt_project (<include refid="colList"/>) values(
+			#{id,jdbcType=INTEGER},
+			#{code,jdbcType=VARCHAR},
+			#{name,jdbcType=VARCHAR},
+			#{type,jdbcType=DOUBLE},
+			#{location,jdbcType=VARCHAR},
+			#{lng,jdbcType=DOUBLE},
+			#{lat,jdbcType=DOUBLE},
+			#{roof_type,jdbcType=DOUBLE},
+			#{build_area,jdbcType=DOUBLE},
+			#{build_ground_area,jdbcType=DOUBLE},
+			#{pro_available_area,jdbcType=DOUBLE},
+			#{install_capacity,jdbcType=DOUBLE},
+			#{image,jdbcType=VARCHAR},
+			#{invest_firm_name,jdbcType=VARCHAR},
+			#{invest_firm_contact_name,jdbcType=VARCHAR},
+			#{invest_firm_contact_position,jdbcType=VARCHAR},
+			#{invest_firm_contact_mobile,jdbcType=VARCHAR},
+			#{owner_firm_name,jdbcType=VARCHAR},
+			#{owner_firm_contact_name,jdbcType=VARCHAR},
+			#{owner_firm_contact_position,jdbcType=VARCHAR},
+			#{owner_firm_contact_mobile,jdbcType=VARCHAR},
+			#{operator_name,jdbcType=VARCHAR},
+			#{operator_mobile,jdbcType=VARCHAR},
+			#{maintainer_name,jdbcType=VARCHAR},
+			#{maintainer_mobile,jdbcType=VARCHAR},
+			SYSDATE,<!-- 由系统自动生成 -->
+			#{description,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 
+	   	 往参数中设置值
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	SELECT SEQ_PV_CE_ESTIMATE_ID.NEXTVAL AS ID FROM DUAL  
+    	</selectKey>
+    	这可以被设置为 BEFORE 或 AFTER。如果设置为 BEFORE,那么它会首先选择主键,
+    	设置 keyProperty 然后执行插入语句。如果设置为 AFTER,那么先执行插入语句,
+    	然后是 selectKey 元素-这和如 Oracle 数据库相似,可以在插入语句中嵌入序列调用。 
+    -->
+</mapper>

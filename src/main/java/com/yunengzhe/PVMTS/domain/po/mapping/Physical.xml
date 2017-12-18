@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.PhysicalPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.PhysicalPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="examineId" column="examineId" jdbcType="NUMERIC" />
+            <result property="isSolve" column="isSolve" jdbcType="NUMERIC" />
+            <result property="explainInfo" column="explainInfo" jdbcType="VARCHAR" />
+            <result property="workorderNum" column="workorderNum" jdbcType="VARCHAR" />
+            <result property="checkupContent" column="checkup_content" jdbcType="VARCHAR" />
+            <result property="checkupName" column="checkup_name" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="base_field">
+		t1.id,t1.examineId,t1.isSolve,t1.explainInfo,t1.workorderNum,t2.checkup_content,t2.checkup_name
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "examineId != null ">	and t1.examineId = #{examineId,jdbcType=NUMERIC }</if>
+            <if test= "isSolve != null ">	and t1.isSolve = #{isSolve,jdbcType=NUMERIC }</if>
+            <if test= "explainInfo != null ">	and t1.explainInfo = #{explainInfo,jdbcType=VARCHAR }</if>
+            <if test= "workorderNum != null ">	and t1.workorderNum = #{workorderNum,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "examineId != null ">	and t1.examineId = #{examineId,jdbcType=NUMERIC }</if>
+            <if test= "isSolve != null ">	and t1.isSolve = #{isSolve,jdbcType=NUMERIC }</if>
+            <if test= "explainInfo != null ">	and t1.explainInfo like "%"#{explainInfo}"%"</if>
+            <if test= "workorderNum != null ">	and t1.workorderNum like "%"#{workorderNum}"%"</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "examineId != null ">	or t1.examineId = #{examineId,jdbcType=NUMERIC }</if>
+            <if test= "isSolve != null ">	or t1.isSolve = #{isSolve,jdbcType=NUMERIC }</if>
+            <if test= "explainInfo != null ">	or t1.explainInfo = #{explainInfo,jdbcType=VARCHAR }</if>
+            <if test= "workorderNum != null ">	or t1.workorderNum = #{workorderNum,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_powerstation t1 left join pvmts_workorder_examine t2 on t1.examineId=t2.id
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by t1.${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_powerstation t1 left join pvmts_workorder_examine t2 on t1.examineId=t2.id  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_powerstation t1 left join pvmts_workorder_examine t2 on t1.examineId=t2.id  where t1.id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.PhysicalPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_workorder_powerstation( id,examineId,isSolve,explainInfo,workorderNum ) values (#{id,jdbcType=INTEGER},#{examineId,jdbcType=NUMERIC},#{isSolve,jdbcType=NUMERIC},#{explainInfo,jdbcType=VARCHAR},#{workorderNum,jdbcType=VARCHAR} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_workorder_powerstation( id,examineId,isSolve,explainInfo,workorderNum ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.examineId,jdbcType=NUMERIC},#{item.isSolve,jdbcType=NUMERIC},#{item.explainInfo,jdbcType=VARCHAR},#{item.workorderNum,jdbcType=VARCHAR} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.PhysicalPO">
+		update pvmts_workorder_powerstation set examineId=#{examineId,jdbcType=NUMERIC},isSolve=#{isSolve,jdbcType=NUMERIC},explainInfo=#{explainInfo,jdbcType=VARCHAR},workorderNum=#{workorderNum,jdbcType=VARCHAR} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.PhysicalPO">
+		update pvmts_workorder_powerstation
+        <set>
+            <if test="examineId != null "> 
+                examineId = #{examineId,jdbcType=NUMERIC},
+            </if>
+            <if test="isSolve != null "> 
+                isSolve = #{isSolve,jdbcType=NUMERIC},
+            </if>
+            <if test="explainInfo != null "> 
+                explainInfo = #{explainInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="workorderNum != null "> 
+                workorderNum = #{workorderNum,jdbcType=VARCHAR},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_workorder_powerstation where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.PhysicalPO">
+		delete from pvmts_workorder_powerstation
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+
+	<select id="getPhysicalList" resultMap="result" parameterType="java.lang.String">
+		select 	t1.id,t1.examineId,t1.isSolve,t1.explainInfo,t1.workorderNum,t2.checkup_content,t2.checkup_name
+		from pvmts_workorder_powerstation t1 left join pvmts_workorder_examine t2 on t1.examineId=t2.id  
+<!-- 		<if test="workorderNum != null"> -->
+			where t1.workorderNum=#{_parameter}
+<!-- 		</if> -->
+		group by t1.examineId
+	</select>
+</mapper>
+

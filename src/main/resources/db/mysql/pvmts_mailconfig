@@ -1,0 +1,2 @@
+ALTER TABLE pvmts_mailconfig
+ADD COLUMN usessl  int NULL AFTER `update_time`;

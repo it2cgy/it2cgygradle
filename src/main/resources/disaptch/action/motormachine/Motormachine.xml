@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--缺陷故障反馈表处理 -->
+<mapper namespace="motormachine">
+
+   	<resultMap type="java.util.HashMap" id="cheakMap">
+		<result property="n" column="n"/>
+		<result property="id" column="id"/>
+		<result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="state" column="state"/>
+        <result property="modelname" column="modelname"/>
+        <result property="proname" column="proname"/>
+        <result property="remarks" column="remarks"/>
+        
+        
+    </resultMap>
+    
+
+  	
+  	<select id="loadcheaktotal"  resultType="java.lang.Integer"> 	
+				SELECT
+				  count(*)
+				FROM
+					MT_DEV md
+				LEFT JOIN MT_DEV_TYPE mdt ON mdt. ID = md.DEV_TYPE_ID
+				LEFT JOIN MT_DEV_MODEL mdm ON md.dev_model_id = mdm. ID
+				LEFT JOIN MT_PROJECT pr on pr.id = md.pro_id
+				LEFT JOIN R_MT_PRO_USER_ROLE rmr on rmr.pro_id=md.pro_id
+				where 1=1
+		        <if test="userId != null and userId != ''">
+				                and rmr.user_id  = '${userId}'
+				</if>
+			    <if test="proname != null and proname != ''">
+								and pr.name like '%${proname}%'
+				</if>
+				<if test="code != null and code != ''">
+								and md.code like '%${code}%'
+				</if> 
+				 <if test="name != null and name != ''">
+								and mdt.name like '%${name}%'
+				</if>
+				<if test="modelname != null and modelname != ''">
+								and mdm.name like '%${modelname}%'
+				</if>
+				<if test="state != null and state != ''">
+								and md.state = '${state}'
+				</if>
+  	</select>
+  	
+  	   <!--        b.n n,
+			  b.id id,
+			  b.name name, 设备名称
+			  b.code code, 设备编号
+			  b.name modelname, 设备规格
+			  b.state state, 运行状态
+			  b.name proname, 电站名称
+			  b.remarks remarks  备注 -->
+  	 	<select id="loadcheak"  resultMap="cheakMap"> 	
+       SELECT
+			  b.n n,
+			  b.id id,
+			  b.name name, 
+			  b.code code, 
+			  b.modelname modelname, 
+			  b.state state, 
+			  b.proname proname, 
+			  b.remarks remarks  
+		FROM
+			(
+				SELECT
+					ROWNUM n,
+					A .*
+				FROM
+					(
+						SELECT 
+					     	md.id id,
+							mdt.name name, 
+							md.code code, 
+							mdm.name modelname,
+							pr.name proname,
+                            md.remarks remarks,
+						CASE WHEN md.state='1' THEN '运行'
+						      WHEN md.state='0' then '报废' end state
+						FROM
+							MT_DEV md
+						LEFT JOIN MT_DEV_TYPE mdt ON mdt. ID = md.DEV_TYPE_ID
+						LEFT JOIN MT_DEV_MODEL mdm ON md.dev_model_id = mdm. ID
+						LEFT JOIN MT_PROJECT pr on pr.id = md.pro_id
+						LEFT JOIN R_MT_PRO_USER_ROLE rmr on rmr.pro_id=md.pro_id
+						where 1=1 
+						<if test="userId != null and userId != ''">
+						                and rmr.user_id  = '${userId}'
+						</if>
+					    <if test="proname != null and proname != ''">
+										and pr.name like '%${proname}%'
+						</if>
+						<if test="code != null and code != ''">
+										and md.code like '%${code}%'
+						</if> 
+						 <if test="name != null and name != ''">
+										and mdt.name like '%${name}%'
+						</if>
+						<if test="modelname != null and modelname != ''">
+										and mdm.name like '%${modelname}%'
+						</if>
+						<if test="state != null ">
+										and md.state = '${state}'
+						</if>
+										
+					) a
+			) b
+		<if test="page != null and page != ''">
+				where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows} order by b.id
+		</if>
+  	</select>
+  	
+  	
+  		<resultMap type="java.util.HashMap" id="cheakeidMap">
+  		<result property="id" column="id"/>
+  		<result property="pid" column="pid"/>
+  		<result property="dev_model_id" column="dev_model_id"/>
+  		<result property="dev_type_id" column="dev_type_id"/>
+		<result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="state" column="state"/>
+        <result property="modelname" column="modelname"/>
+        <result property="proname" column="proname"/>
+        <result property="remarks" column="remarks"/>
+       	
+    </resultMap>
+<!--     根据pid查询 -->
+
+  	
+  	  <select id="selectbyeid"  resultMap="cheakeidMap">
+				SELECT
+			      pr.id  pid,
+			      md.dev_model_id dev_model_id,
+			      md.DEV_TYPE_ID dev_type_id,
+				  mdt.name name, 
+				  md.code code,
+				  mdm.name modelname,
+				  md.state state,
+				  pr.name proname, 
+				  md.remarks remarks 
+				FROM
+					MT_DEV md
+				LEFT JOIN MT_DEV_TYPE mdt ON mdt. ID = md.DEV_TYPE_ID
+				LEFT JOIN MT_DEV_MODEL mdm ON md.dev_model_id = mdm. ID
+				LEFT JOIN MT_PROJECT pr on pr.id = md.pro_id
+				where 1=1
+				                
+				<if test="_parameter != null and _parameter !=''" >
+				and md.id= #{_parameter}
+		     	</if>
+  	</select>
+  	
+  	<!-- id;				//id
+	pro_id;	        //电厂id
+	dev_type_id;	//设备类型id
+	dev_model_id;	//设备规格id
+	code;		    //设备编号
+	state;          //运行状态
+	remarks;         //备注 -->
+  	
+  	 <insert id="addDev" parameterType="mtdev">
+	<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select SEQ_MT_DEV_ID.nextval as id from dual  
+    </selectKey>
+		insert into MT_DEV (id, pro_id,dev_type_id,dev_model_id,code,state,remarks) values (
+			#{id,jdbcType=INTEGER},
+			#{pro_id,jdbcType=INTEGER},
+			#{dev_type_id,jdbcType=INTEGER},
+			#{dev_model_id,jdbcType=INTEGER},
+			#{code,jdbcType=VARCHAR},
+			#{state,jdbcType=INTEGER},
+			#{remarks,jdbcType=VARCHAR}
+			
+		)
+	</insert> 
+    
+    
+    
+    <update id="updatebyid" parameterType="mtdev">
+		UPDATE  MT_DEV  T SET T.pro_id=#{pro_id,jdbcType=INTEGER},T.dev_type_id=#{dev_type_id,jdbcType=INTEGER},T.dev_model_id=#{dev_model_id,jdbcType=INTEGER},T.code=#{code,jdbcType=VARCHAR},T.state=#{state,jdbcType=INTEGER},T.remarks=#{remarks,jdbcType=VARCHAR}   WHERE T.id=#{id,jdbcType=INTEGER}
+	</update>
+  	
+  	
+  	<delete id="delbyid" parameterType="java.lang.String" >
+		     delete
+			 FROM
+			    MT_DEV
+			 WHERE 1=1
+	 <if test="_parameter != null and _parameter !=''" >
+		and  id = #{_parameter}
+	 </if>
+	</delete>
+	
+	
+	<delete id="delByallid"  parameterType="java.util.List" >
+	    DELETE FROM MT_DEV T WHERE T.ID IN 
+	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")"> 
+      	  #{item} 
+   	    </foreach>
+	</delete>
+	
+	
+	
+	
+	 <resultMap type="java.util.HashMap" id="cheakcodeMap">
+		<result property="code" column="code"/>
+    </resultMap>
+    
+	<select id="checkcode"  resultMap="cheakcodeMap">
+  		
+				
+				SELECT
+					md.code code
+				FROM
+					MT_DEV md
+				LEFT JOIN MT_PROJECT pr ON pr. ID = md.pro_id
+				WHERE
+					1 = 1
+				                
+				<if test="code != null and code != ''">
+						        and md.code  = '${code}'
+				</if>
+			    <if test="proid != null and proid != ''">
+								and pr.id = '${proid}'
+				</if>
+					
+		
+  	</select>
+  	
+  	
+  	<select id="checkid"  resultMap="cheakcodeMap">
+  		
+				
+				SELECT
+					md.code code
+				FROM
+					MT_DEV md
+				WHERE
+					1 = 1
+				                
+				<if test="_parameter != null and _parameter !=''" >
+					and  md.id = #{_parameter}
+				</if>
+								
+		
+  	</select>
+	
+</mapper>

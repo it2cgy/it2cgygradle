@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="warnManager">
+
+     <resultMap type="java.util.HashMap" id="cheakMap">
+		<result property="n" column="n"/>
+		<result property="id" column="id"/>
+        <result property="description" column="description"/>
+        <result property="alarmtype" column="alarmtype"/>
+        <result property="threshold" column="threshold"/>
+        <result property="buff" column="buff"/>
+        <result property="alarminfo" column="alarminfo"/>
+        <result property="alarmlevel" column="alarmlevel"/>
+        <result property="if_pop_alarm" column="if_pop_alarm"/>
+    </resultMap>
+  	 	<select id="loadData"  resultMap="cheakMap"> 	
+       SELECT 
+			  b.n n,
+			  b.id id,
+			  b.description description,
+			  b.alarmtype alarmtype,
+			  b.threshold threshold,
+			  b.buff buff,
+			  b.alarminfo alarminfo,
+			  b.alarmlevel alarmlevel,
+			  b.if_pop_alarm if_pop_alarm
+		FROM
+			(
+				SELECT
+					ROWNUM n,
+					A .*
+				FROM
+					(<!-- 
+						SELECT 
+						        mr.id id,
+								mr.name name,
+						    TO_CHAR (
+											mr.CREATE_TIME,
+											'yyyy-MM-dd hh24:mi:ss'
+										) create_time,    
+						    CASE WHEN mr.type='1' THEN '月报表'
+								WHEN mr.type='0' then '日报表' end type
+						FROM
+							MC_RUN_REPORT mr
+						
+						where 1=1   -->
+						select
+						  ma.id id,
+						  mp.description description,
+						  CASE  WHEN ma.alarmtype='1' THEN '高限报警'
+								WHEN ma.alarmtype='2' then '低限报警'
+								WHEN ma.alarmtype='3' then '等于某值' end  alarmtype,
+						  ma.threshold threshold,
+						  ma.buff buff,
+						  ma.alarminfo alarminfo,
+						  CASE  WHEN ma.alarmlevel='1' THEN 'Ⅰ级报警'
+								WHEN ma.alarmlevel='2' then 'Ⅱ级报警'
+								WHEN ma.alarmlevel='3' then 'Ⅲ级报警' end  alarmlevel,
+						  CASE  WHEN ma.if_pop_alarm='1' THEN '是'
+							    WHEN ma.if_pop_alarm='0' then '否' end  if_pop_alarm,
+                          mp.SNTIME SNTIME
+						from
+							mc_alarminfo_config ma
+						left join mc_point mp
+						on ma.pid = mp.pid
+						where 1=1
+						<if test="description != null and description != ''">
+						            and mp.description  LIKE '%${description}%'
+						</if>
+						<if test="startdate != null and startdate != ''">
+							        and  (TO_DATE (19700101, 'yyyymmdd ') + (mp.SNTIME + 28800) / 86400)  &gt; TO_DATE ('${startdate}', 'yyyy-MM-dd hh24:mi:ss')
+						</if>
+						<if test="enddate != null and enddate != ''">
+							        and   (TO_DATE (19700101, 'yyyymmdd ') + (mp.SNTIME + 28800) / 86400)  &lt;  TO_DATE ('${enddate}', 'yyyy-MM-dd hh24:mi:ss')
+						</if>
+						<if test="id != null and id != ''">
+							        and  mp.farmid=  '${id}'
+						</if> 
+						<if test="alarmlevel != null and alarmlevel != ''">
+							        and  ma.alarmlevel=  '${alarmlevel}'
+						</if> 
+						<if test="alarminfo != null and alarminfo != ''">
+							        and  ma.alarminfo LIKE  '${alarminfo}'
+						</if> 
+						<if test="ifpopalarm != null and ifpopalarm != ''">
+							        and  ma.if_pop_alarm=  '${ifpopalarm}'
+						</if> 
+					) a
+			) b
+		<if test="page != null and page != ''">
+				where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows} order by b.SNTIME
+		</if>
+  	</select>
+  	
+  	
+  	<select id="loadcheaktotal"  resultType="java.lang.Integer"> 	
+				SELECT
+				  count(*)
+				from
+					mc_alarminfo_config ma
+				left join mc_point mp
+				on ma.pid = mp.pid
+				where 1=1
+				<if test="description != null and description != ''">
+						    and mp.description  LIKE '%${description}%'
+				</if>
+				<if test="startdate != null and startdate != ''">
+							        and  (TO_DATE (19700101, 'yyyymmdd ') + (mp.SNTIME + 28800) / 86400)  &gt; TO_DATE ('${startdate}', 'yyyy-MM-dd hh24:mi:ss')
+				</if>
+				<if test="enddate != null and enddate != ''">
+					        and   (TO_DATE (19700101, 'yyyymmdd ') + (mp.SNTIME + 28800) / 86400)  &lt;  TO_DATE ('${enddate}', 'yyyy-MM-dd hh24:mi:ss')
+				</if>
+				<if test="id != null and id != ''">
+					        and  mp.farmid=  '${id}'
+				</if> 
+				<if test="alarmlevel != null and alarmlevel != ''">
+					        and  ma.alarmlevel=  '${alarmlevel}'
+				</if> 
+				<if test="alarminfo != null and alarminfo != ''">
+					        and  ma.alarminfo LIKE  '${alarminfo}'
+				</if> 
+				<if test="ifpopalarm != null and ifpopalarm != ''">
+					        and  ma.if_pop_alarm=  '${ifpopalarm}'
+				</if> 
+  	</select>
+  	
+  	
+  	
+  	<resultMap type="java.util.HashMap" id="cheakallMap">
+		<result property="n" column="n"/>
+		<result property="id" column="id"/>
+        <result property="description" column="description"/>
+    </resultMap>
+  	 	<select id="loadallData"  resultMap="cheakallMap"> 	
+       SELECT 
+			  b.n n,
+			  b.id id,
+			  b.description description
+		FROM
+			(
+				SELECT
+					ROWNUM n,
+					A .*
+				FROM
+					(
+						select
+						  mp.id id,
+						  mp.description description,
+                          mp.SNTIME SNTIME
+						from
+						 mc_point mp
+						where 1=1
+					<if test="description != null and description != ''">
+						    and mp.description  LIKE '%${description}%'
+					</if>	
+					<if test="id != null and id != ''">
+					        and  mp.farmid=  '${id}'
+			     	</if> 
+					) a
+			) b
+		<if test="page != null and page != ''">
+				where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows} order by b.SNTIME
+		</if>
+  	</select>
+  	
+  	
+  		<select id="loadallDatatotal"  resultType="java.lang.Integer"> 	
+				SELECT
+				  count(*)
+				from
+				 mc_point mp
+				where 1=1
+			<if test="description != null and description != ''">
+						    and mp.description  LIKE '%${description}%'
+			</if>		
+			<if test="id != null and id != ''">
+			        and  mp.farmid=  '${id}'
+	     	</if> 
+				
+  	</select>
+  	
+  	
+  	<insert id="savedata">
+		insert into MC_ALARMINFO_CONFIG
+			(id, pid, alarmtype, threshold, buff, alarminfo,alarmlevel,if_pop_alarm)
+		<foreach item="item" collection="list" separator="union all">
+			select -1, ${item.pid}, ${item.alarmtype}, ${item.threshold}, ${item.buff}, ${item.alarminfo},${item.alarmlevel},${item.if_pop_alarm} from dual 
+		</foreach>
+	</insert>
+	
+	<!-- private Integer pid;
+	private Integer alarmtype;
+	private Integer threshold;
+	private Integer buff;
+	private String alarminfo;
+	private Integer alarmlevel;
+	private Integer if_pop_alarm; -->
+	
+	<resultMap type="java.util.HashMap" id="cheakoneMap">
+		<result property="n" column="n"/>
+		<result property="id" column="id"/>
+        <result property="description" column="description"/>
+        <result property="alarmtype" column="alarmtype"/>
+        <result property="threshold" column="threshold"/>
+        <result property="buff" column="buff"/>
+        <result property="alarminfo" column="alarminfo"/>
+        <result property="alarmlevel" column="alarmlevel"/>
+        <result property="if_pop_alarm" column="if_pop_alarm"/>
+    </resultMap>
+    
+    <select id="selectone"  resultMap="cheakoneMap"> 	
+						select
+						  ma.id id,
+						  mp.description description,
+						  ma.alarmtype alarmtype,
+						  ma.threshold threshold,
+						  ma.buff buff,
+						  ma.alarminfo alarminfo,
+						  ma.alarmlevel alarmlevel,
+						  ma.if_pop_alarm if_pop_alarm,
+                          mp.SNTIME SNTIME
+						from
+							mc_alarminfo_config ma
+						left join mc_point mp
+						on ma.pid = mp.pid
+						where 1=1
+		                <if test="_parameter != null and _parameter !=''" >
+							and ma.id= #{_parameter}
+						</if>
+  	</select>
+        
+        
+    <update id="updateone" parameterType="alarminfo">
+		UPDATE  MC_ALARMINFO_CONFIG  T SET T.alarmtype=#{alarmtype,jdbcType=INTEGER},T.buff=#{buff,jdbcType=INTEGER},T.threshold=#{threshold,jdbcType=INTEGER},T.alarminfo=#{alarminfo,jdbcType=VARCHAR},T.alarmlevel=#{alarmlevel,jdbcType=INTEGER},T.if_pop_alarm=#{if_pop_alarm,jdbcType=INTEGER}    WHERE T.id=#{id,jdbcType=INTEGER}
+	</update>
+        
+     	<!--通过processid删除附件-->	
+	<delete id="delbyid" parameterType="java.lang.String" >
+		     delete
+			 FROM
+			    MC_ALARMINFO_CONFIG
+			 WHERE 1=1
+	 <if test="_parameter != null and _parameter !=''" >
+		and  id = #{_parameter}
+	 </if>
+	</delete>   
+	
+	<delete id="delbyallid"  parameterType="java.util.List" >
+	    DELETE FROM MC_ALARMINFO_CONFIG T WHERE T.ID IN 
+	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")"> 
+      	  #{item} 
+   	    </foreach>
+	</delete>
+	
+	
+	
+	
+	
+	 <resultMap type="java.util.HashMap" id="cheaknewsMap">
+		<result property="n" column="n"/>
+		<result property="id" column="id"/>
+        <result property="description" column="description"/>
+        <result property="value" column="value"/>
+        <result property="alarminfo" column="alarminfo"/>
+        <result property="alarmlevel" column="alarmlevel"/>
+        <result property="state" column="state"/>
+        <result property="occur_time" column="occur_time"/>
+        <result property="confirm_time" column="confirm_time"/>
+    </resultMap>
+  	 	<select id="loadDataNews"  resultMap="cheaknewsMap"> 	
+       SELECT 
+			  b.n n,
+			  b.id id,
+			  b.description description,
+			  b.value value,
+			  b.alarminfo alarminfo,
+			  b.alarmlevel alarmlevel,
+			  b.state state,
+			  b.occur_time occur_time,
+			  b.confirm_time confirm_time
+		FROM
+			(
+				SELECT
+					ROWNUM n,
+					A .*
+				FROM
+					(
+						select
+							ma.id id,
+							mp.description description,
+							ma.value value,
+							ma.description alarminfo,
+							CASE WHEN ma.alarmlevel='1' THEN 'Ⅰ级报警'
+								WHEN ma.alarmlevel='2' then 'Ⅱ级报警'
+								WHEN ma.alarmlevel='3' then 'Ⅲ级报警' end  alarmlevel,
+							CASE WHEN ma.state='1' THEN '是'
+								WHEN ma.state='0' then '否' end  state,
+						    TO_char (ma.occur_time, 'yyyy-MM-dd hh24:mi:ss')	occur_time,
+						    TO_char (ma.confirm_time, 'yyyy-MM-dd hh24:mi:ss')  confirm_time
+						from
+							mc_alarminfo ma
+						left join mc_point mp
+						on ma.pid = mp.pid
+						where 1=1 
+						<if test="description != null and description != ''">
+						            and mp.description  LIKE '%${description}%'
+						</if>
+						<if test="startdate != null and startdate != ''">
+							        and  ma.occur_time  &gt; TO_DATE ('${startdate}', 'yyyy-MM-dd hh24:mi:ss')
+						</if>
+						<if test="enddate != null and enddate != ''">
+							        and  ma.occur_time  &lt;  TO_DATE ('${enddate}', 'yyyy-MM-dd hh24:mi:ss')
+						</if>
+						<if test="id != null and id != ''">
+							        and  mp.farmid=  '${id}'
+						</if> 
+						<if test="alarmlevel != null and alarmlevel != ''">
+							        and  ma.alarmlevel=  '${alarmlevel}'
+						</if> 
+						<if test="alarminfo != null and alarminfo != ''">
+							        and  ma.description LIKE  '%${alarminfo}%'
+						</if> 
+						<if test="state != null ">
+							        and  ma.state=  '${state}'
+						</if> 
+					) a
+			) b
+		<if test="page != null and page != ''">
+				where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows} order by b.occur_time
+		</if>
+  	</select>
+  	
+  	
+  	<!-- <select id="loadDataNewstotal"  resultType="java.lang.Integer"> 	
+				SELECT
+				  count(*)
+				from
+					mc_alarminfo ma
+				left join mc_point mp
+				on ma.pid = mp.pid
+				where 1=1
+				<if test="description != null and description != ''">
+						    and mp.description  LIKE '%${description}%'
+				</if>
+				<if test="startdate != null and startdate != ''">
+					        and  ma.occur_time  &gt; TO_DATE ('${startdate}', 'yyyy-MM-dd hh24:mi:ss')
+				</if>
+				<if test="enddate != null and enddate != ''">
+					        and  ma.occur_time  &lt;  TO_DATE ('${enddate}', 'yyyy-MM-dd hh24:mi:ss')
+				</if>
+				<if test="id != null and id != ''">
+					        and  mp.farmid=  '${id}'
+				</if> 
+				<if test="alarmlevel != null and alarmlevel != ''">
+					        and  ma.alarmlevel=  '${alarmlevel}'
+				</if> 
+				<if test="alarminfo != null and alarminfo != ''">
+					        and  ma.description LIKE  '%${alarminfo}%'
+				</if> 
+				<if test="state != null ">
+					        and  ma.state=  '${state}'
+				</if> 
+  	</select> -->
+  	
+  	<select id="gettablename"  resultType="java.lang.String"> 	
+				SELECT TABLENAME FROM equipmenttype WHERE 1=1
+			<if test="_parameter != null and _parameter !=''" >
+				and id= #{_parameter}
+			</if>
+  	</select>
+  	<select id="getpid"  resultType="java.lang.String"> 	
+				SELECT farmid FROM ${tableName} WHERE 1=1
+			<if test="cid != null and cid != ''">
+						and  id=  '${cid}'
+			</if> 
+  	</select>
+  	<update id="sureall" parameterType="java.util.List">
+  		begin
+		<foreach collection="list" index="index" item="item" close="" separator=";"> 
+      	  update MC_ALARMINFO ma
+      	   <set>
+      	    ma.state='1',
+      	    ma.confirm_time=sysdate
+      	   </set>
+      	   where ma.id=${item} and ma.confirm_time is null
+   	    </foreach>
+   	    ;end;
+	</update>
+  	
+  	
+  	<resultMap type="java.util.HashMap" id="cheaknewsalertMap">
+		<result property="n" column="n"/>
+		<result property="id" column="id"/>
+        <result property="description" column="description"/>
+        <result property="value" column="value"/>
+        <result property="alarminfo" column="alarminfo"/>
+        <result property="alarmlevel" column="alarmlevel"/>
+        <result property="state" column="state"/>
+        <result property="occur_time" column="occur_time"/>
+        <result property="confirm_time" column="confirm_time"/>
+    </resultMap>
+  	 	<select id="resultsureallData"  resultMap="cheaknewsalertMap"> 	
+       SELECT 
+			  b.n n,
+			  b.id id,
+			  b.description description,
+			  b.value value,
+			  b.alarminfo alarminfo,
+			  b.alarmlevel alarmlevel,
+			  b.state state,
+			  b.occur_time occur_time,
+			  b.confirm_time confirm_time
+		FROM
+			(
+				SELECT
+					ROWNUM n,
+					A .*
+				FROM
+					(
+						select
+							ma.id id,
+							mp.description description,
+							ma.value value,
+							ma.description alarminfo,
+						   CASE WHEN ma.alarmlevel='1' THEN 'Ⅰ级报警'
+								WHEN ma.alarmlevel='2' then 'Ⅱ级报警'
+								WHEN ma.alarmlevel='3' then 'Ⅲ级报警' end  alarmlevel,
+							CASE WHEN ma.state='1' THEN '是'
+								WHEN ma.state='0' then '否' end  state,
+						    TO_char (ma.occur_time, 'yyyy-MM-dd hh24:mi:ss')	occur_time,
+						    TO_char (ma.confirm_time, 'yyyy-MM-dd hh24:mi:ss')  confirm_time
+						from
+							mc_alarminfo ma
+						left join mc_point mp
+						on ma.pid = mp.pid
+						where 1=1 and  ma.state='0'
+					
+						<if test="id != null and id != ''">
+							        and  mp.farmid=  '${id}'
+						</if> 
+					
+					) a
+			) b
+		<if test="page != null and page != ''">
+				where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows} order by b.occur_time
+		</if>
+  	</select>
+  	
+  	
+  	<select id="resultsurealltotal"  resultType="java.lang.Integer"> 	
+				SELECT
+				  count(*)
+				from
+					mc_alarminfo ma
+				left join mc_point mp
+				on ma.pid = mp.pid
+				where 1=1 and ma.state='0'
+		
+				<if test="id != null and id != ''">
+					        and  mp.farmid=  '${id}'
+				</if> 
+				
+  	</select>
+  	
+  	
+  	
+</mapper>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.DeparturePO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.DeparturePO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="orderNum" column="orderNum" jdbcType="VARCHAR" />
+            <result property="conclusion" column="conclusion" jdbcType="VARCHAR" />
+			<collection property="examineInfo" resultMap="examineResult"/>
+	</resultMap>
+	<resultMap id="examineResult" type="com.yunengzhe.PVMTS.domain.po.DepartmappingPO">
+            <id property="id" column="departexamineid" jdbcType="INTEGER" />
+            <result property="orderNum" column="orderNum" jdbcType="VARCHAR" />
+            <result property="examineId" column="examineId" jdbcType="NUMERIC" />
+            <result property="examineName" column="checkup_name" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="base_field">
+		t1.id,t1.orderNum,t1.conclusion,t2.id as departexamineid,t2.examineId,t2.isQualified,t3.checkup_name
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "orderNum != null ">	and t1.orderNum = #{orderNum,jdbcType=VARCHAR }</if>
+            <if test= "conclusion != null ">	and t1.conclusion = #{conclusion,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "orderNum != null ">	and t1.orderNum = #{orderNum,jdbcType=VARCHAR }</if>
+            <if test= "conclusion != null ">	and t1.conclusion like "%"#{conclusion}"%"</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "orderNum != null ">	or t1.orderNum = #{orderNum,jdbcType=VARCHAR }</if>
+            <if test= "conclusion != null ">	or t1.conclusion = #{conclusion,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+			FROM
+			pvmts_workorder_departure t1
+			LEFT JOIN pvmts_workorder_departmapping t2 ON t1.orderNum = t2.orderNum
+			LEFT JOIN pvmts_workorder_examinedepart t3 ON t2.examineId = t3.id
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by t1.${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+			FROM
+			pvmts_workorder_departure t1
+			LEFT JOIN pvmts_workorder_departmapping t2 ON t1.orderNum = t2.orderNum
+			LEFT JOIN pvmts_workorder_examinedepart t3 ON t2.examineId = t3.id
+		<where>
+			<if test="_parameter != null">
+				t1.id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		FROM
+		pvmts_workorder_departure t1
+		LEFT JOIN pvmts_workorder_departmapping t2 ON t1.orderNum = t2.orderNum
+		LEFT JOIN pvmts_workorder_examinedepart t3 ON t2.examineId = t3.id  where t1.id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.DeparturePO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_workorder_departure( id,orderNum,conclusion ) values (#{id,jdbcType=INTEGER},#{orderNum,jdbcType=NUMERIC},#{conclusion,jdbcType=VARCHAR} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_workorder_departure( id,orderNum,conclusion ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.orderNum,jdbcType=NUMERIC},#{item.conclusion,jdbcType=VARCHAR} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.DeparturePO">
+		update pvmts_workorder_departure set orderNum=#{orderNum,jdbcType=NUMERIC},conclusion=#{conclusion,jdbcType=VARCHAR} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.DeparturePO">
+		update pvmts_workorder_departure
+        <set>
+            <if test="orderNum != null "> 
+                orderNum = #{orderNum,jdbcType=NUMERIC},
+            </if>
+            <if test="conclusion != null "> 
+                conclusion = #{conclusion,jdbcType=VARCHAR},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_workorder_departure where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.DeparturePO">
+		delete from pvmts_workorder_departure
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

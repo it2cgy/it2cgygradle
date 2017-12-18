@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="mtCompany">
+    
+    <insert id="addCompany">
+    	insert into mt_company(id,name, address, contract_code, owner_firm_contact_name,
+    			owner_firm_contact_position, owner_firm_contact_mobile, create_time, remarks)
+    		values(
+    		#{id},
+    		#{name},
+    		#{address},
+    		#{contract_code},
+    		#{owner_firm_contact_name},
+    		#{owner_firm_contact_position},
+    		#{owner_firm_contact_mobile},
+    		sysdate,
+    		#{remarks})
+    </insert>
+    
+    <select id="getId" resultType="java.lang.Integer">
+  		select seq_mt_company_id.nextval as id from dual 
+  	</select>
+  	
+  	<select id="queryCompany" resultType="mtCompany">
+  		select mc.*, mu.name user_name, mu.realname user_realname, mu.cellphone, mu.password, mu.id user_id ,mu."COMMENT" remarks1 
+			from mt_user mu, mt_company mc
+				where mu.role_id = 1
+					and mc.id = mu.company_id
+			<if test="id != null and id != ''" ><!-- 公司名称 -->
+				and mc.id = ${id}
+			</if>
+			<if test="contract_code != null and contract_code != ''" ><!-- 合同号 -->
+				and mc.contract_code like '%${contract_code}%'
+			</if>
+			<if test="uesr_name != null and uesr_name != ''" ><!-- 管理员账号 -->
+				and mu.name like '%${uesr_name}%'
+			</if>			
+  			<if test="name != null and name != ''" ><!-- 公司名称 -->
+				and mc.name like '%${name}%'
+			</if>
+			<if test="contract_code != null and contract_code != ''" ><!-- 合同号 -->
+				and mc.contract_code like '%${contract_code}%'
+			</if>
+			<if test="uesr_name != null and uesr_name != ''" ><!-- 管理员账号 -->
+				and mu.name like '%${uesr_name}%'
+			</if>
+			order by mc.create_time 
+			
+			
+  	</select>
+  	
+  	<!-- name, address, contract_code, owner_firm_contact_name,
+    			owner_firm_contact_position, owner_firm_contact_mobile, create_time, remarks -->
+  	
+  	<update id="updateCompany">
+  		update mt_company
+  		   	set name = #{name},
+				address = #{address},
+				contract_code = #{contract_code},
+				owner_firm_contact_name = #{owner_firm_contact_name},
+				owner_firm_contact_position = #{owner_firm_contact_position},
+				owner_firm_contact_mobile = #{owner_firm_contact_mobile},
+				remarks = #{remarks},
+				versionType = #{versionType}
+  			where id = #{id}
+  	</update>
+  	
+  	<select id="checkCompanyAccount" resultType="java.lang.Integer">
+		select count(id) count from mt_user where name = '${name}'
+	</select>
+	
+	<!-- 修改密码 -->
+	<update id="editPsw">
+		update mt_user
+			set password = '${password}'
+			where company_id = ${companyId}
+				and role_id = 1
+	</update>	
+	<select id ="getCompany" resultType="MTCompany">
+	SELECT
+		*
+	FROM
+		MT_COMPANY
+	WHERE
+		1 = 1
+		<if test="company_id!='' and company_id!=null">
+			AND "ID" = ${company_id}
+		</if>
+		<if test="name!='' and name!=null">
+			AND "NAME"  like '%${name}%'
+		</if>
+	</select>	
+</mapper>

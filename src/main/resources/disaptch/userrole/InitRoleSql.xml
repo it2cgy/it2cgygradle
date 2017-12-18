@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="initRole">
+    <resultMap type="java.util.HashMap" id="queryMap">
+    	<id property="id" column="id" />
+    	<result property="name" column="name" />
+    	<result property="url" column="url" />
+    	<result property="roleid" column="roleid" />
+		<result property="privilegeid" column="privilegeid"/>
+    	<result property="parentid" column="parentid" />
+    </resultMap>
+	<select id="queryRole" resultMap="queryMap">
+		select up.id, up.name, up.url, urp.roleid, urp.privilegeid, up.parentid
+		from mt_userrole_privilege urp, 
+			mt_userprivilege up where urp.privilegeid = up.id 
+		start with up.parentid = 0 
+			connect by prior up.id = up.parentid
+		<!-- order by urp.roleid -->
+	</select>
+</mapper>

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.GridarkPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.GridarkPO">
+            <id property="id" column="ID" jdbcType="INTEGER" />
+            <result property="name" column="NAME" jdbcType="VARCHAR" />
+            <result property="equipmenttypeid" column="EQUIPMENTTYPEID" jdbcType="NUMERIC" />
+            <result property="description" column="DESCRIPTION" jdbcType="VARCHAR" />
+            <result property="type" column="TYPE" jdbcType="NUMERIC" />
+            <result property="model" column="MODEL" jdbcType="VARCHAR" />
+            <result property="serialNumber" column="SERIAL_NUMBER" jdbcType="VARCHAR" />
+             <result property="englishname" column="englishname" jdbcType="VARCHAR" />
+            <result property="farmid" column="FARMID" jdbcType="NUMERIC" />
+            <result property="collectorId" column="COLLECTOR_ID" jdbcType="NUMERIC" />
+            <result property="parentId" column="PARENT_ID" jdbcType="NUMERIC" />
+            <result property="meterType" column="METER_TYPE" jdbcType="NUMERIC" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		ID,NAME,EQUIPMENTTYPEID,DESCRIPTION,TYPE,MODEL,SERIAL_NUMBER,FARMID,COLLECTOR_ID,PARENT_ID,METER_TYPE,englishname
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "name != null ">	and NAME = #{name,jdbcType=VARCHAR }</if>
+            <if test= "equipmenttypeid != null ">	and EQUIPMENTTYPEID = #{equipmenttypeid,jdbcType=NUMERIC }</if>
+            <if test= "description != null ">	and DESCRIPTION = #{description,jdbcType=VARCHAR }</if>
+            <if test= "type != null ">	and TYPE = #{type,jdbcType=NUMERIC }</if>
+            <if test= "model != null ">	and MODEL = #{model,jdbcType=VARCHAR }</if>
+            <if test= "serialNumber != null ">	and SERIAL_NUMBER = #{serialNumber,jdbcType=VARCHAR }</if>
+            <if test= "farmid != null ">	and FARMID = #{farmid,jdbcType=NUMERIC }</if>
+            <if test= "collectorId != null ">	and COLLECTOR_ID = #{collectorId,jdbcType=NUMERIC }</if>
+            <if test= "parentId != null ">	and PARENT_ID = #{parentId,jdbcType=NUMERIC }</if>
+            <if test= "meterType != null ">	and METER_TYPE = #{meterType,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "name != null ">	and NAME like "%"#{name}"%"</if>
+            <if test= "equipmenttypeid != null ">	and EQUIPMENTTYPEID = #{equipmenttypeid,jdbcType=NUMERIC }</if>
+            <if test= "description != null ">	and DESCRIPTION like "%"#{description}"%"</if>
+            <if test= "type != null ">	and TYPE = #{type,jdbcType=NUMERIC }</if>
+            <if test= "model != null ">	and MODEL like "%"#{model}"%"</if>
+            <if test= "serialNumber != null ">	and SERIAL_NUMBER like "%"#{serialNumber}"%"</if>
+            <if test= "farmid != null ">	and FARMID = #{farmid,jdbcType=NUMERIC }</if>
+            <if test= "collectorId != null ">	and COLLECTOR_ID = #{collectorId,jdbcType=NUMERIC }</if>
+            <if test= "parentId != null ">	and PARENT_ID = #{parentId,jdbcType=NUMERIC }</if>
+            <if test= "meterType != null ">	and METER_TYPE = #{meterType,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "name != null ">	or NAME = #{name,jdbcType=VARCHAR }</if>
+            <if test= "equipmenttypeid != null ">	or EQUIPMENTTYPEID = #{equipmenttypeid,jdbcType=NUMERIC }</if>
+            <if test= "description != null ">	or DESCRIPTION = #{description,jdbcType=VARCHAR }</if>
+            <if test= "type != null ">	or TYPE = #{type,jdbcType=NUMERIC }</if>
+            <if test= "model != null ">	or MODEL = #{model,jdbcType=VARCHAR }</if>
+            <if test= "serialNumber != null ">	or SERIAL_NUMBER = #{serialNumber,jdbcType=VARCHAR }</if>
+            <if test= "farmid != null ">	or FARMID = #{farmid,jdbcType=NUMERIC }</if>
+            <if test= "collectorId != null ">	or COLLECTOR_ID = #{collectorId,jdbcType=NUMERIC }</if>
+            <if test= "parentId != null ">	or PARENT_ID = #{parentId,jdbcType=NUMERIC }</if>
+            <if test= "meterType != null ">	or METER_TYPE = #{meterType,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from mc_grid_cabinet
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from mc_grid_cabinet  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from mc_grid_cabinet  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.GridarkPO" useGeneratedKeys="true" keyProperty="id">
+		insert into mc_grid_cabinet( ID,NAME,EQUIPMENTTYPEID,DESCRIPTION,TYPE,MODEL,SERIAL_NUMBER,FARMID,COLLECTOR_ID,PARENT_ID,METER_TYPE ) values (#{id,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{equipmenttypeid,jdbcType=NUMERIC},#{description,jdbcType=VARCHAR},#{type,jdbcType=NUMERIC},#{model,jdbcType=VARCHAR},#{serialNumber,jdbcType=VARCHAR},#{farmid,jdbcType=NUMERIC},#{collectorId,jdbcType=NUMERIC},#{parentId,jdbcType=NUMERIC},#{meterType,jdbcType=NUMERIC} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into mc_grid_cabinet( ID,NAME,EQUIPMENTTYPEID,DESCRIPTION,TYPE,MODEL,SERIAL_NUMBER,FARMID,COLLECTOR_ID,PARENT_ID,METER_TYPE ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.equipmenttypeid,jdbcType=NUMERIC},#{item.description,jdbcType=VARCHAR},#{item.type,jdbcType=NUMERIC},#{item.model,jdbcType=VARCHAR},#{item.serialNumber,jdbcType=VARCHAR},#{item.farmid,jdbcType=NUMERIC},#{item.collectorId,jdbcType=NUMERIC},#{item.parentId,jdbcType=NUMERIC},#{item.meterType,jdbcType=NUMERIC} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.GridarkPO">
+		update mc_grid_cabinet set NAME=#{name,jdbcType=VARCHAR},EQUIPMENTTYPEID=#{equipmenttypeid,jdbcType=NUMERIC},DESCRIPTION=#{description,jdbcType=VARCHAR},TYPE=#{type,jdbcType=NUMERIC},MODEL=#{model,jdbcType=VARCHAR},SERIAL_NUMBER=#{serialNumber,jdbcType=VARCHAR},FARMID=#{farmid,jdbcType=NUMERIC},COLLECTOR_ID=#{collectorId,jdbcType=NUMERIC},PARENT_ID=#{parentId,jdbcType=NUMERIC},METER_TYPE=#{meterType,jdbcType=NUMERIC} where ID=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.GridarkPO">
+		update mc_grid_cabinet
+        <set>
+            <if test="name != null "> 
+                NAME = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="equipmenttypeid != null "> 
+                EQUIPMENTTYPEID = #{equipmenttypeid,jdbcType=NUMERIC},
+            </if>
+            <if test="description != null "> 
+                DESCRIPTION = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null "> 
+                TYPE = #{type,jdbcType=NUMERIC},
+            </if>
+            <if test="model != null "> 
+                MODEL = #{model,jdbcType=VARCHAR},
+            </if>
+            <if test="serialNumber != null "> 
+                SERIAL_NUMBER = #{serialNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="farmid != null "> 
+                FARMID = #{farmid,jdbcType=NUMERIC},
+            </if>
+            <if test="collectorId != null "> 
+                COLLECTOR_ID = #{collectorId,jdbcType=NUMERIC},
+            </if>
+            <if test="parentId != null "> 
+                PARENT_ID = #{parentId,jdbcType=NUMERIC},
+            </if>
+            <if test="meterType != null "> 
+                METER_TYPE = #{meterType,jdbcType=NUMERIC},
+            </if>
+        </set>
+         where ID=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from mc_grid_cabinet where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.GridarkPO">
+		delete from mc_grid_cabinet
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

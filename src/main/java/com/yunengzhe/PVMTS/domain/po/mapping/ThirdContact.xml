@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.ThirdContactPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.ThirdContactPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="isneedthird" column="isneedthird" jdbcType="NUMERIC" />
+            <result property="thirdCompany" column="third_company" jdbcType="VARCHAR" />
+            <result property="thirdIdentity" column="third_identity" jdbcType="VARCHAR" />
+            <result property="thirdUsername" column="third_username" jdbcType="VARCHAR" />
+            <result property="thirdPosition" column="third_position" jdbcType="VARCHAR" />
+            <result property="thirdContact" column="third_contact" jdbcType="VARCHAR" />
+            <result property="workcontent" column="workcontent" jdbcType="VARCHAR" />
+            <result property="workorderNum" column="workorderNum" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,isneedthird,third_company,third_identity,third_username,third_position,third_contact,workcontent,workorderNum
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "isneedthird != null ">	and isneedthird = #{isneedthird,jdbcType=NUMERIC }</if>
+            <if test= "thirdCompany != null ">	and third_company = #{thirdCompany,jdbcType=VARCHAR }</if>
+            <if test= "thirdIdentity != null ">	and third_identity = #{thirdIdentity,jdbcType=VARCHAR }</if>
+            <if test= "thirdUsername != null ">	and third_username = #{thirdUsername,jdbcType=VARCHAR }</if>
+            <if test= "thirdPosition != null ">	and third_position = #{thirdPosition,jdbcType=VARCHAR }</if>
+            <if test= "thirdContact != null ">	and third_contact = #{thirdContact,jdbcType=VARCHAR }</if>
+            <if test= "workcontent != null ">	and workcontent = #{workcontent,jdbcType=VARCHAR }</if>
+            <if test= "workorderNum != null ">	and workorderNum = #{workorderNum,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "isneedthird != null ">	and isneedthird = #{isneedthird,jdbcType=NUMERIC }</if>
+            <if test= "thirdCompany != null ">	and third_company like "%"#{thirdCompany}"%"</if>
+            <if test= "thirdIdentity != null ">	and third_identity like "%"#{thirdIdentity}"%"</if>
+            <if test= "thirdUsername != null ">	and third_username like "%"#{thirdUsername}"%"</if>
+            <if test= "thirdPosition != null ">	and third_position like "%"#{thirdPosition}"%"</if>
+            <if test= "thirdContact != null ">	and third_contact like "%"#{thirdContact}"%"</if>
+            <if test= "workcontent != null ">	and workcontent like "%"#{workcontent}"%"</if>
+            <if test= "workorderNum != null ">	and workorderNum like "%"#{workorderNum}"%"</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "isneedthird != null ">	or isneedthird = #{isneedthird,jdbcType=NUMERIC }</if>
+            <if test= "thirdCompany != null ">	or third_company = #{thirdCompany,jdbcType=VARCHAR }</if>
+            <if test= "thirdIdentity != null ">	or third_identity = #{thirdIdentity,jdbcType=VARCHAR }</if>
+            <if test= "thirdUsername != null ">	or third_username = #{thirdUsername,jdbcType=VARCHAR }</if>
+            <if test= "thirdPosition != null ">	or third_position = #{thirdPosition,jdbcType=VARCHAR }</if>
+            <if test= "thirdContact != null ">	or third_contact = #{thirdContact,jdbcType=VARCHAR }</if>
+            <if test= "workcontent != null ">	or workcontent = #{workcontent,jdbcType=VARCHAR }</if>
+            <if test= "workorderNum != null ">	or workorderNum = #{workorderNum,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_contact
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_contact  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_contact  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.ThirdContactPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_workorder_contact( id,isneedthird,third_company,third_identity,third_username,third_position,third_contact,workcontent,workorderNum ) values (#{id,jdbcType=INTEGER},#{isneedthird,jdbcType=NUMERIC},#{thirdCompany,jdbcType=VARCHAR},#{thirdIdentity,jdbcType=VARCHAR},#{thirdUsername,jdbcType=VARCHAR},#{thirdPosition,jdbcType=VARCHAR},#{thirdContact,jdbcType=VARCHAR},#{workcontent,jdbcType=VARCHAR},#{workorderNum,jdbcType=VARCHAR} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_workorder_contact( id,isneedthird,third_company,third_identity,third_username,third_position,third_contact,workcontent,workorderNum ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.isneedthird,jdbcType=NUMERIC},#{item.thirdCompany,jdbcType=VARCHAR},#{item.thirdIdentity,jdbcType=VARCHAR},#{item.thirdUsername,jdbcType=VARCHAR},#{item.thirdPosition,jdbcType=VARCHAR},#{item.thirdContact,jdbcType=VARCHAR},#{item.workcontent,jdbcType=VARCHAR},#{item.workorderNum,jdbcType=VARCHAR} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.ThirdContactPO">
+		update pvmts_workorder_contact set isneedthird=#{isneedthird,jdbcType=NUMERIC},third_company=#{thirdCompany,jdbcType=VARCHAR},third_identity=#{thirdIdentity,jdbcType=VARCHAR},third_username=#{thirdUsername,jdbcType=VARCHAR},third_position=#{thirdPosition,jdbcType=VARCHAR},third_contact=#{thirdContact,jdbcType=VARCHAR},workcontent=#{workcontent,jdbcType=VARCHAR},workorderNum=#{workorderNum,jdbcType=VARCHAR} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.ThirdContactPO">
+		update pvmts_workorder_contact
+        <set>
+            <if test="isneedthird != null "> 
+                isneedthird = #{isneedthird,jdbcType=NUMERIC},
+            </if>
+            <if test="thirdCompany != null "> 
+                third_company = #{thirdCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="thirdIdentity != null "> 
+                third_identity = #{thirdIdentity,jdbcType=VARCHAR},
+            </if>
+            <if test="thirdUsername != null "> 
+                third_username = #{thirdUsername,jdbcType=VARCHAR},
+            </if>
+            <if test="thirdPosition != null "> 
+                third_position = #{thirdPosition,jdbcType=VARCHAR},
+            </if>
+            <if test="thirdContact != null "> 
+                third_contact = #{thirdContact,jdbcType=VARCHAR},
+            </if>
+            <if test="workcontent != null "> 
+                workcontent = #{workcontent,jdbcType=VARCHAR},
+            </if>
+            <if test="workorderNum != null "> 
+                workorderNum = #{workorderNum,jdbcType=VARCHAR},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_workorder_contact where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.ThirdContactPO">
+		delete from pvmts_workorder_contact
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

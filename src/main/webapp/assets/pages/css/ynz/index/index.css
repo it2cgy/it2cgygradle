@@ -1,0 +1,26 @@
+.dotted{
+	width: 100%;
+	height: 0;
+	border:2px dotted #354b6d;
+	margin: 12px 0 24px;
+}
+.totalEle{
+	width: 445px;
+	height: 150px;
+	margin: 19px 30px 0 30px;
+	text-align: center;
+	overflow: hidden;
+	color: #a5cce8;
+	background: url(bg1.png) no-repeat left top;
+}
+.totalEle h4{
+	margin: 29px 0 19px;
+	font-size: 16px;
+}
+.electData{
+	width: 255px;
+	height: 52px;
+	background: #052a59;
+	font-size: 24px;
+	letter-spacing: 5px;
+}

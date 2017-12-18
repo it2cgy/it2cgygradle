@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--病例表 -->
+<mapper namespace="motorCase">
+<!--通过processid查询投诉记录表-->
+   	<resultMap type="java.util.HashMap" id="cheakMap">
+		<result property="name" column="name"/>
+        <result property="form_flow_num" column="form_flow_num"/>
+        <result property="archieve_num" column="archieve_num"/>
+        <result property="form_flow_num_in_book" column="form_flow_num_in_book"/>
+        <result property="exam_time" column="exam_time"/> 
+        <result property="record_date" column="record_date"/> 
+        <result property="solve_manager" column="solve_manager"/>
+        <result property="summary" column="summary"/>
+        <result property="exam_result" column="exam_result"/>
+        <result property="exam_opinion" column="exam_opinion"/>
+        <result property="realname" column="realname"/>
+    </resultMap>
+    
+  	<select id="loadcheakmation"  resultMap="cheakMap">
+  		    SELECT
+				P . NAME NAME,
+				c.FORM_FLOW_NUM form_flow_num,
+				E .ARCHIEVE_NUM archieve_num,
+				c.FORM_FLOW_NUM_IN_BOOK form_flow_num_in_book,
+				TO_CHAR (
+					c.EXAM_TIME,
+					'yyyy-MM-dd hh24:mi:ss'
+				) exam_time,
+				c.SOLVE_MANAGER solve_manager,
+				c. SUMMARY SUMMARY,
+				TO_CHAR (
+					c.record_date,
+					'yyyy-MM-dd hh24:mi:ss'
+				) record_date,
+				TO_CHAR (
+					c.solve_time,
+					'yyyy-MM-dd hh24:mi:ss'
+				) solve_time,
+				c.exam_result exam_result,
+				c.exam_opinion exam_opinion,
+			  ur.realname realname
+			FROM
+				MT_CASE c
+			LEFT JOIN MT_EVENT E ON c.EVENT_ID = E . ID
+			LEFT JOIN MT_PROJECT P ON E .pro_id = P . ID
+			LEFT JOIN MT_USER ur ON c.record_user_id= ur . ID
+			WHERE
+				1 = 1
+  		  <if test="_parameter != null and _parameter !=''" >
+				and C.PROCESS_ID= #{_parameter}
+			</if>
+  	
+  	</select>
+  	
+  <!--通过processid查询投诉记录表基本信息-->	
+  	<resultMap type="java.util.HashMap" id="cheakmationMap">
+		<result property="id" column="id"/>
+		<result property="fid" column="fid"/>
+		<result property="dev_type" column="dev_type"/>
+		<result property="num" column="num"/>
+		<result property="name" column="name"/>
+		<result property="fault_level" column="fault_level"/>
+		<result property="fault_descrip" column="fault_descrip"/>
+		<result property="analysis" column="analysis"/>
+		<result property="center_analysis" column="center_analysis"/>
+		<result property="ferl_fault" column="ferl_fault"/>
+        <result property="solution" column="solution"/>
+        <result property="solve_result" column="solve_result"/>
+        <result property="form_flow_num" column="form_flow_num"/>
+        <result property="fform_flow_num" column="fform_flow_num"/>
+        <result property="solve_manager" column="solve_manager"/>
+        <result property="solve_time" column="solve_time"/>
+        <result property="record_date" column="record_date"/>
+        <result property="summary" column="summary"/>
+        <!-- <result property="form_flow_num" column="form_flow_num"/> ,c.form_flow_num form_flow_num-->
+    </resultMap>
+  	<select id="loadcheak"  resultMap="cheakmationMap">
+  	SELECT
+		f. ID id,
+		fd.id fid,
+		fd.dev_type dev_type,
+		fd.num num,
+		dt. NAME name,
+		fd.fault_level fault_level,
+		fd.fault_descrip fault_descrip,
+		fd.analysis analysis,
+		fd.CENTER_ANALYSIS center_analysis,
+		fd.REAL_FAULT ferl_fault,
+		fd.SOLUTION solution,
+		fd.SOLVE_RESULT solve_result,
+		fa.FORM_FLOW_NUM form_flow_num,
+	    f.form_flow_num fform_flow_num,
+		c.SOLVE_MANAGER solve_manager,
+		TO_CHAR(c.solve_time,'yyyy-MM-dd hh24:mi:ss') solve_time,
+		TO_CHAR(c.record_date,'yyyy-MM-dd hh24:mi:ss') record_date,
+		c.summary summary
+	FROM
+		MT_CASE c
+	LEFT JOIN MT_FAULT f ON c.EVENT_ID = f.EVENT_ID
+	LEFT JOIN MT_FAULT_DEV fd ON f. ID = fd.fault_id
+	LEFT JOIN MT_DEV_TYPE dt ON dt. ID = fd.dev_type
+	LEFT JOIN MT_FAULT_ANALYSIS fa ON f. ID = fa.FAULT_ID
+	WHERE
+		fd.IS_REAL_FAULT='1'
+		 <if test="_parameter != null and _parameter !=''" >
+				and C.PROCESS_ID= #{_parameter}
+			</if>
+  	</select>
+  <!--通过processid修改病例表内容-->	
+  	  <update id="updatebycidcase" parameterType="case">
+		UPDATE  MT_CASE  T SET T.solve_manager=#{solve_manager,jdbcType=VARCHAR},t.solve_time=to_date(#{solve_time,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss') ,t.record_date=to_date(#{record_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),T.summary=#{summary,jdbcType=VARCHAR},T.record_user_id=#{record_user_id,jdbcType=INTEGER} WHERE T.PROCESS_ID=#{processid,jdbcType=INTEGER} 
+	</update>
+	
+	
+	
+    <update id="updatebycidcaseff" parameterType="case">
+		UPDATE  MT_CASE  T 
+			SET T.exam_result=${exam_result} 
+				,t.exam_opinion='${exam_rosition}'
+			 WHERE 
+			 	T.process_id=${processid} 
+	</update>
+    
+    <!--通过processid查询-->	
+	<select id="quId" parameterType="checkupResult" resultType="java.lang.String">
+  		select id from  MT_CHECKUP_RESULT where checkup_id=${checkup_id} and item_type=${item_type}
+  	</select>
+  	
+  	
+    <!--添加附件-->	
+	 <insert id="addDev_at" parameterType="checkupAttach">
+	<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select SEQ_MT_CHECKUP_ATTACH_ID.nextval as id from dual  
+    </selectKey>
+		insert into MT_CHECKUP_ATTACH (id, checkup_result_id,result_descrip,file_name,remarks,provider_name,source_time,source_location,attach_path) values (
+			#{id,jdbcType=INTEGER},
+			#{checkup_result_id,jdbcType=INTEGER},
+			#{result_descrip,jdbcType=VARCHAR},
+			#{file_name,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR},
+			#{provider_name,jdbcType=VARCHAR},
+			to_date(#{source_time,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			#{source_location,jdbcType=VARCHAR},
+			#{attach_path,jdbcType=VARCHAR}
+			
+		)
+	</insert> 
+	
+	<!--通过processid查询投诉记录表基本信息-->	
+    <resultMap type="java.util.HashMap" id="mationMap">
+        <result property="pname" column="pname"/>
+        <result property="archieve_num" column="archieve_num"/>
+        <result property="form_flow_num" column="form_flow_num"/>
+        <result property="check_manager" column="check_manager"/>
+        <result property="check_manager_contact" column="check_manager_contact"/>
+        <result property="check_time" column="check_time"/>
+        <result property="check_type" column="check_type"/>
+        <result property="check_result" column="check_result"/>
+        <result property="remarks" column="remarks"/>
+    
+        <!-- <result property="form_flow_num" column="form_flow_num"/> ,c.form_flow_num form_flow_num-->
+    </resultMap>
+  	<select id="mation"  resultMap="mationMap">
+  		 SELECT	p.NAME pname,e.archieve_num archieve_num,c.form_flow_num form_flow_num,	c.check_manager check_manager,	c.check_manager_contact check_manager_contact,	c.check_time check_time,	c.check_type check_type,  c.check_result check_result,	c.remarks remarks FROM MT_CHECKUP c LEFT JOIN MT_EVENT e ON  e . ID = c.event_id  LEFT JOIN MT_PROJECT p  ON p . ID = E .pro_id WHERE	c . ID = '1' ORDER BY	c . ID
+  	</select>
+  	
+  	<!--通过processid查询投诉记录表附属信息-->	
+  	<resultMap type="java.util.HashMap" id="feedbackMap">
+		<result property="cid" column="cid"/>
+		<result property="file_name" column="file_name"/>
+        <result property="attach_path" column="attach_path"/>
+        <result property="name" column="name"/>
+        <result property="check_standard" column="check_standard"/>
+        <result property="result_level" column="result_level"/>
+		<result property="remarks" column="remarks"/>
+		<result property="is_qualified" column="is_qualified"/>
+    </resultMap>
+    
+  	<select id="feedback"  resultMap="feedbackMap">
+  		 SELECT
+		    ci.id id,
+			ci.name name,
+			ci.check_standard check_standard,
+			cr.result_level result_level,
+			cr.remarks remarks,
+			cr.direct_solution direct_solution
+		 FROM
+	     	MT_CHECKUP c
+		 LEFT JOIN
+			MT_CHECKUP_RESULT cr
+		 ON c. ID = cr.checkup_id
+		 LEFT JOIN MT_CHECKUP_ITEM_TYPE ci 
+		 ON ci.id = cr.item_type 		
+		 WHERE 1=1
+		 <if test="_parameter != null and _parameter !=''" >
+				and C.PROCESS_ID= #{_parameter}
+			</if>
+		 ORDER BY
+			ID
+  	</select>
+  	
+  	
+  	<!--通过processid查询投诉记录表附件信息-->	
+  	<!-- <resultMap type="java.util.HashMap" id="attachMap">
+		<result property="ID" column="ID"/>
+		<result property="FILENAME" column="FILENAME"/>
+		<result property="FILEPATH" column="FILEPATH"/>
+    </resultMap> -->
+  	
+	<!-- <select id="loadAttach" parameterType="java.lang.String" resultMap="attachMap">
+		 SELECT
+		    ca.file_name file_name,
+		    ca.attach_path attach_path
+		 FROM
+		    	MT_CHECKUP c
+		 LEFT JOIN
+			MT_CHECKUP_RESULT cr
+		 ON c. ID = cr.checkup_id
+		 LEFT JOIN MT_CHECKUP_ITEM_TYPE ci 
+		 ON ci.id = cr.item_type 
+		 LEFT JOIN MT_CHECKUP_ATTACH ca 
+		 ON ca.CHECKUP_RESULT_ID = cr.id 
+			 WHERE 1=1
+	 <if test="_parameter != null and _parameter !=''" >
+		and ci.id = #{_parameter}
+	 </if>
+	 
+	 调度中心附件
+	</select> -->
+	
+	<resultMap type="java.util.HashMap" id="fattachcMap">
+		<result property="ID" column="ID"/>
+		<result property="FILE_NAME" column="FILE_NAME"/>
+		<result property="FILE_PATH" column="FILE_PATH"/>
+    </resultMap>
+  	
+	<select id="fattachc" parameterType="java.lang.String" resultMap="fattachcMap">
+		SELECT
+		fdac. ID ID,
+		fdac.FILE_NAME FILE_NAME,
+		fdac.FILE_PATH FILE_PATH
+		FROM
+			MT_FAULT_DEV_ATTACH_C fdac
+		LEFT JOIN MT_FAULT_DEV fd ON fdac.FAULT_DEV_ID = fd. ID
+		WHERE
+		1=1
+	 <if test="_parameter != null and _parameter !=''" >
+		and fd. ID = #{_parameter}
+	 </if>
+	 
+	 <!-- 附件 -->
+	</select>
+	
+		<resultMap type="java.util.HashMap" id="fattachMap">
+		<result property="ID" column="ID"/>
+		<result property="FILE_NAME" column="FILE_NAME"/>
+		<result property="FILE_PATH" column="FILE_PATH"/>
+    </resultMap>
+  	
+	<select id="fattach" parameterType="java.lang.String" resultMap="fattachMap">
+		SELECT
+			fda. ID ID,
+			fda.FILE_NAME FILE_NAME,
+			fda.FILE_PATH FILE_PATH
+		FROM
+			MT_FAULT_DEV_ATTACH fda
+			LEFT JOIN MT_FAULT_DEV fd ON fda.FAULT_DEV_ID = fd. ID
+		WHERE
+			1=1
+	 <if test="_parameter != null and _parameter !=''" >
+		and fd. ID = #{_parameter}
+	 </if>
+	 
+	 <!-- 现场附件 -->
+	</select>
+	
+		<resultMap type="java.util.HashMap" id="fattachrMap">
+		<result property="ID" column="ID"/>
+		<result property="FILE_NAME" column="FILE_NAME"/>
+		<result property="FILE_PATH" column="FILE_PATH"/>
+    </resultMap>
+  	
+	<select id="fattachr" parameterType="java.lang.String" resultMap="fattachrMap">
+	    SELECT
+			fdal. ID ID,
+			fdal.FILE_NAME FILE_NAME,
+			fdal.ATTACH_PATH FILE_PATH
+		FROM
+			MT_FAULT_DEV_ATTACH_REAL fdal
+		LEFT JOIN MT_FAULT_DEV fd ON fdal.FAULT_DEV_ID = fd. ID
+		WHERE
+			1=1
+	 <if test="_parameter != null and _parameter !=''" >
+		and fd. ID = #{_parameter}
+	 </if>
+	</select>
+	
+	<!-- 现场结果附件 -->
+	<resultMap type="java.util.HashMap" id="fattachsMap">
+		<result property="ID" column="ID"/>
+		<result property="FILE_NAME" column="FILE_NAME"/>
+		<result property="FILE_PATH" column="FILE_PATH"/>
+    </resultMap>
+    
+  	
+	<select id="fattachs" parameterType="java.lang.String" resultMap="fattachsMap">		
+		SELECT
+			fdas. ID ID,
+			fdas.FILE_NAME FILE_NAME,
+			fdas.ATTACH_PATH FILE_PATH
+		FROM
+			MT_FAULT_DEV_ATTACH_SOLVE fdas
+		LEFT JOIN MT_FAULT_DEV fd ON fdas.FAULT_DEV_ID = fd. ID
+		WHERE
+			1=1
+	 <if test="_parameter != null and _parameter !=''" >
+		and fd. ID = #{_parameter}
+	 </if>
+	</select>
+  	
+</mapper>

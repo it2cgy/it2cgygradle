@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="login">
+
+    <resultMap type="java.util.HashMap" id="loginResult">
+        <result property="id" column="id" />
+    	<result property="realname" column="realname" />
+    	<result property="email" column="email" />
+    	<result property="company" column="company" />
+    	<result property="dept" column="dept" />
+    	<result property="position" column="position" />
+    	<result property="name" column="name" />
+    	<result property="password" column="password" />
+		<result property="cellphone" column="cellphone"/>
+    	<result property="role_id" column="role_id" />
+    	<result property="company_id" column="company_id"/>
+    	<result property="rolename" column="rolename" />
+    </resultMap>
+    
+	<select id="login" parameterType="java.util.HashMap" resultType="userBean">
+		<!-- select name, password, role, cellphone from mt_user 
+			where name = #{name,jdbcType=VARCHAR} 
+			and password = #{password,jdbcType=VARCHAR} -->
+			
+		<!-- select u.name, u.password, u.realname, u.cellphone, uur.roleid, ur.name as rolename 
+			from mt_user u, mt_user_userrole uur, mt_userrole ur
+				where u.name = #{name,jdbcType=VARCHAR} 
+					  and u.password = #{password,jdbcType=VARCHAR} 
+					  and u.id = uur.userid 
+				      and ur.id = uur.roleid -->
+		
+		select u.id,u.email,u.company,u.dept,u.position,u.name, u.password, u.realname, u.cellphone, u.role_id, u.company_id,u.status as status, ur.name as rolename,cy.versionType as versionType 
+			from mt_user u, mt_userrole ur ,mt_company cy
+				where u.name = #{name,jdbcType=VARCHAR}
+					  and u.password = #{password,jdbcType=VARCHAR}
+					  and u.role_id = ur.id
+					  and u.company_id = cy.id	      
+			
+			
+<!-- select u.name, u.password, u.cellphone, u.role, ur.name from 
+	mt_user u, MT_USER_USERROLE uur, mt_userrole ur
+		where u.name = 'zhan2' and u.password = '11' and u.id = uur.userid and ur.id = uur.roleid 
+SELECT * from MT_USERROLE
+
+SELECT * from mt -->
+	</select>
+	
+	<resultMap type="java.util.HashMap" id="userMap">
+		<result property="id" column="id"/>
+        <result property="text" column="name"/>
+    </resultMap>
+	<!--查看用户名是否存在 -->
+	<select id="checkUser" parameterType="java.util.HashMap" resultMap="userMap">
+		select u.id
+   		 from mt_user u
+    		where u.name = #{name,jdbcType=VARCHAR}	      
+	</select>
+	
+	
+	
+	
+	
+</mapper>
+

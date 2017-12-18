@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.ThirduserPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.ThirduserPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="userId" column="user_id" jdbcType="NUMERIC" />
+            <result property="equipmentType" column="equipment_type" jdbcType="NUMERIC" />
+            <result property="equipmentId" column="equipment_id" jdbcType="NUMERIC" />
+            <result property="measurementtypeId" column="measurementtype_id" jdbcType="VARCHAR" />
+            <result property="powerStationId" column="power_station_id" jdbcType="NUMERIC" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,user_id,equipment_type,equipment_id,measurementtype_id,power_station_id,create_time,update_time
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "userId != null ">	and user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "equipmentType != null ">	and equipment_type = #{equipmentType,jdbcType=NUMERIC }</if>
+            <if test= "equipmentId != null ">	and equipment_id = #{equipmentId,jdbcType=NUMERIC }</if>
+            <if test= "measurementtypeId != null ">	and measurementtype_id = #{measurementtypeId,jdbcType=VARCHAR }</if>
+            <if test= "powerStationId != null ">	and power_station_id = #{powerStationId,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "userId != null ">	and user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "equipmentType != null ">	and equipment_type = #{equipmentType,jdbcType=NUMERIC }</if>
+            <if test= "equipmentId != null ">	and equipment_id = #{equipmentId,jdbcType=NUMERIC }</if>
+            <if test= "measurementtypeId != null ">	and measurementtype_id like "%"#{measurementtypeId}"%"</if>
+            <if test= "powerStationId != null ">	and power_station_id = #{powerStationId,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "userId != null ">	or user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "equipmentType != null ">	or equipment_type = #{equipmentType,jdbcType=NUMERIC }</if>
+            <if test= "equipmentId != null ">	or equipment_id = #{equipmentId,jdbcType=NUMERIC }</if>
+            <if test= "measurementtypeId != null ">	or measurementtype_id = #{measurementtypeId,jdbcType=VARCHAR }</if>
+            <if test= "powerStationId != null ">	or power_station_id = #{powerStationId,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_thirduser_equipment
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_thirduser_equipment  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_thirduser_equipment  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.ThirduserPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_thirduser_equipment( id,user_id,equipment_type,equipment_id,measurementtype_id,power_station_id,create_time,update_time ) values (#{id,jdbcType=INTEGER},#{userId,jdbcType=NUMERIC},#{equipmentType,jdbcType=NUMERIC},#{equipmentId,jdbcType=NUMERIC},#{measurementtypeId,jdbcType=VARCHAR},#{powerStationId,jdbcType=NUMERIC},#{createTime},#{updateTime} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_thirduser_equipment( id,user_id,equipment_type,equipment_id,measurementtype_id,power_station_id,create_time,update_time ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.userId,jdbcType=NUMERIC},#{item.equipmentType,jdbcType=NUMERIC},#{item.equipmentId,jdbcType=NUMERIC},#{item.measurementtypeId,jdbcType=VARCHAR},#{item.powerStationId,jdbcType=NUMERIC},#{item.createTime},#{item.updateTime} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.ThirduserPO">
+		update pvmts_thirduser_equipment set user_id=#{userId,jdbcType=NUMERIC},equipment_type=#{equipmentType,jdbcType=NUMERIC},equipment_id=#{equipmentId,jdbcType=NUMERIC},measurementtype_id=#{measurementtypeId,jdbcType=VARCHAR},power_station_id=#{powerStationId,jdbcType=NUMERIC},create_time=#{createTime},update_time=#{updateTime} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.ThirduserPO">
+		update pvmts_thirduser_equipment
+        <set>
+            <if test="userId != null "> 
+                user_id = #{userId,jdbcType=NUMERIC},
+            </if>
+            <if test="equipmentType != null "> 
+                equipment_type = #{equipmentType,jdbcType=NUMERIC},
+            </if>
+            <if test="equipmentId != null "> 
+                equipment_id = #{equipmentId,jdbcType=NUMERIC},
+            </if>
+            <if test="measurementtypeId != null "> 
+                measurementtype_id = #{measurementtypeId,jdbcType=VARCHAR},
+            </if>
+            <if test="powerStationId != null "> 
+                power_station_id = #{powerStationId,jdbcType=NUMERIC},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_thirduser_equipment where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.ThirduserPO">
+		delete from pvmts_thirduser_equipment
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

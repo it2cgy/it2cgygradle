@@ -1,0 +1,16 @@
+
+
+drop table if exists pvmts_report_daily_power;
+
+/*==============================================================*/
+/* Table: pvmts_report_daily_power          2017-08-31   14:39                             */
+/*==============================================================*/
+create table pvmts_report_daily_power
+(
+   id                   int auto_increment not null,
+   power_id             int,
+   iscreate             int,
+   createtime           datetime,
+   updatetime           datetime,
+    primary key (id)
+);

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="mcPowerInfo">
+	<resultMap type="java.util.Map" id="queryPowerInfoMap">
+    	<id property="id" column="id" />
+    	<result property="packtemp_val" column="PACKTEMP_VAL" />
+    	<result property="dirradiation_val" column="DIRRADIATION_VAL" />
+    	<result property="dthepory_val" column="DTHEROYP_VAL" />
+    	<result property="sysdate" column="SYSRATE"/>
+    	<result property="picture_path" column="PICTURE_PATH"/>
+		<result property="install_capacity" column="INSTALL_CAPACITY"/>
+		<result property="pro_id" column="PRO_ID" />
+    	<result property="pro_name" column="PRO_NAME" />
+    	<result property="pro_code" column="PRO_CODE" />
+    	<result property="invest_firm_name" column="INVEST_FIRM_NAME" />
+		<result property="owner_firm_name" column="OWNER_FIRM_NAME"/>
+    	<result property="ddy_name" column="DDY_NAME" />
+    	<result property="r_id" column="R_ID" />
+    </resultMap>
+
+	<!-- 首页查询电站列表数据  温度容量 日照等从scada平台接口获取-->
+	<select id="queryPowerInfo" resultMap="queryPowerInfoMap">
+	<!-- oracle -->
+		<!-- SELECT
+			CP.SNDVALUE PACKTEMP_VAL, CP1.SNDVALUE DIRRADIATION_VAL, CP2.SNDVALUE DTHEROYP_VAL, 
+			MP.INSTALL_CAPACITY, MP.ID PRO_ID, MP.NAME PRO_NAME, MP.CODE PRO_CODE, MP.INVEST_FIRM_NAME, 
+			MP.OWNER_FIRM_NAME, MU.NAME DDY_NAME, MP.PICTURE_PATH, null SYSRATE
+		FROM
+			R_MT_PRO_USER_ROLE TR
+			LEFT JOIN MT_PROJECT MP ON TR.PRO_ID = MP.ID
+			LEFT JOIN R_MT_PRO_USER_ROLE RR ON MP.ID = RR.PRO_ID
+			LEFT JOIN MT_USER MU ON RR.USER_ID  = MU.ID
+			LEFT JOIN MC_METEORINFO CM ON TR.PRO_ID = CM.FARMID
+			LEFT JOIN MC_POINT CP ON CM.PACKTEMP_ID  = CP.PID
+			LEFT JOIN MC_POINT CP1 ON CM.DIRRADIATION_ID  = CP1.PID
+			LEFT JOIN MC_POINT CP2 ON CM.DTHEROYP_ID = CP2.PID
+		-->
+		<!-- mysql -->
+		SELECT
+			MP.INSTALL_CAPACITY,
+			MP.ID PRO_ID,
+			MP. NAME PRO_NAME,
+			MP. CODE PRO_CODE,
+			MP.INVEST_FIRM_NAME,
+			MP.OWNER_FIRM_NAME,
+			MU. NAME DDY_NAME,
+			MP.PICTURE_PATH,
+			NULL SYSRATE,
+			TR.ROLE_ID as R_ID
+		FROM
+			R_MT_PRO_USER_ROLE TR
+		LEFT JOIN MT_PROJECT MP ON TR.PRO_ID = MP.ID
+		LEFT JOIN MT_USER MU ON TR.USER_ID = MU.ID 
+		WHERE
+			TR.USER_ID = ${userId}
+			AND
+			TR.ROLE_ID = ${roleId}
+			<if test="proName != null and proName != ''">
+				and mp.name like '%${proName}%'
+			</if>
+			<if test="investFirmName != null and investFirmName != ''">
+				and mp.invest_firm_name like '%${investFirmName}%'
+			</if>
+			<if test="proCode != null and proCode != ''">
+				and mp.code like '%${proCode}%'
+			</if>
+<!--		<if test="order != null and order != ''">-->
+<!--			ORDER BY ${sort} ${order}-->
+<!--		</if>-->
+	</select>
+	
+	<!-- <resultMap type="java.util.Map" id="ammeterInfoMap">
+    	<result property="p_val" column="P_VAL" />
+    	<result property="total_power" column="TOTAL_POWER" />
+    	<result property="a_id" column="AID" />
+    	<result property="a_name" column="ANAME" />
+    	<result property="sn_time" column="SNTIME"/>
+    </resultMap> 
+    
+	<select id="queryAmmeterInfo" resultMap="ammeterInfoMap">
+		SELECT CP.SNDVALUE P_VAL, CP1.sndvalue TOTAL_POWER, CA.AID, CA.NAME ANAME,
+			TO_CHAR(TO_DATE(19700101, 'yyyymmdd') + (CP.SNTIME+28800)/86400, 'yyyy-mm-dd hh24:mi') SNTIME
+		FROM 
+			MC_AMINFO CA
+		LEFT JOIN MC_POINT CP ON CA.P_ID = CP.PID
+		LEFT JOIN MC_POINT CP1 ON CA.itjea_id = CP1.PID
+		WHERE CA.FARMID = ${proId}
+			AND CA.TYPE = 1
+		ORDER BY CA.NAME
+		SELECT
+			CA.aid,
+			CA.aname,
+			(
+				SELECT
+					sndvalue AS itjea
+				FROM
+					MC_POINT
+				WHERE
+					pid = CA.itjea_id
+			) AS itjea,
+			(
+				SELECT
+					sndvalue AS p_val, 
+					TO_CHAR(TO_DATE(19700101, 'yyyymmdd') + (SNTIME+28800)/86400, 'yyyy-mm-dd hh24:mi') sntime
+				FROM
+					MC_POINT
+				WHERE
+					pid = CA.p_id
+			) AS P
+		FROM
+			mc_aminfo CA
+		WHERE
+			CA.FARMID = ${proId}
+			AND CA.TYPE = 1 
+	</select> -->
+	<resultMap type="java.util.Map" id="ammeterInfoMap">
+    	<result property="ID" column="ID" />
+    	<result property="NAME" column="NAME" />
+    	<result property="a_id" column="AID" />
+    	<result property="a_name" column="ANAME" />
+    	<result property="sn_time" column="SNTIME"/>
+    </resultMap> 
+    
+	<select id="queryAmmeterInfo" parameterType="java.util.HashMap" resultMap="ammeterInfoMap">
+		SELECT 
+			ID,NAME 
+		FROM 
+			mc_electric_meter 
+		WHERE FARMID = ${proId} AND type = 1 
+	</select>
+	<select id="queryAmmeterInfoTable" parameterType="java.util.HashMap" resultType="java.lang.String">
+		SELECT 
+			NAME
+		from 
+			measurementtype 
+		WHERE 
+			id in (
+				SELECT 
+					TYPE 
+				from 
+					analoginput 
+				WHERE 
+					EQUIPMENTCONTAINER_ID = #{_parameter} 
+				and 
+					EQUIPMENTCONTAINER_TABLEID = 5)
+	</select>
+	<resultMap type="java.util.Map" id="queryWarnMap">
+    	<result property="farmid" column="FARMID" />
+    	<result property="pro_name" column="NAME" />
+    	<result property="level1" column="LEVEL1" />
+    	<result property="level2" column="LEVEL2" />
+    	<result property="level3" column="LEVEL3" />
+    	<result property="warn_time" column="WARNTIME" />
+    </resultMap> 
+	<select id="queryWarnInfo" resultMap="queryWarnMap">
+<!--		SELECT TP.NAME, CA.FARMID, COUNT(CASE WHEN CA.ALARMLEVEL=1 THEN 1 ELSE NULL END) LEVEL1, -->
+<!--			COUNT(CASE WHEN CA.ALARMLEVEL=2 THEN 2 ELSE NULL END) LEVEL2, -->
+<!--			COUNT(CASE WHEN CA.ALARMLEVEL= 3 THEN 3 ELSE NULL END) LEVEL3, -->
+<!--			TO_CHAR(MAX(CA.OCCUR_TIME), 'YYYY-MM-DD HH24:MI:SS') WARNTIME-->
+<!--			FROM MC_ALARMINFO CA LEFT JOIN MT_PROJECT TP ON CA.FARMID = TP.ID-->
+<!--			 WHERE CA.FARMID IN (-->
+<!--			SELECT PRO_ID FROM R_MT_PRO_USER_ROLE -->
+<!--			WHERE USER_ID = ${userId})  -->
+<!--			GROUP BY CA.FARMID, TP.NAME-->
+	</select>
+	
+	<resultMap type="java.util.Map" id="queryItstateMap">
+    	<result property="farmid" column="farmid" />
+    	<result property="itstate" column="itstate" />
+    </resultMap> 
+	<select id="queryitstate" parameterType="java.util.HashMap" resultMap="queryItstateMap">
+			SELECT farmid, 
+				(SELECT SNIVALUE FROM MC_POINT WHERE pid = info.ITSTATE_ID) AS itstate
+			FROM MC_ITINFO info
+			where 1=1
+		<!-- <if test="_parameter != null and _parameter !=''" > -->
+				and info.farmid in (21) 
+				<!-- WHERE CA.FARMID IN (
+			SELECT PRO_ID FROM R_MT_PRO_USER_ROLE 
+			WHERE USER_ID = ${userId}) --> 
+		<!-- </if> -->
+	</select>
+	<select id="rueryProCountSum"  parameterType="java.util.HashMap" resultType="java.lang.Integer">
+		SELECT COUNT(PRO_ID) VAL FROM R_MT_PRO_USER_ROLE 
+			WHERE USER_ID =${userId} and role_id=${roleId} 
+	</select>
+	
+	<select id="rueryProVolume"  parameterType="java.util.HashMap"  resultType="java.lang.Double">
+		SELECT SUM(TB.INSTALL_CAPACITY) VAL 
+			FROM R_MT_PRO_USER_ROLE TA 
+				LEFT JOIN MT_PROJECT TB ON TA.PRO_ID = TB.ID
+			WHERE TA.USER_ID =${userId} and ta.role_id=${roleId}
+	</select>
+	
+	<select id="rueryProTotalPower"  parameterType="java.util.HashMap" resultType="java.lang.String">
+				SELECT
+					NAME
+				FROM
+					measurementtype a
+				WHERE
+					a.id IN (
+						SELECT
+							t.measurementtypeID
+						FROM
+							equipment2measure t
+						WHERE
+							t.equipmenttypeID = 0
+					)
+	</select>
+	
+		<!-- 获取设备编号  -->
+	<select id="getContainer" parameterType="java.lang.String" resultType="java.lang.String">
+		select id from mc_meteor_monitor t where 1=1 
+		 <if test="_parameter != null and _parameter !=''" >
+			and t.FARMID= #{_parameter}
+		  </if>
+	</select>
+	<!-- 通过电站id查询当前电站所属的逆变器列表 -->
+		<resultMap type="java.util.Map" id="equipMap">
+    	<result property="id" column="id" />
+    	<result property="typeId" column="EQUIPMENTTYPEID" />
+    	<result property="model" column="model" />
+    </resultMap> 
+	<select id="getEquipsProperty" parameterType="java.lang.String" resultMap="equipMap">
+		select t.id,t.EQUIPMENTTYPEID,t.model from mc_inverter t where 1=1
+		 <if test="_parameter != null and _parameter !=''" >
+			and t.FARMID= #{_parameter}
+		  </if>
+	</select>
+	
+</mapper>

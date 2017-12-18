@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="mtPackagerecord">
+    
+    <select id="getVersionType" resultType="mtPackagerecord">
+  	<!-- SELECT
+	*
+	FROM
+		( -->
+			SELECT
+				*
+			FROM
+				MT_PACKAGE_RECORD
+			WHERE
+				"company_id" = ${id}
+				and MT_PACKAGE_RECORD."packageStatus" &lt;'2'
+			ORDER BY
+				"createTime" DESC
+		<!-- )
+	WHERE
+		ROWNUM &lt; 2 -->
+  	</select>
+  	
+  	<select id="getPackageRecord" resultType="mtPackagerecord">
+  	SELECT
+			*
+		FROM
+			MT_PACKAGE_RECORD
+		WHERE "company_id" = ${id}
+				
+  	</select>
+  	
+  	<insert id="insertPackageRecord">
+		INSERT INTO MT_PACKAGE_RECORD 
+VALUES
+	(
+		SEQ_MT_PACKAGE_RECORD_ID.nextval,
+		'${company_id}',
+		'${packageStatus}',
+		TO_DATE (
+			'${createTime}',
+			'YYYY-MM-DD HH24:MI:SS'
+		),
+		<if test="updateTime != null and updateTime != ''" ><!-- 公司名称 -->
+				TO_DATE (
+			'${updateTime}',
+			'YYYY-MM-DD HH24:MI:SS'
+		),
+		</if>
+		<if test="updateTime == null or updateTime == ''" ><!-- 公司名称 -->
+				null,
+		</if>
+		TO_DATE (
+			'${startTime}',
+			'YYYY-MM-DD HH24:MI:SS'
+		),
+		TO_DATE (
+			'${endTime}',
+			'YYYY-MM-DD HH24:MI:SS'
+		),
+		'${type}',
+		'${interval}',
+		'${accountCount}',
+		<if test="stoptime != null and stoptime != ''" ><!-- 公司名称 -->
+				TO_DATE (
+			'${stoptime}',
+			'YYYY-MM-DD HH24:MI:SS'
+		),
+		</if>
+		<if test="stoptime == null or stoptime == ''" ><!-- 公司名称 -->
+				null,
+		</if>
+		'${number}',
+		'${account_type}',
+		'${remarks}'
+	)
+  	</insert>
+  	
+  	<update  id="changestatus">
+  		update MT_PACKAGE_RECORD 
+  			set MT_PACKAGE_RECORD."packageStatus"='${packageStatus}' 
+  			,MT_PACKAGE_RECORD."stoptime" = TO_DATE (
+			'${endTime}',
+			'YYYY-MM-DD HH24:MI:SS')
+  			where MT_PACKAGE_RECORD."id" ='${id}'
+  	</update>
+  	
+  	<update  id="updateDiestatus">
+  		update MT_PACKAGE_RECORD set MT_PACKAGE_RECORD."packageStatus"='2'
+  		,MT_PACKAGE_RECORD."stoptime" = TO_DATE (
+			'${endTime}',
+			'YYYY-MM-DD HH24:MI:SS')
+  		 where MT_PACKAGE_RECORD."packageStatus" ='1'
+  		and MT_PACKAGE_RECORD."endTime" &lt;TO_DATE (
+			'${endTime}',
+			'YYYY-MM-DD HH24:MI:SS')
+  	</update>
+  	<update  id="updateLivestatus">
+  		update MT_PACKAGE_RECORD set MT_PACKAGE_RECORD."packageStatus"='1' where MT_PACKAGE_RECORD."packageStatus" ='0'
+  		and MT_PACKAGE_RECORD."startTime" &lt;TO_DATE (
+			'${endTime}',
+			'YYYY-MM-DD HH24:MI:SS')
+  	</update>
+  	
+  	<select  id="selectlostCompanyid" resultType="mtPackagerecord">
+  		select DISTINCT MT_PACKAGE_RECORD."company_id" from  MT_PACKAGE_RECORD where MT_PACKAGE_RECORD."packageStatus" ='1'
+  		and MT_PACKAGE_RECORD."endTime" &lt;TO_DATE (
+			'${endTime}',
+			'YYYY-MM-DD HH24:MI:SS')
+  	</select>
+  	<select  id="selectlostcount" resultType="mtPackagerecord">
+  		select * from  MT_PACKAGE_RECORD where MT_PACKAGE_RECORD."packageStatus" ='1'
+  		and MT_PACKAGE_RECORD."endTime" &gt;TO_DATE (
+			'${endTime}',
+			'YYYY-MM-DD HH24:MI:SS')
+			AND MT_PACKAGE_RECORD."company_id" = '${company_id}'
+  	</select>
+  	
+  	<update id ="updateUserType">
+  		update MT_USER set status = 1 where id in ${id}
+  	</update>
+  	
+  	<select id ="selectLiveUserCount" resultType="java.lang.String">
+  		SELECT
+				id
+			FROM
+				MT_USER
+			WHERE
+				status = 0
+			AND role_id &gt;1
+		AND company_id = ${company_id}
+		ORDER BY
+			registertime DESC
+  	</select>
+	<select id="getUsingCount" resultType="java.lang.Integer">
+		SELECT
+			COUNT (*)
+		FROM
+			MT_USER
+		WHERE
+			COMPANY_ID = ${company_id}
+		AND ROLE_ID IN (2, 3,4,5,6)
+		AND STATUS = 0
+	</select>
+	<select id="CheckedRecode" resultType="java.lang.Integer">
+		SELECT
+			"type"
+		FROM
+			MT_PACKAGE_RECORD
+		WHERE
+			"company_id" = ${company_id}
+		AND "packageStatus" IN (0,1)
+	</select>
+	
+	<select id="getPackageVersionType" resultType="java.lang.Integer">
+		SELECT
+			"type"
+		FROM
+			MT_PACKAGE_RECORD
+		WHERE
+			"company_id" = ${company_id}
+		AND "packageStatus" =1
+	</select>
+	
+	<select id="getUserPackageType" resultType="MTPackagerecord">
+	SELECT
+	*
+	FROM
+		(
+			SELECT
+				*
+			FROM
+				MT_PACKAGE_RECORD
+			WHERE
+				"company_id" = ${company_id}
+			AND "packageStatus" = 1
+			ORDER BY
+				"startTime" DESC
+		)
+	WHERE
+		ROWNUM &lt; 2
+	</select>
+	<select id="getPackageCount" resultType="java.lang.Integer">
+		SELECT count(*) from MT_PACKAGE_RECORD WHERE "company_id" =${company_id}
+	</select>
+	<select id="getPackage" resultType="MTPackagerecord">
+		SELECT
+			*
+		FROM
+			(
+				SELECT
+					MT_PACKAGE_RECORD.* , ROWNUM rm
+				FROM
+					(select * from MT_PACKAGE_RECORD order by MT_PACKAGE_RECORD."createTime" desc)MT_PACKAGE_RECORD
+				WHERE
+					"company_id" = ${company_id}
+				AND
+					ROWNUM &lt; ${end}
+			)
+		WHERE
+			rm &gt; ${start}
+	</select>
+	
+	<select id="selectLocalInfo" resultType="localConfig">
+		SELECT
+			"id",
+			"producttype",
+			"ip",
+			"mac",
+			"endTime",
+			"type",
+			"accountCount",
+			"number",
+			"accountType",
+			"remarks"
+		FROM
+			MT_LOCAL_CONFIG
+		WHERE "number" ='${number}'
+	</select>
+	<insert id="insertResultInfo">
+	INSERT INTO MT_LOCAL_RESULT
+	VALUES
+		(
+			SEQ_MT_LOCAL_RESULT_ID.nextval,
+			${configId},
+			TO_DATE (
+				'${startTime}',
+				'YYYY-MM-DD HH24:MI:SS'
+			),
+			'${remarks}',
+			${type}
+		)
+	</insert>
+	<select id="getCheckedInfo" resultType="checkedResult">
+		select a.*,rownum from(SELECT
+			"id",
+			"configId",
+			"startTime",
+			"remarks",
+			"type",
+			ROWNUM rw
+		FROM
+			(select * from "MT_LOCAL_RESULT" order by "id" asc)
+		where 1= 1
+		<if test="configIdstr != null and configIdstr !=''" >
+			AND	"configId" = ${configIdstr}
+		</if>
+		<if test="stopTime != null and stopTime != ''" >
+			AND	"startTime" &lt; TO_DATE (
+				'${stopTime}',
+				'YYYY-MM-DD HH24:MI:SS'
+			)
+		</if>
+		<if test="startTime != null and startTime != ''" >
+			AND	"startTime" &gt; TO_DATE (
+				'${startTime}',
+				'YYYY-MM-DD HH24:MI:SS'
+			)
+		</if>
+		<if test="typestr != null and typestr !=''" >
+			AND	"type" = ${typestr}
+		</if>
+		and ROWNUM &lt; ${end})a where rw &gt;${start}
+		
+	</select>
+	<select id="getCheckedCount" resultType="java.lang.Integer">
+		select count(*) from "MT_LOCAL_RESULT" 
+		where 1= 1
+		<if test="configIdstr != null and configIdstr !=''" >
+			AND	"configId" = ${configIdstr}
+		</if>
+		<if test="stopTime != null and stopTime != ''" >
+			AND	"startTime" &lt; TO_DATE (
+				'${stopTime}',
+				'YYYY-MM-DD HH24:MI:SS'
+			)
+		</if>
+		<if test="startTime != null and startTime != ''" >
+			AND	"startTime" &gt; TO_DATE (
+				'${startTime}',
+				'YYYY-MM-DD HH24:MI:SS'
+			)
+		</if>
+		<if test="typestr != null and typestr !=''" >
+			AND	"type" = ${typestr}
+		</if>
+	</select>
+	<select id="getLocalList" resultType="localConfig">
+		SELECT * from (SELECT 
+		"companyName",
+		"ip",
+		"mac",
+		"number",
+		"producttype",
+		"type",
+		"accountType",
+		"accountCount",
+		"createTime",
+		"endTime",
+		"remarks",
+		ROWNUM rw
+		 FROM (select * from "MT_LOCAL_CONFIG" ORDER BY "id")
+		WHERE 1 = 1
+		<if test="companyName != null and companyName !=''">
+			AND "companyName" like '%${companyName}%'
+		</if>
+		AND ROWNUM &lt;${endRow}) WHERE rw &gt; ${startRow}
+	</select>
+	
+	<select id="getLocalListCount" resultType="java.lang.Integer">
+		SELECT count(*) from (SELECT 
+		"companyName",
+		"ip",
+		"mac",
+		"number",
+		"producttype",
+		"type",
+		"accountType",
+		"accountCount",
+		"createTime",
+		"endTime",
+		"remarks",
+		ROWNUM rw
+		 FROM (select * from "MT_LOCAL_CONFIG" ORDER BY "id")
+		WHERE 1 = 1
+		<if test="companyName != null and companyName !=''">
+			AND "companyName" like '%${companyName}%'
+		</if>
+		)
+	</select>
+	<update id ="stopLocalConfig">
+		update "MT_LOCAL_CONFIG" set "accountType" = 1 where "number" = '${number}'
+	</update>
+	<insert id ="insertLocal">
+		INSERT INTO "MT_LOCAL_CONFIG"
+		VALUES
+			(
+				SEQ_MT_LOCAL_CONFIG_ID.nextval,
+				${producttype},
+				'${ip}',
+				'${mac}',
+				TO_DATE (
+					'${endTime}',
+					'YYYY-MM-DD HH24:MI:SS'
+				),
+				${type},
+				${accountCount},
+				'${number}',
+				${accountType},
+				'${remarks}',
+				'${companyName}',
+				TO_DATE (
+					'${createTime}',
+					'YYYY-MM-DD HH24:MI:SS'
+				)
+			)
+	</insert>
+	<select id="checkNumber" resultType="localConfig">
+	select * from "MT_LOCAL_CONFIG" where "number" = '${number}'
+	</select>
+</mapper>

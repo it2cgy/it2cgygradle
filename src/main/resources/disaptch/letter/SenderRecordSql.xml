@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="senderLetter">
+	<insert id="sendLetter">
+		INSERT INTO 
+			MT_LETTER_SENDER_RECORD (ID, USER_ID, CONSIGNEE_RECORD_ID, LETTER_BODY, TOPIC, SENDTIME) 
+		VALUES (${id}, ${user_id}, ${consignee_record_id}, '${letter_body}', '${topic}', sysdate)
+	</insert>
+	
+	<select id="getSequence" resultType="java.lang.Integer">
+		SELECT SEQ_SENDER_RECORD_ID.NEXTVAL FROM SYS.DUAL
+	</select>
+	
+	<insert id="sender_consignee">
+		INSERT INTO MT_LETTER_SENDER_CONSIGNEE (SENDER_ID, CONSIGNEE_ID) 
+		<foreach item="item" collection="list" separator="union all">
+			select ${item.sender_id},${item.consignee_id} from dual 
+		</foreach>
+	</insert>
+	
+	<insert id="consigneeLetter">
+		INSERT INTO MT_LETTER_CONSIGNEE_RECORD (
+			USER_ID,
+			STATUS,
+			LETTER_BODY,
+			TOPIC,
+			SEND_USER_ID,
+			SENDTIME
+		)
+	  <foreach item="item" collection="list" separator="union all">
+		 select ${item.user_id},0, #{item.letter_body}, #{item.topic}, #{item.send_user_id}, sysdate from dual
+	  </foreach>
+	</insert>
+	<select id="querySendBox" resultType="MTSendBox">
+		SELECT
+			LSR. ID,
+			LSR.USER_ID,
+			(
+				SELECT
+					WMSYS.WM_CONCAT(REALNAME)
+				FROM
+					MT_USER US
+				LEFT JOIN MT_LETTER_SENDER_CONSIGNEE LSC ON US. ID = LSC.CONSIGNEE_ID
+				WHERE
+					LSC.SENDER_ID = LSR. ID
+			) CONSIGNEE_NAME, LSR.CONSIGNEE_RECORD_ID,
+			LSR.TOPIC,
+			TO_CHAR(LSR.SENDTIME, 'yyyy-mm-dd hh24:mi:ss') SENDTIME
+		FROM
+			MT_LETTER_SENDER_RECORD LSR
+		WHERE
+			LSR.USER_ID = ${user_id}
+			ORDER BY LSR.SENDTIME DESC
+	</select>
+	<select id="readLetter" resultType="MTSendBox">
+		SELECT
+			LSR. ID,
+			LSR.USER_ID, 
+			LSR.TOPIC,
+			LSR.LETTER_BODY,
+			LSR.CONSIGNEE_RECORD_ID,
+			TO_CHAR(LSR.SENDTIME, 'yyyy-mm-dd hh24:mi:ss') SENDTIME
+		FROM MT_LETTER_SENDER_RECORD LSR
+			WHERE LSR.ID = #{letterId}
+	</select>
+	<resultMap type="java.util.HashMap" id="consigneeMap">
+			<result property="real_name" column="REALNAME"/>
+			<result property="user_name" column="NAME"/>
+	</resultMap>
+	<select id="getConsignee" resultMap="consigneeMap">
+		SELECT
+			U.REALNAME, U.NAME
+		FROM
+			MT_LETTER_SENDER_RECORD LSR
+			LEFT JOIN MT_LETTER_SENDER_CONSIGNEE LSC ON LSR.ID = LSC.SENDER_ID
+			LEFT JOIN MT_USER U ON LSC.CONSIGNEE_ID = U.ID
+		WHERE LSR.ID = #{letterId}
+	</select>
+	
+	<delete id="delLetter">
+		delete MT_LETTER_SENDER_RECORD where id in (${letterIds})
+	</delete>
+	<resultMap type="java.util.HashMap" id="queryUserMap">
+			<result property="id" column="ID"/>
+			<result property="name" column="NAME"/>
+			<result property="real_name" column="REAL_NAME"/>
+			<result property="role_name" column="ROLE_NAME"/>
+	</resultMap>
+	<select id="queryUser" resultMap="queryUserMap">
+		SELECT
+			U . ID,
+			U . NAME,
+			U .REALNAME REAL_NAME,
+			UR. NAME ROLE_NAME
+		FROM
+			MT_USER U
+		LEFT JOIN MT_USERROLE UR ON U .ROLE_ID = UR. ID
+			WHERE U.ID <![CDATA[<>]]> #{id}
+			<if test="company_id != 0 ">
+			AND U.COMPANY_ID = #{company_id}
+			</if>
+			<if test="company_id == 0 ">
+			AND U.ROLE_ID = 1
+			</if>
+		<if test="role_id != null and role_id !=''" >
+			AND U.ROLE_ID = #{role_id}
+		</if>
+		<if test="realname != null and realname !=''" >
+			AND LOWER(U.REALNAME) LIKE LOWER('%${realname}%')
+		</if>
+	</select>
+</mapper>
+<!-- SELECT
+			LSR. ID,
+			LSR.USER_ID,
+			(
+				SELECT
+					WMSYS.WM_CONCAT(REALNAME)
+				FROM
+					MT_USER US
+				LEFT JOIN MT_LETTER_SENDER_CONSIGNEE LSC ON US. ID = LSC.CONSIGNEE_ID
+				WHERE
+					LSC.SENDER_ID = LSR. ID
+			) REALNAME, LSR.CONSIGNEE_RECORD_ID,
+			LSR.LETTER_BODY,
+			LSR.TOPIC
+		FROM
+			MT_LETTER_SENDER_RECORD LSR
+		WHERE
+			LSR. ID = 13 -->
+

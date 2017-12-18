@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.TaskConfigPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.TaskConfigPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="configTime" column="config_time" jdbcType="VARCHAR" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="type" column="type" jdbcType="NUMERIC" />
+            <result property="defaultTime" column="default_time" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,config_time,create_time,update_time,type,default_time
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "configTime != null ">	and config_time = #{configTime,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+            <if test= "type != null ">	and type = #{type,jdbcType=NUMERIC }</if>
+            <if test= "defaultTime != null ">	and default_time = #{defaultTime,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "configTime != null ">	and config_time like "%"#{configTime}"%"</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+            <if test= "type != null ">	and type = #{type,jdbcType=NUMERIC }</if>
+            <if test= "defaultTime != null ">	and default_time like "%"#{defaultTime}"%"</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "configTime != null ">	or config_time = #{configTime,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+            <if test= "type != null ">	or type = #{type,jdbcType=NUMERIC }</if>
+            <if test= "defaultTime != null ">	or default_time = #{defaultTime,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_task
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_task  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_task  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.TaskConfigPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_task( id,config_time,create_time,update_time,type,default_time ) values (#{id,jdbcType=INTEGER},#{configTime,jdbcType=VARCHAR},#{createTime},#{updateTime},#{type,jdbcType=NUMERIC},#{defaultTime,jdbcType=VARCHAR} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_task( id,config_time,create_time,update_time,type,default_time ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.configTime,jdbcType=VARCHAR},#{item.createTime},#{item.updateTime},#{item.type,jdbcType=NUMERIC},#{item.defaultTime,jdbcType=VARCHAR} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.TaskConfigPO">
+		update pvmts_task set config_time=#{configTime,jdbcType=VARCHAR},create_time=#{createTime},update_time=#{updateTime},type=#{type,jdbcType=NUMERIC},default_time=#{defaultTime,jdbcType=VARCHAR} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.TaskConfigPO">
+		update pvmts_task
+        <set>
+            <if test="configTime != null "> 
+                config_time = #{configTime,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+            <if test="type != null "> 
+                type = #{type,jdbcType=NUMERIC},
+            </if>
+            <if test="defaultTime != null "> 
+                default_time = #{defaultTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_task where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.TaskConfigPO">
+		delete from pvmts_task
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

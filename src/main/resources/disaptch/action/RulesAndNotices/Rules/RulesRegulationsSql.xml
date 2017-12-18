@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rulesRegulations">
+	<resultMap type="java.util.Map" id="getFileMap">
+		<result property="file_name" column="file_name" />
+    	<result property="file_path" column="file_path" />
+	</resultMap>
+	<!-- 选择序列 -->
+	<select id="loadKey" resultType="java.lang.Integer">
+  		select SEQ_MT_RULES_ID.nextval as id from dual  
+  	</select>
+	
+	<insert id="addRule">
+		insert into mt_rules_regulations
+			(id, name, version, publish_time, file_name, file_path, status,
+				 remarks, publisher, company_id)
+		  values(
+		     ${id},
+		  	 '${name}',
+		  	 '${version}',
+		  	 sysdate,
+		  	 '${file_name}',
+		  	 '${file_path}',
+		  	 '${status}',
+		  	 '${remarks}',
+		  	 '${publisher}',
+		  	 '${company_id}'
+		  )
+	</insert>
+	
+	<update id="secondSaveRules">
+		update mt_rules_regulations
+			set name = '${name}',
+				version = '${version}',
+				publish_time = sysdate,
+				file_name = '${file_name}',
+				file_path = '${file_path}',
+				status = '${status}',
+				remarks = '${remarks}',
+				publisher = '${publisher}',
+				company_id = '${company_id}'
+			where id = '${id}'
+	</update>
+	
+	<select id="queryRulesList" resultType="rulesRegulation">
+		select b.* from 
+			(select rownum n, a.* from
+				(select * from mt_rules_regulations
+					where company_id = '${company_id}'
+					<if test="name != null and name != ''">
+						and name like '%${name}%'
+					</if>
+					<if test="version != null and version != ''">
+						and version like '%${version}%'
+					</if>
+					<if test="startDate != null and startDate != ''">
+						and publish_time &gt; to_date('${startDate}', 'yyyy-mm-dd hh24:mi:ss')
+					</if>
+					<if test="endDate != null and endDate != ''">
+						and publish_time &lt; to_date('${endDate}', 'yyyy-mm-dd hh24:mi:ss')
+					</if>
+					<if test="status != null and status != ''">
+						and status = 1
+					</if>
+					<if test="id != null and id != ''">
+						and id = #{id}
+					</if>
+					<if test="sort != null and sort != ''">
+						order by ${sort} ${order}
+					</if>
+				) a
+			) b
+			<if test="page != null and page != ''">
+				where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows}
+			</if>
+	</select>
+	<select id="totalNum" resultType="java.lang.Integer">
+		select count(id) from mt_rules_regulations
+			<where>
+				<if test="name != null and name != ''">
+					name like '%${name}%'
+				</if>
+				<if test="version != null and version != ''">
+					and version like '%${version}%'
+				</if>
+				<if test="startDate != null and startDate != ''">
+					and publish_time &gt; to_date('${startDate}', 'yyyy-mm-dd hh24:mi:ss')
+				</if>
+				<if test="endDate != null and endDate != ''">
+					and publish_time &lt; to_date('${endDate}', 'yyyy-mm-dd hh24:mi:ss')+1
+				</if>
+				<if test="status != null and status != ''">
+					and status = 1
+				</if>
+				<if test="id != null and id != ''">
+					and id = #{id}
+				</if>
+			</where>
+	</select>
+	
+	<update id="rulePublish">
+		update mt_rules_regulations
+			set status = 1,
+				publish_time = sysdate
+			where id = #{publishID}
+	</update>
+	
+	<delete id="ruleDel">
+		delete from mt_rules_regulations where id in (${rules})
+	</delete>
+	
+	<select id="getFile" resultMap="getFileMap">
+		select file_name, file_path from mt_rules_regulations where id = #{id}
+	</select>
+	
+	<update id="updateRules" parameterType="java.util.Map">
+		update mt_rules_regulations
+			set name = '${name}',
+				version = '${version}',
+				status = '${status}',
+				publish_time = sysdate,
+				<if test="file_name != null and file_name != '' 
+					and file_path != null and file_path != ''">
+					file_name = '${file_name}',
+		  	 		file_path = '${file_path}',
+				</if>
+		  	 	remarks = '${remarks}'
+			where id = '${id}'
+	</update>
+	
+	 <resultMap type="java.util.HashMap" id="cheakcodeMap">
+		<result property="id" column="id"/>
+    </resultMap>
+    
+	<select id="checkid"  resultMap="cheakcodeMap">
+  		
+				
+				SELECT
+					md.id id
+				FROM
+					mt_rules_regulations md
+				WHERE
+					1 = 1
+				                
+				<if test="_parameter != null and _parameter !=''" >
+					and  md.id = #{_parameter}
+				</if>
+								
+		
+  	</select>
+	
+	<select id="homePageRulesList" resultType="rulesRegulation">
+<!--		select * from-->
+<!--		(select id, name, to_char(publish_time,'yyyy-mm-dd hh24:mi:ss') publish_time, file_name, file_path -->
+<!--			from mt_rules_regulations-->
+<!--				where company_id = #{company_id}-->
+<!--					and status = 1-->
+<!--				order by publish_time desc)-->
+<!--		 where rownum &lt;= #{showNum}-->
+		 		select * from
+		(select id, name, DATE_FORMAT(publish_time,'%Y-%m-%d %H:%m:%s') as publish_time, file_name, file_path 
+			from mt_rules_regulations
+				where company_id = #{company_id}
+					and status = 1
+				order by publish_time desc)
+		 where limit #{showNum}
+	</select>
+	<!-- select b.* from 
+			(select rownum n, c.count, a.* from
+				(select mp.id, mp.name, mp.install_capacity, mp.code, mur.name rolename, mur.id role_id 
+					from mt_user mu, r_mt_pro_user_role rmpur, mt_project mp, mt_userrole mur
+						where mu.id = #{id}
+								and mu.id = rmpur.user_id
+								and mp.id = rmpur.pro_id
+								and mur.id = rmpur.role_id
+							<if test="powerName != null and powerName != ''">
+								and mp.name like '%${powerName}%'
+							</if>
+				)a,
+				(select count(rownum) count
+					from mt_user mu, r_mt_pro_user_role rmpur, mt_project mp, mt_userrole mur
+						where mu.id = #{id}
+							and mu.id = rmpur.user_id
+							and mp.id = rmpur.pro_id
+							and mur.id = rmpur.role_id
+						<if test="powerName != null and powerName != ''">
+							and mp.name like '%${powerName}%'
+						</if>
+				) c 
+			) b 
+			where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows} -->
+</mapper>

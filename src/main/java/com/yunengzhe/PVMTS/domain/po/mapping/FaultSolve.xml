@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.FaultSolvePO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.FaultSolvePO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="solveUser" column="solve_user" jdbcType="NUMERIC" />
+            <result property="solveTime" column="solve_time" />
+            <result property="solveResult" column="solve_result" jdbcType="NUMERIC" />
+            <result property="solveInfo" column="solve_info" jdbcType="VARCHAR" />
+            <result property="workorderNum" column="workorderNum" jdbcType="VARCHAR" />
+            <result property="faultId" column="faultId" jdbcType="NUMERIC" />
+            <result property="dispatcherId" column="dispatcherId" jdbcType="NUMERIC" />
+            <result property="dispatcherState" column="dispatcherState" jdbcType="VARCHAR" />
+            <result property="dispatcherTime" column="dispatcherTime" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,solve_user,solve_time,solve_result,solve_info,workorderNum,faultId,dispatcherId,dispatcherState,dispatcherTime
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "solveUser != null ">	and solve_user = #{solveUser,jdbcType=NUMERIC }</if>
+            <if test= "solveTime != null ">	and solve_time = #{solveTime }</if>
+            <if test= "solveResult != null ">	and solve_result = #{solveResult,jdbcType=NUMERIC }</if>
+            <if test= "solveInfo != null ">	and solve_info = #{solveInfo,jdbcType=VARCHAR }</if>
+            <if test= "workorderNum != null ">	and workorderNum = #{workorderNum,jdbcType=VARCHAR }</if>
+            <if test= "faultId != null ">	and faultId = #{faultId,jdbcType=NUMERIC }</if>
+            <if test= "dispatcherId != null ">	and dispatcherId = #{dispatcherId,jdbcType=NUMERIC }</if>
+            <if test= "dispatcherState != null ">	and dispatcherState = #{dispatcherState,jdbcType=VARCHAR }</if>
+            <if test= "dispatcherTime != null ">	and dispatcherTime = #{dispatcherTime }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "solveUser != null ">	and solve_user = #{solveUser,jdbcType=NUMERIC }</if>
+            <if test= "solveTime != null ">	and solve_time = #{solveTime }</if>
+            <if test= "solveResult != null ">	and solve_result = #{solveResult,jdbcType=NUMERIC }</if>
+            <if test= "solveInfo != null ">	and solve_info like "%"#{solveInfo}"%"</if>
+            <if test= "workorderNum != null ">	and workorderNum like "%"#{workorderNum}"%"</if>
+            <if test= "faultId != null ">	and faultId = #{faultId,jdbcType=NUMERIC }</if>
+            <if test= "dispatcherId != null ">	and dispatcherId = #{dispatcherId,jdbcType=NUMERIC }</if>
+            <if test= "dispatcherState != null ">	and dispatcherState like "%"#{dispatcherState}"%"</if>
+            <if test= "dispatcherTime != null ">	and dispatcherTime = #{dispatcherTime }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "solveUser != null ">	or solve_user = #{solveUser,jdbcType=NUMERIC }</if>
+            <if test= "solveTime != null ">	or solve_time = #{solveTime }</if>
+            <if test= "solveResult != null ">	or solve_result = #{solveResult,jdbcType=NUMERIC }</if>
+            <if test= "solveInfo != null ">	or solve_info = #{solveInfo,jdbcType=VARCHAR }</if>
+            <if test= "workorderNum != null ">	or workorderNum = #{workorderNum,jdbcType=VARCHAR }</if>
+            <if test= "faultId != null ">	or faultId = #{faultId,jdbcType=NUMERIC }</if>
+            <if test= "dispatcherId != null ">	or dispatcherId = #{dispatcherId,jdbcType=NUMERIC }</if>
+            <if test= "dispatcherState != null ">	or dispatcherState = #{dispatcherState,jdbcType=VARCHAR }</if>
+            <if test= "dispatcherTime != null ">	or dispatcherTime = #{dispatcherTime }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_solve
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_solve  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_solve  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.FaultSolvePO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_workorder_solve( id,solve_user,solve_time,solve_result,solve_info,workorderNum,faultId,dispatcherId,dispatcherState,dispatcherTime ) values (#{id,jdbcType=INTEGER},#{solveUser,jdbcType=NUMERIC},#{solveTime},#{solveResult,jdbcType=NUMERIC},#{solveInfo,jdbcType=VARCHAR},#{workorderNum,jdbcType=VARCHAR},#{faultId,jdbcType=NUMERIC},#{dispatcherId,jdbcType=NUMERIC},#{dispatcherState,jdbcType=VARCHAR},#{dispatcherTime} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_workorder_solve( id,solve_user,solve_time,solve_result,solve_info,workorderNum,faultId,dispatcherId,dispatcherState,dispatcherTime ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.solveUser,jdbcType=NUMERIC},#{item.solveTime},#{item.solveResult,jdbcType=NUMERIC},#{item.solveInfo,jdbcType=VARCHAR},#{item.workorderNum,jdbcType=VARCHAR},#{item.faultId,jdbcType=NUMERIC},#{item.dispatcherId,jdbcType=NUMERIC},#{item.dispatcherState,jdbcType=VARCHAR},#{item.dispatcherTime} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.FaultSolvePO">
+		update pvmts_workorder_solve set solve_user=#{solveUser,jdbcType=NUMERIC},solve_time=#{solveTime},solve_result=#{solveResult,jdbcType=NUMERIC},solve_info=#{solveInfo,jdbcType=VARCHAR},workorderNum=#{workorderNum,jdbcType=VARCHAR},faultId=#{faultId,jdbcType=NUMERIC},dispatcherId=#{dispatcherId,jdbcType=NUMERIC},dispatcherState=#{dispatcherState,jdbcType=VARCHAR},dispatcherTime=#{dispatcherTime} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.FaultSolvePO">
+		update pvmts_workorder_solve
+        <set>
+            <if test="solveUser != null "> 
+                solve_user = #{solveUser,jdbcType=NUMERIC},
+            </if>
+            <if test="solveTime != null "> 
+                solve_time = #{solveTime},
+            </if>
+            <if test="solveResult != null "> 
+                solve_result = #{solveResult,jdbcType=NUMERIC},
+            </if>
+            <if test="solveInfo != null "> 
+                solve_info = #{solveInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="workorderNum != null "> 
+                workorderNum = #{workorderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="faultId != null "> 
+                faultId = #{faultId,jdbcType=NUMERIC},
+            </if>
+            <if test="dispatcherId != null "> 
+                dispatcherId = #{dispatcherId,jdbcType=NUMERIC},
+            </if>
+            <if test="dispatcherState != null "> 
+                dispatcherState = #{dispatcherState,jdbcType=VARCHAR},
+            </if>
+            <if test="dispatcherTime != null "> 
+                dispatcherTime = #{dispatcherTime},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_workorder_solve where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.FaultSolvePO">
+		delete from pvmts_workorder_solve
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

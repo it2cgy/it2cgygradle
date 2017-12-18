@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+		<meta http-equiv="X-UA-Compatible" content="IE=9" />
+		<meta name="renderer" content="webkit">
+	    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	    
+	    <link rel="stylesheet" type="text/css" href="../../assets/pages/css/ynz/scrollDefined.css"/>
+		<title>拓扑图</title>
+		<style>
+			*{margin:0;padding:0;}
+			
+			 		
+			.centerCon{
+				width:48%;
+				height:814px;
+				opacity:0.5;
+				filter:alpha(opacity=50);
+				background:pink;
+			}
+			.plantBox{
+				margin-top:15px;
+				width:100%;
+				height:100%;
+				position:relative;
+				overflow-y:auto;
+			}
+			.plantBox a{
+				position: absolute;
+				width: 65px;
+			    height: 23px;
+			     background: pink;
+			}
+			.nbq1{	
+				left: 120px;
+			    top: 36px;
+			    background: pink;
+			}
+			.nbq2{
+				left: 269px;
+			    top: 36px;
+			    background: peru;
+			}
+			.nbq3{
+				left: 384px;
+			    top: 62px;
+			    background: palegreen;
+			}
+			.nbq4{
+				left: 384px;
+			    top: 117px;
+			    background: oldlace;
+			}
+			.nbq5{
+				left: 535px;
+			    top: 64px;
+			    background: orchid;
+			}
+			.nbq6{
+			    background: pink;
+			    top: 120px;
+   				left: 536px;
+			}
+			.nbq7{
+				left:269px;
+    			top: 74px;
+			}
+			.nbq8{
+				top: 76px;
+    			left: 120px;
+			}
+			.nbq9{
+			    left: 119px;
+    			top: 104px;
+			}
+			.nbq10{
+				left:384px;
+    			top: 170px;
+			}
+			.nbq11{
+				left: 535px;
+    			top: 170px;
+
+			}
+			.nbq12{
+				left: 143px;
+    			top: 220px;
+			}
+			.nbq13{
+			    left: 143px;
+   				top: 244px;
+			}
+			.nbq14{
+				left: 178px;
+    			top: 274px;
+			}
+			.nbq15{
+				left:255px;
+    			top: 274px;
+			}
+			.nbq16{
+				left: 322px;
+    			top: 274px;
+
+			}
+			.nbq17{
+				left: 396px;
+    			top: 274px;
+			}
+			.nbq18{
+			    left: 470px;
+   				top: 274px;
+			}
+			.nbq19{
+				left: 555px;
+    			top: 274px;
+			}
+			.nbq20{
+				left: 178px;
+    			top: 359px;
+			}
+			.nbq21{
+				left: 555px;
+    			top: 359px;
+
+			}
+			.nbq22{
+				left: 178px;
+    			top: 359px;
+			}
+			.nbq23{
+			    left:255px;
+   				top: 359px;
+			}
+			.nbq24{
+				left: 322px;
+    			top: 359px;
+			}
+			.nbq25{
+				left: 396px;
+    			top: 359px;
+			}
+			.nbq26{
+				left: 470px;
+    			top: 359px;
+
+			}
+			.nbq27{
+				left: 53px;
+    			top: 407px;
+			}
+			.nbq28{
+			    left: 128px;
+   				top: 407px;
+			}
+			.nbq29{
+				left: 254px;
+    			top: 407px;
+			}
+			.nbq30{
+				left: 338px;
+    			top: 407px;
+			}
+			.nbq31{
+				left: 410px;
+    			top: 407px;
+
+			}
+			.nbq32{
+				left: 480px;
+	    		top: 387px;
+			}
+			.nbq33{
+   				left: 535px;
+    			top: 412px;
+			}
+			.nbq34{
+				left: 602px;
+    			top: 388px;
+			}
+			.nbq35{
+				left: 675px;
+    			top: 404px;
+			}
+			.nbq36{
+				left: 53px;
+    			top: 494px;
+			}
+			.nbq37{
+				left: 128px;
+    			top: 494px;
+			}
+			.nbq38{
+			    left: 254px;
+   				top: 494px;
+			}
+			.nbq39{
+				left: 338px;
+    			top: 494px;
+			}
+			.nbq40{
+				left: 410px;
+    			top: 494px;
+			}
+			.nbq41{
+				left: 480px;
+	    		top: 494px;
+			}
+			.nbq42{
+   				left: 547px;
+    			top: 494px;
+			}
+			.nbq43{
+				left: 615px;
+			    top: 494px;
+			    width: 51px!important;
+			}
+			.nbq44{
+				left: 675px;
+    			top: 494px;
+			}
+			.nbq45{
+				left: 53px;
+    			top: 542px;
+			}
+			.nbq46{
+				left: 128px;
+    			top: 542px;
+			}
+			.nbq47{
+			    left: 254px;
+   				top: 542px;
+			}
+			.nbq48{
+				left: 338px;
+    			top: 542px;
+			}
+			.nbq49{
+				left: 452px;
+    			top: 542px;
+			}
+			.nbq50{
+				left: 537px;
+	    		top: 542px;
+			}
+			.nbq51{
+   				left: 632px;
+    			top: 542px;
+			}
+			.nbq52{
+				left:707px;
+			    top: 542px;
+			}
+			.nbq53{
+				left: 53px;
+    			top: 629px;
+			}
+			.nbq54{
+				left: 128px;
+    			top: 629px;
+			}
+			.nbq55{
+			    left: 254px;
+   				top: 629px;
+			}
+			.nbq56{
+				left: 338px;
+    			top: 629px;
+			}
+			.nbq57{
+				left: 452px;
+    			top: 629px;
+			}
+			.nbq58{
+				left: 537px;
+	    		top: 629px;
+			}
+			.nbq59{
+   				left: 632px;
+    			top: 629px;
+			}
+			.nbq60{
+				left:707px;
+			    top: 629px;
+			}						
+			.nbq61 {
+			    left: 351px;
+			    top: 656px;
+			}
+			.nbq62 {
+			    left: 351px;
+			    top: 746px;
+			}
+			.nbq63 {
+			    left: 724px;
+			    top: 656px;
+			}
+			.nbq64 {
+			    left: 724px;
+			    top: 746px;
+			}
+			.nbq65 {
+			    left: 351px;
+			    top: 779px;
+			}
+			.nbq66 {
+			    left: 351px;
+			    top: 866px;
+			}
+			.nbq67{
+			    left: 351px;
+			    top: 899px;
+			}
+			.nbq68{
+			    left: 714px;
+			    top: 899px;
+			}
+			.nbq69{
+			    left: 795px;
+			    top: 899px;
+			}
+			.nbq70{
+			    left: 351px;
+			    top: 986px;
+			}
+			.nbq71{
+			    left: 714px;
+			    top: 986px;
+			}
+			.nbq72{
+			    left: 795px;
+			    top: 986px;
+			}
+			.nbq73{
+			    left: 351px;
+			    top: 1019px;
+			}
+			.nbq74{
+			    left: 714px;
+			    top: 1019px;
+			}
+			.nbq75{
+			    left: 795px;
+			    top: 1019px;
+			}
+			.nbq76{
+			    left: 351px;
+			    top: 1107px;
+			}
+			 .nbq77{
+			    left: 714px;
+			    top: 1107px;
+			}
+			.nbq78{
+			    left: 795px;
+			    top: 1107px;
+			}			
+		</style>
+	</head>
+	<body>
+<!-- 	<div class="centerCon"> -->
+		<div class="plantBox">
+			<img src="../img/topology.png" title="拓扑图" alt="拓扑图"/>
+			<a class="nbq1" title="nbq1" target="_blank" href="../..//page/inverter/inverterList.jsp">1</a>
+			<a class="nbq2" title="nbq2" target="_blank" href="../..//page/inverter/inverterList.jsp">2</a>
+			<a class="nbq3" title="nbq3" target="_blank" href="../..//page/inverter/inverterList.jsp">3</a>
+			<a class="nbq4" title="nbq4" target="_blank" href="../..//page/inverter/inverterList.jsp">4</a>								
+			<a class="nbq5" title="nbq5" target="_blank" href="../..//page/inverter/inverterList.jsp">5</a>
+			<a class="nbq6" title="nbq6" target="_blank" href="../..//page/inverter/inverterList.jsp">6</a>
+			<a class="nbq7" title="nbq7" target="_blank" href="../..//page/inverter/inverterList.jsp">7</a>
+			<a class="nbq8" title="nbq8" target="_blank" href="../..//page/inverter/inverterList.jsp">8</a>
+			<a class="nbq9" title="nbq9" target="_blank" href="../..//page/inverter/inverterList.jsp">9</a>								
+			<a class="nbq10" title="nbq10" target="_blank" href="../..//page/inverter/inverterList.jsp">10</a>
+			<a class="nbq11" title="nbq11" target="_blank" href="../..//page/inverter/inverterList.jsp">11</a>
+			<a class="nbq12" title="nbq12" target="_blank" href="../..//page/inverter/inverterList.jsp">12</a>
+			<a class="nbq13" title="nbq13" target="_blank" href="../..//page/inverter/inverterList.jsp">13</a>
+			<a class="nbq14" title="nbq14" target="_blank" href="../..//page/inverter/inverterList.jsp">14</a>
+			<a class="nbq15" title="nbq15" target="_blank" href="../..//page/inverter/inverterList.jsp">15</a>
+			<a class="nbq16" title="nbq16" target="_blank" href="../..//page/inverter/inverterList.jsp">16</a>
+			<a class="nbq17" title="nbq17" target="_blank" href="../..//page/inverter/inverterList.jsp">17</a>								
+			<a class="nbq18" title="nbq18" target="_blank" href="../..//page/inverter/inverterList.jsp">18</a>
+			<a class="nbq19" title="nbq19" target="_blank" href="../..//page/inverter/inverterList.jsp">19</a>
+			<a class="nbq20" title="nbq20" target="_blank" href="../..//page/inverter/inverterList.jsp">20</a>
+			<a class="nbq21" title="nbq21" target="_blank" href="../..//page/inverter/inverterList.jsp">21</a>
+			<a class="nbq22" title="nbq22" target="_blank" href="../..//page/inverter/inverterList.jsp">22</a>								
+			<a class="nbq23" title="nbq23" target="_blank" href="../..//page/inverter/inverterList.jsp">23</a>
+			<a class="nbq24" title="nbq24" target="_blank" href="../..//page/inverter/inverterList.jsp">24</a>
+			<a class="nbq25" title="nbq25" target="_blank" href="../..//page/inverter/inverterList.jsp">25</a>
+			<a class="nbq26" title="nbq26" target="_blank" href="../..//page/inverter/inverterList.jsp">26</a>
+			<a class="nbq27" title="nbq27" target="_blank" href="../..//page/inverter/inverterList.jsp">27</a>
+			<a class="nbq28" title="nbq28" target="_blank" href="../..//page/inverter/inverterList.jsp">28</a>
+			<a class="nbq29" title="nbq29" target="_blank" href="../..//page/inverter/inverterList.jsp">29</a>
+			<a class="nbq30" title="nbq30" target="_blank" href="../..//page/inverter/inverterList.jsp">30</a>
+			<a class="nbq31" title="nbq31" target="_blank" href="../..//page/inverter/inverterList.jsp">31</a>
+			<a class="nbq32" title="nbq32" target="_blank" href="../..//page/inverter/inverterList.jsp">32</a>								
+			<a class="nbq33" title="nbq33" target="_blank" href="../..//page/inverter/inverterList.jsp">33</a>
+			<a class="nbq34" title="nbq34" target="_blank" href="../..//page/inverter/inverterList.jsp">34</a>
+			<a class="nbq35" title="nbq35" target="_blank" href="../..//page/inverter/inverterList.jsp">35</a>
+			<a class="nbq36" title="nbq36" target="_blank" href="../..//page/inverter/inverterList.jsp">36</a>
+			<a class="nbq37" title="nbq37" target="_blank" href="../..//page/inverter/inverterList.jsp">37</a>								
+			<a class="nbq38" title="nbq38" target="_blank" href="../..//page/inverter/inverterList.jsp">38</a>
+			<a class="nbq39" title="nbq39" target="_blank" href="../..//page/inverter/inverterList.jsp">39</a>
+			<a class="nbq40" title="nbq40" target="_blank" href="../..//page/inverter/inverterList.jsp">40</a>
+			<a class="nbq41" title="nbq41" target="_blank" href="../..//page/inverter/inverterList.jsp">41</a>
+			<a class="nbq42" title="nbq42" target="_blank" href="../..//page/inverter/inverterList.jsp">42</a>	
+			<a class="nbq43" title="nbq23" target="_blank" href="../..//page/inverter/inverterList.jsp">43</a>
+			<a class="nbq44" title="nbq24" target="_blank" href="../..//page/inverter/inverterList.jsp">44</a>
+			<a class="nbq45" title="nbq25" target="_blank" href="../..//page/inverter/inverterList.jsp">45</a>
+			<a class="nbq46" title="nbq26" target="_blank" href="../..//page/inverter/inverterList.jsp">46</a>
+			<a class="nbq47" title="nbq27" target="_blank" href="../..//page/inverter/inverterList.jsp">47</a>
+			<a class="nbq48" title="nbq28" target="_blank" href="../..//page/inverter/inverterList.jsp">48</a>
+			<a class="nbq49" title="nbq29" target="_blank" href="../..//page/inverter/inverterList.jsp">49</a>
+			<a class="nbq50" title="nbq30" target="_blank" href="../..//page/inverter/inverterList.jsp">50</a>
+			<a class="nbq51" title="nbq31" target="_blank" href="../..//page/inverter/inverterList.jsp">51</a>
+			<a class="nbq52" title="nbq32" target="_blank" href="../..//page/inverter/inverterList.jsp">52</a>								
+			<a class="nbq53" title="nbq33" target="_blank" href="../..//page/inverter/inverterList.jsp">53</a>
+			<a class="nbq54" title="nbq34" target="_blank" href="../..//page/inverter/inverterList.jsp">54</a>
+			<a class="nbq55" title="nbq35" target="_blank" href="../..//page/inverter/inverterList.jsp">55</a>
+			<a class="nbq56" title="nbq36" target="_blank" href="../..//page/inverter/inverterList.jsp">56</a>
+			<a class="nbq57" title="nbq37" target="_blank" href="../..//page/inverter/inverterList.jsp">57</a>								
+			<a class="nbq58" title="nbq38" target="_blank" href="../..//page/inverter/inverterList.jsp">58</a>
+			<a class="nbq59" title="nbq39" target="_blank"  href="../..//page/inverter/inverterList.jsp">59</a>
+			<a class="nbq60" title="nbq40" target="_blank"  href="../..//page/inverter/inverterList.jsp">60</a>
+			<a class="nbq61" title="nbq41" target="_blank"  href="../..//page/inverter/inverterList.jsp">61</a>
+			<a class="nbq62" title="nbq42" target="_blank"  href="../..//page/inverter/inverterList.jsp">62</a>
+			<a class="nbq63" title="nbq23" target="_blank"  href="../..//page/inverter/inverterList.jsp">63</a>
+			<a class="nbq64" title="nbq24" target="_blank"  href="../..//page/inverter/inverterList.jsp">64</a>
+			<a class="nbq65" title="nbq25" target="_blank"  href="../..//page/inverter/inverterList.jsp">65</a>
+			<a class="nbq66" title="nbq26" target="_blank"  href="../..//page/inverter/inverterList.jsp">66</a>
+			<a class="nbq67" title="nbq27" target="_blank"  href="../..//page/inverter/inverterList.jsp">67</a>
+			<a class="nbq68" title="nbq28" target="_blank"  href="../..//page/inverter/inverterList.jsp">68</a>
+			<a class="nbq69" title="nbq29" target="_blank"  href="../..//page/inverter/inverterList.jsp">69</a>
+			<a class="nbq70" title="nbq30" target="_blank"  href="../..//page/inverter/inverterList.jsp">70</a>
+			<a class="nbq71" title="nbq31" target="_blank"  href="../..//page/inverter/inverterList.jsp">71</a>
+			<a class="nbq72" title="nbq32" target="_blank"  href="../..//page/inverter/inverterList.jsp">72</a>								
+			<a class="nbq73" title="nbq33" target="_blank"  href="../..//page/inverter/inverterList.jsp">73</a>
+			<a class="nbq74" title="nbq34" target="_blank"  href="../..//page/inverter/inverterList.jsp">74</a>
+			<a class="nbq75" title="nbq35" target="_blank"  href="../..//page/inverter/inverterList.jsp">75</a>
+			<a class="nbq76" title="nbq36" target="_blank"  href="../..//page/inverter/inverterList.jsp">76</a>
+			<a class="nbq77" title="nbq37" target="_blank"  href="../..//page/inverter/inverterList.jsp">77</a>								
+			<a class="nbq78" title="nbq38" target="_blank"  href="../..//page/inverter/inverterList.jsp">78</a>	
+		</div>
+<!-- 	</div> -->
+	</body>
+</html>

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.GenerationMonthPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.GenerationMonthPO">
+            <id property="id" column="ID" jdbcType="INTEGER" />
+            <result property="formId" column="FORM_ID" jdbcType="NUMERIC" />
+            <result property="time" column="TIME" />
+            <result property="generation" column="Generation" jdbcType="NUMERIC" />
+            <result property="generationLosed" column="GenerationLosed" jdbcType="NUMERIC" />
+            <result property="generationOnLine" column="GenerationOnLine" jdbcType="NUMERIC" />
+            <result property="generationSelfUse" column="GenerationSelfUse" jdbcType="NUMERIC" />
+            <result property="saveCoal" column="SaveCoal" jdbcType="NUMERIC" />
+            <result property="reduceCarbonDioxode" column="ReduceCarbonDioxode" jdbcType="NUMERIC" />
+            <result property="eleIncome" column="EleIncome" jdbcType="NUMERIC" />
+            <result property="onLineIncome" column="OnLineIncome" jdbcType="NUMERIC" />
+            <result property="selfUseIncome" column="SelfUseIncome" jdbcType="NUMERIC" />
+            <result property="subsidyIncome" column="SubsidyIncome" jdbcType="NUMERIC" />
+            <result property="totalIncome" column="TotalIncome" jdbcType="NUMERIC" />
+            <result property="generationAllUse" column="GenerationAllUse" jdbcType="NUMERIC" />
+            <result property="generationUseOnLine" column="GenerationUseOnLine" jdbcType="NUMERIC" />
+            <result property="allUseCast" column="AllUseCast" jdbcType="NUMERIC" />
+            <result property="useOnLineCast" column="UseOnLineCast" jdbcType="NUMERIC" />
+            <result property="saveCast" column="SaveCast" jdbcType="NUMERIC" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		ID,FORM_ID,TIME,Generation,GenerationLosed,GenerationOnLine,GenerationSelfUse,SaveCoal,ReduceCarbonDioxode,EleIncome,OnLineIncome,SelfUseIncome,SubsidyIncome,TotalIncome,GenerationAllUse,GenerationUseOnLine,AllUseCast,UseOnLineCast,SaveCast
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "formId != null ">	and FORM_ID = #{formId,jdbcType=NUMERIC }</if>
+            <if test= "time != null ">	and TIME = #{time }</if>
+            <if test= "generation != null ">	and Generation = #{generation,jdbcType=NUMERIC }</if>
+            <if test= "generationLosed != null ">	and GenerationLosed = #{generationLosed,jdbcType=NUMERIC }</if>
+            <if test= "generationOnLine != null ">	and GenerationOnLine = #{generationOnLine,jdbcType=NUMERIC }</if>
+            <if test= "generationSelfUse != null ">	and GenerationSelfUse = #{generationSelfUse,jdbcType=NUMERIC }</if>
+            <if test= "saveCoal != null ">	and SaveCoal = #{saveCoal,jdbcType=NUMERIC }</if>
+            <if test= "reduceCarbonDioxode != null ">	and ReduceCarbonDioxode = #{reduceCarbonDioxode,jdbcType=NUMERIC }</if>
+            <if test= "eleIncome != null ">	and EleIncome = #{eleIncome,jdbcType=NUMERIC }</if>
+            <if test= "onLineIncome != null ">	and OnLineIncome = #{onLineIncome,jdbcType=NUMERIC }</if>
+            <if test= "selfUseIncome != null ">	and SelfUseIncome = #{selfUseIncome,jdbcType=NUMERIC }</if>
+            <if test= "subsidyIncome != null ">	and SubsidyIncome = #{subsidyIncome,jdbcType=NUMERIC }</if>
+            <if test= "totalIncome != null ">	and TotalIncome = #{totalIncome,jdbcType=NUMERIC }</if>
+            <if test= "generationAllUse != null ">	and GenerationAllUse = #{generationAllUse,jdbcType=NUMERIC }</if>
+            <if test= "generationUseOnLine != null ">	and GenerationUseOnLine = #{generationUseOnLine,jdbcType=NUMERIC }</if>
+            <if test= "allUseCast != null ">	and AllUseCast = #{allUseCast,jdbcType=NUMERIC }</if>
+            <if test= "useOnLineCast != null ">	and UseOnLineCast = #{useOnLineCast,jdbcType=NUMERIC }</if>
+            <if test= "saveCast != null ">	and SaveCast = #{saveCast,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "formId != null ">	and FORM_ID = #{formId,jdbcType=NUMERIC }</if>
+            <if test= "time != null ">	and TIME = #{time }</if>
+            <if test= "generation != null ">	and Generation = #{generation,jdbcType=NUMERIC }</if>
+            <if test= "generationLosed != null ">	and GenerationLosed = #{generationLosed,jdbcType=NUMERIC }</if>
+            <if test= "generationOnLine != null ">	and GenerationOnLine = #{generationOnLine,jdbcType=NUMERIC }</if>
+            <if test= "generationSelfUse != null ">	and GenerationSelfUse = #{generationSelfUse,jdbcType=NUMERIC }</if>
+            <if test= "saveCoal != null ">	and SaveCoal = #{saveCoal,jdbcType=NUMERIC }</if>
+            <if test= "reduceCarbonDioxode != null ">	and ReduceCarbonDioxode = #{reduceCarbonDioxode,jdbcType=NUMERIC }</if>
+            <if test= "eleIncome != null ">	and EleIncome = #{eleIncome,jdbcType=NUMERIC }</if>
+            <if test= "onLineIncome != null ">	and OnLineIncome = #{onLineIncome,jdbcType=NUMERIC }</if>
+            <if test= "selfUseIncome != null ">	and SelfUseIncome = #{selfUseIncome,jdbcType=NUMERIC }</if>
+            <if test= "subsidyIncome != null ">	and SubsidyIncome = #{subsidyIncome,jdbcType=NUMERIC }</if>
+            <if test= "totalIncome != null ">	and TotalIncome = #{totalIncome,jdbcType=NUMERIC }</if>
+            <if test= "generationAllUse != null ">	and GenerationAllUse = #{generationAllUse,jdbcType=NUMERIC }</if>
+            <if test= "generationUseOnLine != null ">	and GenerationUseOnLine = #{generationUseOnLine,jdbcType=NUMERIC }</if>
+            <if test= "allUseCast != null ">	and AllUseCast = #{allUseCast,jdbcType=NUMERIC }</if>
+            <if test= "useOnLineCast != null ">	and UseOnLineCast = #{useOnLineCast,jdbcType=NUMERIC }</if>
+            <if test= "saveCast != null ">	and SaveCast = #{saveCast,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "formId != null ">	or FORM_ID = #{formId,jdbcType=NUMERIC }</if>
+            <if test= "time != null ">	or TIME = #{time }</if>
+            <if test= "generation != null ">	or Generation = #{generation,jdbcType=NUMERIC }</if>
+            <if test= "generationLosed != null ">	or GenerationLosed = #{generationLosed,jdbcType=NUMERIC }</if>
+            <if test= "generationOnLine != null ">	or GenerationOnLine = #{generationOnLine,jdbcType=NUMERIC }</if>
+            <if test= "generationSelfUse != null ">	or GenerationSelfUse = #{generationSelfUse,jdbcType=NUMERIC }</if>
+            <if test= "saveCoal != null ">	or SaveCoal = #{saveCoal,jdbcType=NUMERIC }</if>
+            <if test= "reduceCarbonDioxode != null ">	or ReduceCarbonDioxode = #{reduceCarbonDioxode,jdbcType=NUMERIC }</if>
+            <if test= "eleIncome != null ">	or EleIncome = #{eleIncome,jdbcType=NUMERIC }</if>
+            <if test= "onLineIncome != null ">	or OnLineIncome = #{onLineIncome,jdbcType=NUMERIC }</if>
+            <if test= "selfUseIncome != null ">	or SelfUseIncome = #{selfUseIncome,jdbcType=NUMERIC }</if>
+            <if test= "subsidyIncome != null ">	or SubsidyIncome = #{subsidyIncome,jdbcType=NUMERIC }</if>
+            <if test= "totalIncome != null ">	or TotalIncome = #{totalIncome,jdbcType=NUMERIC }</if>
+            <if test= "generationAllUse != null ">	or GenerationAllUse = #{generationAllUse,jdbcType=NUMERIC }</if>
+            <if test= "generationUseOnLine != null ">	or GenerationUseOnLine = #{generationUseOnLine,jdbcType=NUMERIC }</if>
+            <if test= "allUseCast != null ">	or AllUseCast = #{allUseCast,jdbcType=NUMERIC }</if>
+            <if test= "useOnLineCast != null ">	or UseOnLineCast = #{useOnLineCast,jdbcType=NUMERIC }</if>
+            <if test= "saveCast != null ">	or SaveCast = #{saveCast,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from mc_month_generation
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="startTime !=null and startTime !=''">
+		and time &gt;str_to_date('${startTime}','%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="endTime !=null and endTime!=''">
+		and time &lt;str_to_date('${endTime}','%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from mc_month_generation  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from mc_month_generation  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.GenerationMonthPO" useGeneratedKeys="true" keyProperty="id">
+		insert into mc_month_generation( ID,FORM_ID,TIME,Generation,GenerationLosed,GenerationOnLine,GenerationSelfUse,SaveCoal,ReduceCarbonDioxode,EleIncome,OnLineIncome,SelfUseIncome,SubsidyIncome,TotalIncome,GenerationAllUse,GenerationUseOnLine,AllUseCast,UseOnLineCast,SaveCast ) values (#{id,jdbcType=INTEGER},#{formId,jdbcType=NUMERIC},#{time},#{generation,jdbcType=NUMERIC},#{generationLosed,jdbcType=NUMERIC},#{generationOnLine,jdbcType=NUMERIC},#{generationSelfUse,jdbcType=NUMERIC},#{saveCoal,jdbcType=NUMERIC},#{reduceCarbonDioxode,jdbcType=NUMERIC},#{eleIncome,jdbcType=NUMERIC},#{onLineIncome,jdbcType=NUMERIC},#{selfUseIncome,jdbcType=NUMERIC},#{subsidyIncome,jdbcType=NUMERIC},#{totalIncome,jdbcType=NUMERIC},#{generationAllUse,jdbcType=NUMERIC},#{generationUseOnLine,jdbcType=NUMERIC},#{allUseCast,jdbcType=NUMERIC},#{useOnLineCast,jdbcType=NUMERIC},#{saveCast,jdbcType=NUMERIC} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into mc_month_generation( ID,FORM_ID,TIME,Generation,GenerationLosed,GenerationOnLine,GenerationSelfUse,SaveCoal,ReduceCarbonDioxode,EleIncome,OnLineIncome,SelfUseIncome,SubsidyIncome,TotalIncome,GenerationAllUse,GenerationUseOnLine,AllUseCast,UseOnLineCast,SaveCast ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.formId,jdbcType=NUMERIC},#{item.time},#{item.generation,jdbcType=NUMERIC},#{item.generationLosed,jdbcType=NUMERIC},#{item.generationOnLine,jdbcType=NUMERIC},#{item.generationSelfUse,jdbcType=NUMERIC},#{item.saveCoal,jdbcType=NUMERIC},#{item.reduceCarbonDioxode,jdbcType=NUMERIC},#{item.eleIncome,jdbcType=NUMERIC},#{item.onLineIncome,jdbcType=NUMERIC},#{item.selfUseIncome,jdbcType=NUMERIC},#{item.subsidyIncome,jdbcType=NUMERIC},#{item.totalIncome,jdbcType=NUMERIC},#{item.generationAllUse,jdbcType=NUMERIC},#{item.generationUseOnLine,jdbcType=NUMERIC},#{item.allUseCast,jdbcType=NUMERIC},#{item.useOnLineCast,jdbcType=NUMERIC},#{item.saveCast,jdbcType=NUMERIC} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.GenerationMonthPO">
+		update mc_month_generation set FORM_ID=#{formId,jdbcType=NUMERIC},TIME=#{time},Generation=#{generation,jdbcType=NUMERIC},GenerationLosed=#{generationLosed,jdbcType=NUMERIC},GenerationOnLine=#{generationOnLine,jdbcType=NUMERIC},GenerationSelfUse=#{generationSelfUse,jdbcType=NUMERIC},SaveCoal=#{saveCoal,jdbcType=NUMERIC},ReduceCarbonDioxode=#{reduceCarbonDioxode,jdbcType=NUMERIC},EleIncome=#{eleIncome,jdbcType=NUMERIC},OnLineIncome=#{onLineIncome,jdbcType=NUMERIC},SelfUseIncome=#{selfUseIncome,jdbcType=NUMERIC},SubsidyIncome=#{subsidyIncome,jdbcType=NUMERIC},TotalIncome=#{totalIncome,jdbcType=NUMERIC},GenerationAllUse=#{generationAllUse,jdbcType=NUMERIC},GenerationUseOnLine=#{generationUseOnLine,jdbcType=NUMERIC},AllUseCast=#{allUseCast,jdbcType=NUMERIC},UseOnLineCast=#{useOnLineCast,jdbcType=NUMERIC},SaveCast=#{saveCast,jdbcType=NUMERIC} where ID=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.GenerationMonthPO">
+		update mc_month_generation
+        <set>
+            <if test="formId != null "> 
+                FORM_ID = #{formId,jdbcType=NUMERIC},
+            </if>
+            <if test="time != null "> 
+                TIME = #{time},
+            </if>
+            <if test="generation != null "> 
+                Generation = #{generation,jdbcType=NUMERIC},
+            </if>
+            <if test="generationLosed != null "> 
+                GenerationLosed = #{generationLosed,jdbcType=NUMERIC},
+            </if>
+            <if test="generationOnLine != null "> 
+                GenerationOnLine = #{generationOnLine,jdbcType=NUMERIC},
+            </if>
+            <if test="generationSelfUse != null "> 
+                GenerationSelfUse = #{generationSelfUse,jdbcType=NUMERIC},
+            </if>
+            <if test="saveCoal != null "> 
+                SaveCoal = #{saveCoal,jdbcType=NUMERIC},
+            </if>
+            <if test="reduceCarbonDioxode != null "> 
+                ReduceCarbonDioxode = #{reduceCarbonDioxode,jdbcType=NUMERIC},
+            </if>
+            <if test="eleIncome != null "> 
+                EleIncome = #{eleIncome,jdbcType=NUMERIC},
+            </if>
+            <if test="onLineIncome != null "> 
+                OnLineIncome = #{onLineIncome,jdbcType=NUMERIC},
+            </if>
+            <if test="selfUseIncome != null "> 
+                SelfUseIncome = #{selfUseIncome,jdbcType=NUMERIC},
+            </if>
+            <if test="subsidyIncome != null "> 
+                SubsidyIncome = #{subsidyIncome,jdbcType=NUMERIC},
+            </if>
+            <if test="totalIncome != null "> 
+                TotalIncome = #{totalIncome,jdbcType=NUMERIC},
+            </if>
+            <if test="generationAllUse != null "> 
+                GenerationAllUse = #{generationAllUse,jdbcType=NUMERIC},
+            </if>
+            <if test="generationUseOnLine != null "> 
+                GenerationUseOnLine = #{generationUseOnLine,jdbcType=NUMERIC},
+            </if>
+            <if test="allUseCast != null "> 
+                AllUseCast = #{allUseCast,jdbcType=NUMERIC},
+            </if>
+            <if test="useOnLineCast != null "> 
+                UseOnLineCast = #{useOnLineCast,jdbcType=NUMERIC},
+            </if>
+            <if test="saveCast != null "> 
+                SaveCast = #{saveCast,jdbcType=NUMERIC},
+            </if>
+        </set>
+         where ID=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from mc_month_generation where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.GenerationMonthPO">
+		delete from mc_month_generation
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

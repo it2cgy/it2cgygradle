@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.UserGetuiPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.UserGetuiPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="userId" column="userId" jdbcType="NUMERIC" />
+            <result property="clientId" column="client_id" jdbcType="VARCHAR" />
+            <result property="clientType" column="client_type" jdbcType="VARCHAR" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,userId,client_id,client_type,create_time,update_time
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "userId != null ">	and userId = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "clientId != null ">	and client_id = #{clientId,jdbcType=VARCHAR }</if>
+            <if test= "clientType != null ">	and client_type = #{clientType,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "userId != null ">	and userId = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "clientId != null ">	and client_id like "%"#{clientId}"%"</if>
+            <if test= "clientType != null ">	and client_type like "%"#{clientType}"%"</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "userId != null ">	or userId = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "clientId != null ">	or client_id = #{clientId,jdbcType=VARCHAR }</if>
+            <if test= "clientType != null ">	or client_type = #{clientType,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_user_getui
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_user_getui  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_user_getui  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.UserGetuiPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_user_getui( id,userId,client_id,client_type,create_time,update_time ) values (#{id,jdbcType=INTEGER},#{userId,jdbcType=NUMERIC},#{clientId,jdbcType=VARCHAR},#{clientType,jdbcType=VARCHAR},#{createTime},#{updateTime} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_user_getui( id,userId,client_id,client_type,create_time,update_time ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.userId,jdbcType=NUMERIC},#{item.clientId,jdbcType=VARCHAR},#{item.clientType,jdbcType=VARCHAR},#{item.createTime},#{item.updateTime} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.UserGetuiPO">
+		update pvmts_user_getui set userId=#{userId,jdbcType=NUMERIC},client_id=#{clientId,jdbcType=VARCHAR},client_type=#{clientType,jdbcType=VARCHAR},create_time=#{createTime},update_time=#{updateTime} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.UserGetuiPO">
+		update pvmts_user_getui
+        <set>
+            <if test="userId != null "> 
+                userId = #{userId,jdbcType=NUMERIC},
+            </if>
+            <if test="clientId != null "> 
+                client_id = #{clientId,jdbcType=VARCHAR},
+            </if>
+            <if test="clientType != null "> 
+                client_type = #{clientType,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_user_getui where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.UserGetuiPO">
+		delete from pvmts_user_getui
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

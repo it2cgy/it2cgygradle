@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+		<meta http-equiv="X-UA-Compatible" content="IE=9" />
+		<meta name="renderer" content="webkit">
+	    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	    
+	    <link rel="stylesheet" type="text/css" href="../../assets/pages/css/ynz/scrollDefined.css"/>	
+	    
+		<title>电站布置图</title>
+		<style>
+			*{margin:0;padding:0;}
+			a{text-decoration:none;}
+			.centerCon{
+				width:48%;
+				height:814px;
+				background:pink;
+				overflow:auto;
+			}
+			.plantBox{
+				margin-top:15px;
+				width:100%;
+				height:100%;
+				position:relative;
+			}
+			.plantBox a{
+				position: absolute;
+				width: 65px;
+			    height: 23px;
+			    background: pink;
+			    opacity: 0;
+    			filter: alpha(opacity=0);
+			}
+			.returnBtn{
+    			position: absolute;
+    			top: 305px;
+    			left: 723px;
+    		}
+			.returnBtn a{
+				width:120px;
+				height:30px;
+				line-height: 30px;
+    			font-size: 15px;
+				text-align:center;
+				background-color: #E26A6A;
+    			border:0;
+    			color:#fff;
+    			opacity: 100;
+    			filter: alpha(opacity=1);
+			}
+			.returnBtn a:hover{
+				color: #fff;
+			    background-color: #da3f3f;
+			}
+			.nbq1{	
+				left: 120px;
+			    top: 36px;
+			    background: pink;
+			}
+			.nbq2{
+				left: 269px;
+			    top: 36px;
+			    background: peru;
+			}
+			.nbq3{
+				left: 384px;
+			    top: 62px;
+			    background: palegreen;
+			}
+			.nbq4{
+				left: 384px;
+			    top: 117px;
+			    background: oldlace;
+			}
+			.nbq5{
+				left: 535px;
+			    top: 64px;
+			    background: orchid;
+			}
+			.nbq6{
+			    background: pink;
+			    top: 120px;
+   				left: 536px;
+			}
+			.nbq7{
+				left:269px;
+    			top: 74px;
+			}
+			.nbq8{
+				top: 76px;
+    			left: 120px;
+			}
+			 .nbq10{
+			    left: 58px;
+    			top: 104px;
+			} 
+			.nbq9{
+			    left: 472px;
+    			top: 165px;
+			}
+			.nbq11 {
+			    left: 206px;
+			    top: 104px;
+			}
+			.nbq12{
+				left: 143px;
+    			top: 220px;
+			}
+			.weatherStation {
+			    left: 246px;
+			    top: 220px;
+			}
+			.nbq13{
+			    left: 143px;
+   				top: 244px;
+			}
+			.nbq14{
+				left: 178px;
+    			top: 274px;
+			}
+			.nbq15{
+				left:255px;
+    			top: 274px;
+			}
+			.nbq16{
+				left: 322px;
+    			top: 274px;
+
+			}
+			.nbq17{
+				left: 396px;
+    			top: 274px;
+			}
+			.nbq18{
+			    left: 470px;
+   				top: 274px;
+			}
+			.nbq19{
+				left: 555px;
+    			top: 274px;
+			}
+			.nbq20{
+				left: 178px;
+    			top: 359px;
+			}
+			.nbq21{
+				left: 555px;
+    			top: 359px;
+
+			}
+			.nbq22{
+				left: 178px;
+    			top: 359px;
+			}
+			.nbq23{
+			    left:255px;
+   				top: 359px;
+			}
+			.nbq24{
+				left: 322px;
+    			top: 359px;
+			}
+			.nbq25{
+				left: 396px;
+    			top: 359px;
+			}
+			.nbq26{
+				left: 470px;
+    			top: 359px;
+
+			}
+			.nbq27{
+				left: 53px;
+    			top: 407px;
+			}
+			.nbq28{
+			    left: 128px;
+   				top: 407px;
+			}
+			.nbq29{
+				left: 254px;
+    			top: 407px;
+			}
+			.nbq30{
+				left: 338px;
+    			top: 407px;
+			}
+			.nbq31{
+				left: 410px;
+    			top: 407px;
+
+			}
+			.nbq32{
+				left: 480px;
+	    		top: 387px;
+			}
+			.nbq33{
+   				left: 535px;
+    			top: 412px;
+			}
+			.nbq34{
+				left: 602px;
+    			top: 388px;
+			}
+			.nbq35{
+				left: 675px;
+    			top: 404px;
+			}
+			.nbq36{
+				left: 53px;
+    			top: 494px;
+			}
+			.nbq37{
+				left: 128px;
+    			top: 494px;
+			}
+			.nbq38{
+			    left: 254px;
+   				top: 494px;
+			}
+			.nbq39{
+				left: 338px;
+    			top: 494px;
+			}
+			.nbq40{
+				left: 410px;
+    			top: 494px;
+			}
+			.nbq41{
+				left: 480px;
+	    		top: 494px;
+			}
+			.nbq42{
+   				left: 547px;
+    			top: 494px;
+			}
+			.nbq43{
+				left: 615px;
+			    top: 494px;
+			    width: 51px!important;
+			}
+			.nbq44{
+				left: 675px;
+    			top: 494px;
+			}
+			.nbq45{
+				left: 53px;
+    			top: 542px;
+			}
+			.nbq46{
+				left: 128px;
+    			top: 542px;
+			}
+			.nbq47{
+			    left: 254px;
+   				top: 542px;
+			}
+			.nbq48{
+				left: 338px;
+    			top: 542px;
+			}
+			.nbq49{
+				left: 452px;
+    			top: 542px;
+			}
+			.nbq50{
+				left: 537px;
+	    		top: 542px;
+			}
+			.nbq51{
+   				left: 632px;
+    			top: 542px;
+			}
+			.nbq52{
+				left:707px;
+			    top: 542px;
+			}
+			.nbq53{
+				left: 53px;
+    			top: 629px;
+			}
+			.nbq54{
+				left: 128px;
+    			top: 629px;
+			}
+			.nbq55{
+			    left: 254px;
+   				top: 629px;
+			}
+			.nbq56{
+				left: 338px;
+    			top: 629px;
+			}
+			.nbq57{
+				left: 452px;
+    			top: 629px;
+			}
+			.nbq58{
+				left: 537px;
+	    		top: 629px;
+			}
+			.nbq59{
+   				left: 632px;
+    			top: 629px;
+			}
+			.nbq60{
+				left:707px;
+			    top: 629px;
+			}						
+			.nbq61 {
+			    left: 351px;
+			    top: 656px;
+			}
+			.nbq62 {
+			    left: 351px;
+			    top: 746px;
+			}
+			.nbq63 {
+			    left: 724px;
+			    top: 656px;
+			}
+			.nbq64 {
+			    left: 724px;
+			    top: 746px;
+			}
+			.nbq65 {
+			    left: 351px;
+			    top: 779px;
+			}
+			.nbq66 {
+			    left: 351px;
+			    top: 866px;
+			}
+			.nbq67{
+			    left: 351px;
+			    top: 899px;
+			}
+			.nbq68{
+			    left: 714px;
+			    top: 899px;
+			}
+			.nbq69{
+			    left: 795px;
+			    top: 899px;
+			}
+			.nbq70{
+			    left: 351px;
+			    top: 986px;
+			}
+			.nbq71{
+			    left: 714px;
+			    top: 986px;
+			}
+			.nbq72{
+			    left: 795px;
+			    top: 986px;
+			}
+			.nbq73{
+			    left: 351px;
+			    top: 1019px;
+			}
+			.nbq74{
+			    left: 714px;
+			    top: 1019px;
+			}
+			.nbq75{
+			    left: 795px;
+			    top: 1019px;
+			}
+			.nbq76{
+			    left: 351px;
+			    top: 1107px;
+			}
+			 .nbq77{
+			    left: 714px;
+			    top: 1107px;
+			}
+			.nbq78{
+			    left: 795px;
+			    top: 1107px;
+			}			
+		</style>
+	</head>
+	<body>
+		<div class="plantBox">
+			<img src="../img/topology.png" alt=""/>
+			<div class="returnBtn"><a href="../../index/6.do">返回</a></div>
+			<a class="nbq1" alt="nbq1" target="_blank" href="../../inverterPage/inverterDetail/1.do?powerStationId=6">1</a>			
+			<a class="nbq2" alt="nbq2" target="_blank" href="../../inverterPage/inverterDetail/2.do?powerStationId=6">2</a>
+			<a class="nbq3" alt="nbq3" target="_blank" href="../../inverterPage/inverterDetail/3.do?powerStationId=6">3</a>
+			<a class="nbq4" alt="nbq4" target="_blank" href="../../inverterPage/inverterList.do?id=3&powerStationId=6">4</a>								
+			<a class="nbq5" alt="nbq5" target="_blank" href="../../inverterPage/inverterDetail/4.do?powerStationId=6">5</a>
+			<a class="nbq6" alt="nbq6" target="_blank" href="../../inverterPage/inverterList.do?id=4&powerStationId=6">6</a>
+			<a class="nbq7" alt="nbq7" target="_blank" href="../../inverterPage/inverterList.do?id=2&powerStationId=6">7</a>
+			<a class="nbq8" alt="nbq8" target="_blank" href="../../inverterPage/inverterList.do?id=1&powerStationId=6">8</a>
+			<a class="nbq10" alt="nbq10" target="_blank" href="../../TrackPageController/TrackPage.do?id=3&powerStationId=6">10DZ</a>								
+			<a class="nbq9" alt="nbq9" target="_blank" href="../../TrackPageController/TrackPage.do?id=1&powerStationId=6">9SZ-1</a>
+			<a class="nbq11" alt="nbq11" target="_blank" href="../../TrackPageController/TrackPage.do?id=2&powerStationId=6">11SZ-2</a>
+			<a class="nbq12" alt="nbq12" target="_blank" href="../../gridarkPageController/gridarkPage/6.do?powerStationId=6">12</a>
+			<a class="weatherStation" alt="气象站" target="_blank" href="../../weatherPageController/weatherPage/6.do?powerStationId=6">12</a>
+			<a class="nbq13" alt="nbq13" target="_blank" href="../../ivequipmentPage/6?powerStationId=6">13</a>
+			<a class="nbq14" alt="nbq14" target="_blank" href="../../inverterPage/inverterDetail/5.do?powerStationId=6">14</a>
+			<a class="nbq15" alt="nbq15" target="_blank" href="../../inverterPage/inverterDetail/6.do?powerStationId=6">15</a>
+			<a class="nbq16" alt="nbq16" target="_blank" href="../../inverterPage/inverterDetail/7.do?powerStationId=6">16</a>
+			<a class="nbq17" alt="nbq17" target="_blank" href="../../inverterPage/inverterDetail/8.do?powerStationId=6">17</a>								
+			<a class="nbq18" alt="nbq18" target="_blank" href="../../inverterPage/inverterDetail/9.do?powerStationId=6">18</a>
+			<a class="nbq19" alt="nbq19" target="_blank" href="../../inverterPage/inverterDetail/10.do?powerStationId=6">19</a>
+			<a class="nbq20" alt="nbq20" target="_blank" href="">20</a>
+			<a class="nbq21" alt="nbq21" target="_blank" href="../../inverterPage/inverterList.do?id=10&powerStationId=6">21</a>
+			<a class="nbq22" alt="nbq22" target="_blank" href="../../inverterPage/inverterList.do?id=5&powerStationId=6">22</a>								
+			<a class="nbq23" alt="nbq23" target="_blank" href="../../inverterPage/inverterList.do?id=6&powerStationId=6">23</a>
+			<a class="nbq24" alt="nbq24" target="_blank" href="../../inverterPage/inverterList.do?id=7&powerStationId=6">24</a>
+			<a class="nbq25" alt="nbq25" target="_blank" href="../../inverterPage/inverterList.do?id=8&powerStationId=6">25</a>
+			<a class="nbq26" alt="nbq26" target="_blank" href="../../inverterPage/inverterList.do?id=9&powerStationId=6">26</a>
+			<a class="nbq27" alt="nbq27" target="_blank" href="../../inverterPage/inverterDetail/16.do?powerStationId=6">27</a>
+			<a class="nbq28" alt="nbq28" target="_blank" href="../../inverterPage/inverterDetail/17.do?powerStationId=6">28</a>
+			<a class="nbq29" alt="nbq29" target="_blank" href="../../inverterPage/inverterDetail/18.do?powerStationId=6">29</a>
+			<a class="nbq30" alt="nbq30" target="_blank" href="../../inverterPage/inverterDetail/19.do?powerStationId=6">30</a>
+			<a class="nbq31" alt="nbq31" target="_blank" href="../../inverterPage/inverterDetail/11.do?powerStationId=6">31</a>
+			<a class="nbq32" alt="nbq32" target="_blank" href="../../inverterPage/inverterDetail/12.do?powerStationId=6">32</a>								
+			<a class="nbq33" alt="nbq33" target="_blank" href="../../inverterPage/inverterDetail/13.do?powerStationId=6">33</a>
+			<a class="nbq34" alt="nbq34" target="_blank" href="../../inverterPage/inverterDetail/14.do?powerStationId=6">34</a>
+			<a class="nbq35" alt="nbq35" target="_blank" href="../../inverterPage/inverterDetail/15.do?powerStationId=6">35</a>
+			<a class="nbq36" alt="nbq36" target="_blank" href="../../inverterPage/inverterList.do?id=16&powerStationId=6">36</a>
+			<a class="nbq37" alt="nbq37" target="_blank" href="../../inverterPage/inverterList.do?id=17&powerStationId=6">37</a>								
+			<a class="nbq38" alt="nbq38" target="_blank" href="../../inverterPage/inverterList.do?id=18&powerStationId=6">38</a>
+			<a class="nbq39" alt="nbq39" target="_blank" href="../../inverterPage/inverterList.do?id=19&powerStationId=6">39</a>
+			<a class="nbq40" alt="nbq40" target="_blank" href="../../inverterPage/inverterList.do?id=11&powerStationId=6">40</a>
+			<a class="nbq41" alt="nbq41" target="_blank" href="../../inverterPage/inverterList.do?id=12&powerStationId=6">41</a>
+			<a class="nbq42" alt="nbq42" target="_blank" href="../../inverterPage/inverterList.do?id=13&powerStationId=6">42</a>	
+			<a class="nbq43" alt="nbq23" target="_blank" href="../../inverterPage/inverterList.do?id=14&powerStationId=6">43</a>
+			<a class="nbq44" alt="nbq24" target="_blank" href="../../inverterPage/inverterList.do?id=15&powerStationId=6">44</a>
+			<a class="nbq45" alt="nbq25" target="_blank" href="../../inverterPage/inverterDetail/20.do?powerStationId=6">45</a>
+			<a class="nbq46" alt="nbq26" target="_blank" href="../../inverterPage/inverterDetail/21.do?powerStationId=6">46</a>
+			<a class="nbq47" alt="nbq27" target="_blank" href="../../inverterPage/inverterDetail/22.do?powerStationId=6">47</a>
+			<a class="nbq48" alt="nbq28" target="_blank" href="../../inverterPage/inverterDetail/23.do?powerStationId=6">48</a>
+			<a class="nbq49" alt="nbq29" target="_blank" href="../../inverterPage/inverterDetail/24.do?powerStationId=6">49</a>
+			<a class="nbq50" alt="nbq30" target="_blank" href="../../inverterPage/inverterDetail/25.do?powerStationId=6">50</a>
+			<a class="nbq51" alt="nbq31" target="_blank" href="../../inverterPage/inverterDetail/26.do?powerStationId=6">51</a>
+			<a class="nbq52" alt="nbq32" target="_blank" href="../../inverterPage/inverterDetail/27.do?powerStationId=6">52</a>								
+			<a class="nbq53" alt="nbq33" target="_blank" href="../../inverterPage/inverterList.do?id=20&powerStationId=6">53</a>
+			<a class="nbq54" alt="nbq34" target="_blank" href="../../inverterPage/inverterList.do?id=21&powerStationId=6">54</a>
+			<a class="nbq55" alt="nbq35" target="_blank" href="../../inverterPage/inverterList.do?id=22&powerStationId=6">55</a>
+			<a class="nbq56" alt="nbq36" target="_blank" href="../../inverterPage/inverterList.do?id=23&powerStationId=6">56</a>
+			<a class="nbq57" alt="nbq37" target="_blank" href="../../inverterPage/inverterList.do?id=24&powerStationId=6">57</a>								
+			<a class="nbq58" alt="nbq38" target="_blank" href="../../inverterPage/inverterList.do?id=25&powerStationId=6">58</a>
+			<a class="nbq59" alt="nbq39" target="_blank"  href="../../inverterPage/inverterList.do?id=26&powerStationId=6">59</a>
+			<a class="nbq60" alt="nbq40" target="_blank"  href="../../inverterPage/inverterList.do?id=27&powerStationId=6">60</a>
+			<a class="nbq61" alt="nbq41" target="_blank"  href="../../inverterPage/inverterDetail/33.do?powerStationId=6">61</a>
+			<a class="nbq62" alt="nbq42" target="_blank"  href="../../inverterPage/inverterList.do?id=33&powerStationId=6">62</a>
+			<a class="nbq63" alt="nbq23" target="_blank"  href="../../inverterPage/inverterDetail/28.do?powerStationId=6">63</a>
+			<a class="nbq64" alt="nbq24" target="_blank"  href="../../inverterPage/inverterList.do?id=28&powerStationId=6">64</a>
+			<a class="nbq65" alt="nbq25" target="_blank"  href="../../inverterPage/inverterDetail/34.do?powerStationId=6">65</a>
+			<a class="nbq66" alt="nbq26" target="_blank"  href="../../inverterPage/inverterList.do?id=34&powerStationId=6">66</a>
+			<a class="nbq67" alt="nbq27" target="_blank"  href="../../inverterPage/inverterDetail/35.do?powerStationId=6">67</a>
+			<a class="nbq68" alt="nbq28" target="_blank"  href="../../inverterPage/inverterDetail/29.do?powerStationId=6">68</a>
+			<a class="nbq69" alt="nbq29" target="_blank"  href="../../inverterPage/inverterDetail/30.do?powerStationId=6">69</a>
+			<a class="nbq70" alt="nbq30" target="_blank"  href="../../inverterPage/inverterList.do?id=35&powerStationId=6">70</a>
+			<a class="nbq71" alt="nbq31" target="_blank"  href="../../inverterPage/inverterList.do?id=29&powerStationId=6">71</a>
+			<a class="nbq72" alt="nbq32" target="_blank"  href="../../inverterPage/inverterList.do?id=30&powerStationId=6">72</a>								
+			<a class="nbq73" alt="nbq33" target="_blank"  href="../../inverterPage/inverterDetail/36.do?powerStationId=6">73</a>
+			<a class="nbq74" alt="nbq34" target="_blank"  href="../../inverterPage/inverterDetail/31.do?powerStationId=6">74</a>
+			<a class="nbq75" alt="nbq35" target="_blank"  href="../../inverterPage/inverterDetail/32.do?powerStationId=6">75</a>
+			<a class="nbq76" alt="nbq36" target="_blank"  href="../../inverterPage/inverterList.do?id=36&powerStationId=6">76</a>
+			<a class="nbq77" alt="nbq37" target="_blank"  href="../../inverterPage/inverterList.do?id=31&powerStationId=6">77</a>								
+			<a class="nbq78" alt="nbq38" target="_blank"  href="../../inverterPage/inverterList.do?id=32&powerStationId=6">78</a>	
+		</div>
+	</body>
+</html>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.LetterPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.LetterPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="topic" column="topic" jdbcType="VARCHAR" />
+            <result property="content" column="content" jdbcType="VARCHAR" />
+            <result property="sendTime" column="send_time" />
+            <result property="senderUid" column="sender_uid" jdbcType="NUMERIC" />
+            <result property="consigneeUid" column="consignee_uid" jdbcType="VARCHAR" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="senderName" column="sender_name" jdbcType="VARCHAR" />
+            <result property="consigneeName" column="consignee_name" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,topic,content,send_time,sender_uid,consignee_uid,create_time,update_time,sender_name,consignee_name
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "topic != null ">	and topic = #{topic,jdbcType=VARCHAR }</if>
+            <if test= "content != null ">	and content = #{content,jdbcType=VARCHAR }</if>
+            <if test= "sendTime != null ">	and send_time = #{sendTime }</if>
+            <if test= "senderUid != null ">	and sender_uid = #{senderUid,jdbcType=NUMERIC }</if>
+            <if test= "consigneeUid != null ">	and consignee_uid = #{consigneeUid,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+            <if test= "senderName != null ">	and sender_name = #{senderName,jdbcType=VARCHAR }</if>
+            <if test= "consigneeName != null ">	and consignee_name = #{consigneeName,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "topic != null ">	and topic like "%"#{topic}"%"</if>
+            <if test= "content != null ">	and content like "%"#{content}"%"</if>
+            <if test= "sendTime != null ">	and send_time = #{sendTime }</if>
+            <if test= "senderUid != null ">	and sender_uid = #{senderUid,jdbcType=NUMERIC }</if>
+            <if test= "consigneeUid != null ">	and consignee_uid like "%"#{consigneeUid}"%"</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+            <if test= "senderName != null ">	and sender_name like "%"#{senderName}"%"</if>
+            <if test= "consigneeName != null ">	and consignee_name like "%"#{consigneeName}"%"</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "topic != null ">	or topic = #{topic,jdbcType=VARCHAR }</if>
+            <if test= "content != null ">	or content = #{content,jdbcType=VARCHAR }</if>
+            <if test= "sendTime != null ">	or send_time = #{sendTime }</if>
+            <if test= "senderUid != null ">	or sender_uid = #{senderUid,jdbcType=NUMERIC }</if>
+            <if test= "consigneeUid != null ">	or consignee_uid = #{consigneeUid,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+            <if test= "senderName != null ">	or sender_name = #{senderName,jdbcType=VARCHAR }</if>
+            <if test= "consigneeName != null ">	or consignee_name = #{consigneeName,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_letter
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_letter  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_letter  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.LetterPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_letter( id,topic,content,send_time,sender_uid,consignee_uid,create_time,update_time,sender_name,consignee_name ) values (#{id,jdbcType=INTEGER},#{topic,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{sendTime},#{senderUid,jdbcType=NUMERIC},#{consigneeUid,jdbcType=VARCHAR},#{createTime},#{updateTime},#{senderName,jdbcType=VARCHAR},#{consigneeName,jdbcType=VARCHAR} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_letter( id,topic,content,send_time,sender_uid,consignee_uid,create_time,update_time,sender_name,consignee_name ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.topic,jdbcType=VARCHAR},#{item.content,jdbcType=VARCHAR},#{item.sendTime},#{item.senderUid,jdbcType=NUMERIC},#{item.consigneeUid,jdbcType=VARCHAR},#{item.createTime},#{item.updateTime},#{item.senderName,jdbcType=VARCHAR},#{item.consigneeName,jdbcType=VARCHAR} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.LetterPO">
+		update pvmts_letter set topic=#{topic,jdbcType=VARCHAR},content=#{content,jdbcType=VARCHAR},send_time=#{sendTime},sender_uid=#{senderUid,jdbcType=NUMERIC},consignee_uid=#{consigneeUid,jdbcType=VARCHAR},create_time=#{createTime},update_time=#{updateTime},sender_name=#{senderName,jdbcType=VARCHAR},consignee_name=#{consigneeName,jdbcType=VARCHAR} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.LetterPO">
+		update pvmts_letter
+        <set>
+            <if test="topic != null "> 
+                topic = #{topic,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null "> 
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="sendTime != null "> 
+                send_time = #{sendTime},
+            </if>
+            <if test="senderUid != null "> 
+                sender_uid = #{senderUid,jdbcType=NUMERIC},
+            </if>
+            <if test="consigneeUid != null "> 
+                consignee_uid = #{consigneeUid,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+            <if test="senderName != null "> 
+                sender_name = #{senderName,jdbcType=VARCHAR},
+            </if>
+            <if test="consigneeName != null "> 
+                consignee_name = #{consigneeName,jdbcType=VARCHAR},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_letter where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.LetterPO">
+		delete from pvmts_letter
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

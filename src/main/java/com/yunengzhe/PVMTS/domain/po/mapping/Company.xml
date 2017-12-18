@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.CompanyPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.CompanyPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="companyName" column="company_name" jdbcType="VARCHAR" />
+            <result property="address" column="address" jdbcType="VARCHAR" />
+            <result property="ownerUsername" column="owner_userName" jdbcType="VARCHAR" />
+            <result property="ownerPosition" column="owner_position" jdbcType="VARCHAR" />
+            <result property="ownerMobile" column="owner_mobile" jdbcType="VARCHAR" />
+            <result property="createTime" column="create_time" />
+            <result property="remarks" column="remarks" jdbcType="VARCHAR" />
+            <result property="udpateTime" column="udpate_time" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,company_name,address,owner_userName,owner_position,owner_mobile,create_time,remarks,udpate_time
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "companyName != null ">	and company_name = #{companyName,jdbcType=VARCHAR }</if>
+            <if test= "address != null ">	and address = #{address,jdbcType=VARCHAR }</if>
+            <if test= "ownerUsername != null ">	and owner_userName = #{ownerUsername,jdbcType=VARCHAR }</if>
+            <if test= "ownerPosition != null ">	and owner_position = #{ownerPosition,jdbcType=VARCHAR }</if>
+            <if test= "ownerMobile != null ">	and owner_mobile = #{ownerMobile,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "remarks != null ">	and remarks = #{remarks,jdbcType=VARCHAR }</if>
+            <if test= "udpateTime != null ">	and udpate_time = #{udpateTime }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "companyName != null ">	and company_name like "%"#{companyName}"%"</if>
+            <if test= "address != null ">	and address like "%"#{address}"%"</if>
+            <if test= "ownerUsername != null ">	and owner_userName like "%"#{ownerUsername}"%"</if>
+            <if test= "ownerPosition != null ">	and owner_position like "%"#{ownerPosition}"%"</if>
+            <if test= "ownerMobile != null ">	and owner_mobile like "%"#{ownerMobile}"%"</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "remarks != null ">	and remarks like "%"#{remarks}"%"</if>
+            <if test= "udpateTime != null ">	and udpate_time = #{udpateTime }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "companyName != null ">	or company_name = #{companyName,jdbcType=VARCHAR }</if>
+            <if test= "address != null ">	or address = #{address,jdbcType=VARCHAR }</if>
+            <if test= "ownerUsername != null ">	or owner_userName = #{ownerUsername,jdbcType=VARCHAR }</if>
+            <if test= "ownerPosition != null ">	or owner_position = #{ownerPosition,jdbcType=VARCHAR }</if>
+            <if test= "ownerMobile != null ">	or owner_mobile = #{ownerMobile,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "remarks != null ">	or remarks = #{remarks,jdbcType=VARCHAR }</if>
+            <if test= "udpateTime != null ">	or udpate_time = #{udpateTime }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_company
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_company  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_company  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.CompanyPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_company( id,company_name,address,owner_userName,owner_position,owner_mobile,create_time,remarks,udpate_time ) values (#{id,jdbcType=INTEGER},#{companyName,jdbcType=VARCHAR},#{address,jdbcType=VARCHAR},#{ownerUsername,jdbcType=VARCHAR},#{ownerPosition,jdbcType=VARCHAR},#{ownerMobile,jdbcType=VARCHAR},#{createTime},#{remarks,jdbcType=VARCHAR},#{udpateTime} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_company( id,company_name,address,owner_userName,owner_position,owner_mobile,create_time,remarks,udpate_time ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.companyName,jdbcType=VARCHAR},#{item.address,jdbcType=VARCHAR},#{item.ownerUsername,jdbcType=VARCHAR},#{item.ownerPosition,jdbcType=VARCHAR},#{item.ownerMobile,jdbcType=VARCHAR},#{item.createTime},#{item.remarks,jdbcType=VARCHAR},#{item.udpateTime} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.CompanyPO">
+		update pvmts_company set company_name=#{companyName,jdbcType=VARCHAR},address=#{address,jdbcType=VARCHAR},owner_userName=#{ownerUsername,jdbcType=VARCHAR},owner_position=#{ownerPosition,jdbcType=VARCHAR},owner_mobile=#{ownerMobile,jdbcType=VARCHAR},create_time=#{createTime},remarks=#{remarks,jdbcType=VARCHAR},udpate_time=#{udpateTime} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.CompanyPO">
+		update pvmts_company
+        <set>
+            <if test="companyName != null "> 
+                company_name = #{companyName,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null "> 
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="ownerUsername != null "> 
+                owner_userName = #{ownerUsername,jdbcType=VARCHAR},
+            </if>
+            <if test="ownerPosition != null "> 
+                owner_position = #{ownerPosition,jdbcType=VARCHAR},
+            </if>
+            <if test="ownerMobile != null "> 
+                owner_mobile = #{ownerMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="remarks != null "> 
+                remarks = #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="udpateTime != null "> 
+                udpate_time = #{udpateTime},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_company where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.CompanyPO">
+		delete from pvmts_company
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

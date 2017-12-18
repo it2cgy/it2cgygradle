@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.NewsSettingPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.NewsSettingPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="userId" column="user_id" jdbcType="NUMERIC" />
+            <result property="push" column="push" jdbcType="NUMERIC" />
+            <result property="sound" column="sound" jdbcType="NUMERIC" />
+            <result property="vibrate" column="vibrate" jdbcType="NUMERIC" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,user_id,push,sound,vibrate,create_time,update_time
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "userId != null ">	and user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "push != null ">	and push = #{push,jdbcType=NUMERIC }</if>
+            <if test= "sound != null ">	and sound = #{sound,jdbcType=NUMERIC }</if>
+            <if test= "vibrate != null ">	and vibrate = #{vibrate,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "userId != null ">	and user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "push != null ">	and push = #{push,jdbcType=NUMERIC }</if>
+            <if test= "sound != null ">	and sound = #{sound,jdbcType=NUMERIC }</if>
+            <if test= "vibrate != null ">	and vibrate = #{vibrate,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "userId != null ">	or user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "push != null ">	or push = #{push,jdbcType=NUMERIC }</if>
+            <if test= "sound != null ">	or sound = #{sound,jdbcType=NUMERIC }</if>
+            <if test= "vibrate != null ">	or vibrate = #{vibrate,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_news_setting
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_news_setting  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_news_setting  where id in (${_parameter})
+	</select>	
+	
+	<resultMap id="powerstationUser" type="com.yunengzhe.PVMTS.domain.po.PowerstationUserPO">
+            <result property="userId" column="userid" jdbcType="NUMERIC" />
+            <result property="roleId" column="role_id" jdbcType="NUMERIC" />
+            <result property="powerstationId" column="powerstation_id" jdbcType="NUMERIC" />
+         
+	</resultMap>	
+	<select id="getPowerstationUser" resultMap="powerstationUser" >
+		SELECT
+			t1.`user_id` AS userid,
+			t1.`role_id`,
+			t2.`powerstation_id`
+		FROM
+			`pvmts_user_role` t1,
+			`pvmts_role_powerstation` t2
+		WHERE
+			t1.`role_id` = t2.`role_id`
+	</select>	
+	
+	<resultMap id="userToken" type="com.yunengzhe.PVMTS.domain.dto.UserTokenDTO">
+            <result property="userId" column="userid" jdbcType="NUMERIC" />
+            <result property="push" column="push" jdbcType="NUMERIC" />
+            <result property="sound" column="sound" jdbcType="NUMERIC" />
+            <result property="vibrate" column="vibrate" jdbcType="NUMERIC" />
+            <result property="deviceToken" column="device_token" jdbcType="VARCHAR" />
+            <result property="deviceType" column="device_type" jdbcType="NUMERIC" />
+	</resultMap>	
+	<select id="getUserTokens" resultMap="userToken" >
+			SELECT
+				t1.userid,
+				t.push,
+				t.sound,
+				t.vibrate,
+				t1.device_token,
+				t1.device_type 
+			FROM
+			pvmts_umeng_push t1
+			LEFT JOIN 	pvmts_news_setting t ON t.user_id = t1.userId
+			<where>
+				<if test="_parameter != null">
+					t1.user_id in(#{id,jdbcType=INTEGER})
+				</if>
+		   </where>
+	</select>	
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.NewsSettingPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_news_setting( id,user_id,push,sound,vibrate,create_time,update_time ) values (#{id,jdbcType=INTEGER},#{userId,jdbcType=NUMERIC},#{push,jdbcType=NUMERIC},#{sound,jdbcType=NUMERIC},#{vibrate,jdbcType=NUMERIC},#{createTime},#{updateTime} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_news_setting( id,user_id,push,sound,vibrate,create_time,update_time ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.userId,jdbcType=NUMERIC},#{item.push,jdbcType=NUMERIC},#{item.sound,jdbcType=NUMERIC},#{item.vibrate,jdbcType=NUMERIC},#{item.createTime},#{item.updateTime} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.NewsSettingPO">
+		update pvmts_news_setting set user_id=#{userId,jdbcType=NUMERIC},push=#{push,jdbcType=NUMERIC},sound=#{sound,jdbcType=NUMERIC},vibrate=#{vibrate,jdbcType=NUMERIC},create_time=#{createTime},update_time=#{updateTime} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.NewsSettingPO">
+		update pvmts_news_setting
+        <set>
+            <if test="userId != null "> 
+                user_id = #{userId,jdbcType=NUMERIC},
+            </if>
+            <if test="push != null "> 
+                push = #{push,jdbcType=NUMERIC},
+            </if>
+            <if test="sound != null "> 
+                sound = #{sound,jdbcType=NUMERIC},
+            </if>
+            <if test="vibrate != null "> 
+                vibrate = #{vibrate,jdbcType=NUMERIC},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_news_setting where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.NewsSettingPO">
+		delete from pvmts_news_setting
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

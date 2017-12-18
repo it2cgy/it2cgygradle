@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="spareParts">
+	<resultMap type="java.util.HashMap" id="spareMap">
+		<result property="TYPENAME" column="TYPENAME"/>
+		<result property="MODELNAME" column="MODELNAME"/>
+		<result property="COUNT" column="COUNT"/>
+		<result property="OWNER_UNIT" column="OWNER_UNIT"/>
+		<result property="LOCATION" column="LOCATION"/>
+		<result property="REMARKS" column="REMARKS"/>
+		<result property="SPAREID" column="SPAREID"/>
+		<result property="DEVMODEL" column="DEVMODEL"/>
+		<result property="DEVTYPE" column="DEVTYPE"/>
+		<result property="UNIT" column="UNIT"/>
+		<result property="PROID" column="PROID"/>
+		
+	</resultMap>
+	<!-- 加载数据 -->
+	<select id="loadData" parameterType="java.util.HashMap" resultMap="spareMap">
+		 SELECT MS.ID         AS SPAREID,
+	       MD.NAME       AS TYPENAME,
+	       MM.NAME       AS MODELNAME,
+	       MD.ID AS DEVTYPE,
+	       MM.ID AS DEVMODEL,
+	       MS.COUNT,
+	       MS.OWNER_UNIT,
+	       MS.LOCATION,
+	       MS.REMARKS,
+	       MP.NAME       AS PRONAME,
+	       MS.UNIT,
+	       MP.ID AS PROID
+		  FROM MT_SPARE MS
+		  LEFT JOIN MT_DEV_TYPE MD
+		    ON MS.DEV_TYPE_ID = MD.ID
+		  LEFT JOIN MT_DEV_MODEL MM
+		    ON MS.DEV_MODEL_ID = MM.ID
+		  LEFT JOIN MT_PROJECT MP
+		    ON MS.PRO_ID = MP.ID
+		    WHERE 1=1
+	  <if test="id != null and id !=''" >
+			AND MS.ID= ${id}
+	  </if>
+	  <if test="proname != null and proname !=''" >
+			AND MP.NAME LIKE '%${proname}%'
+	  </if>
+	  <if test="devname != null and devname !=''" >
+			AND MD.NAME LIKE '%${devname}%'
+	  </if>
+	  <if test="modelname != null and modelname !=''" >
+			AND MM.NAME LIKE '%${modelname}%'
+	  </if>
+	</select>
+	
+	
+	
+	<resultMap type="java.util.HashMap" id="proMap">
+		<result property="PROID" column="PROID"/>
+		<result property="PRONAME" column="PRONAME"/>
+	</resultMap>
+	<!-- 加载数据 -->
+	<select id="loadProject" parameterType="java.util.HashMap" resultMap="proMap">
+	   SELECT A.ID AS PROID, A.NAME AS PRONAME
+ 	 	FROM MT_PROJECT A
+  		LEFT JOIN R_MT_PRO_USER_ROLE R
+  		ON A.ID = R.PRO_ID
+  		WHERE 1=1
+  		<if test="userId != null and userId  !=''" >
+				AND R.USER_ID=${userId}
+		</if>
+		<if test="pname != null and pname  !=''" >
+				AND A.NAME LIKE '%${pname}%'
+		</if>
+	</select>
+	
+	<sql id="colList" >
+	   	id,dev_type_id,dev_model_id,pro_id,count,owner_unit,location,unit,remarks
+  	</sql>
+	
+	<!-- 保存信息 -->
+  	<insert id="saveData" parameterType="mtSpare">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	  select SEQ_MT_SPARE_ID.nextval as id from dual  
+    	</selectKey>
+		insert into MT_SPARE (<include refid="colList"/>) values (
+			#{id,jdbcType=INTEGER},
+			#{dev_type_id,jdbcType=INTEGER},
+			#{dev_model_id,jdbcType=INTEGER},
+			#{pro_id,jdbcType=INTEGER},
+			#{count,jdbcType=INTEGER},
+			#{owner_unit,jdbcType=VARCHAR},
+			#{location,jdbcType=VARCHAR},
+			#{unit,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	
+	<!-- 根据ID删除电站信息 -->
+	<delete id="delByid"  parameterType="java.util.List" >
+	    DELETE FROM MT_SPARE T WHERE T.ID IN 
+	    <foreach collection="list" index="index" item="item" open="(" separator="," close=")"> 
+      	  #{item} 
+   	    </foreach>
+	</delete>
+	
+	
+	<!-- 更新数据 -->
+	<update id="updateData" parameterType="mtSpare">
+		UPDATE MT_SPARE 
+		SET 
+		dev_type_id=#{dev_type_id,jdbcType=INTEGER},
+		dev_model_id=#{dev_model_id,jdbcType=INTEGER},
+		pro_id=#{pro_id,jdbcType=INTEGER},
+		count=#{count,jdbcType=INTEGER},
+		owner_unit=#{owner_unit,jdbcType=VARCHAR},
+		location=#{location,jdbcType=VARCHAR},
+		unit=#{unit,jdbcType=VARCHAR},
+		remarks=#{remarks,jdbcType=VARCHAR}
+		WHERE id=#{id,jdbcType=INTEGER}
+	</update>
+	
+	<resultMap type="java.util.HashMap" id="cheakcodeMap">
+		<result property="id" column="id"/>
+    </resultMap>
+    
+	<select id="checkid"  resultMap="cheakcodeMap">
+				SELECT
+					md.id id
+				FROM
+					MT_SPARE md
+				WHERE
+					1 = 1
+				                
+				<if test="_parameter != null and _parameter !=''" >
+					and  md.id = #{_parameter}
+				</if>
+  	</select>
+</mapper>

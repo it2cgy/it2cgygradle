@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.InverterToMeterPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.InverterToMeterPO">
+            <id property="id" column="null" jdbcType="INTEGER" />
+            <result property="inverterId" column="inverter_id" jdbcType="NUMERIC" />
+            <result property="electricMeterId" column="meter_id" jdbcType="NUMERIC" />
+
+	</resultMap>
+	<resultMap id="resultInfo" type="com.yunengzhe.PVMTS.domain.vo.longi.InverterToMeterVO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="inverterId" column="inverter_id" jdbcType="NUMERIC" />
+            <result property="electricMeterId" column="meter_id" jdbcType="NUMERIC" />
+			<result property="meterName" column="ammeter_name" jdbcType="VARCHAR" />
+			<result property="meterModel" column="ammeter_model" jdbcType="VARCHAR" />
+			<result property="meterSerialNumber" column="ammeter_serial_number" jdbcType="VARCHAR" />
+			<result property="meterType" column="meter_type" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="base_field">
+		id,inverter_id,meter_id
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "inverterId != null ">	and inverter_id = #{inverterId,jdbcType=NUMERIC }</if>
+            <if test= "electricMeterId != null ">	and meter_id = #{electricMeterId,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "inverterId != null ">	and inverter_id = #{inverterId,jdbcType=NUMERIC }</if>
+            <if test= "electricMeterId != null ">	and meter_id = #{electricMeterId,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "inverterId != null ">	or inverter_id = #{inverterId,jdbcType=NUMERIC }</if>
+            <if test= "electricMeterId != null ">	or meter_id = #{electricMeterId,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_inverter_meter
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_inverter_meter  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	<select id="selectAmmeterInfo" resultMap="resultInfo" parameterType="java.lang.Integer">
+		select
+		 t1.id,t1.inverter_id,t1.meter_id,
+		 t2.name as ammeter_name,t2.model as ammeter_model,t2.serial_number as ammeter_serial_number,t2.meter_type
+		from pvmts_inverter_meter t1 left join mc_electric_meter t2 on t1.meter_id=t2.id
+		where t1.inverter_id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_inverter_meter  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.InverterToMeterPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_inverter_meter( null,inverter_id,meter_id ) values (#{id,jdbcType=INTEGER},#{inverterId,jdbcType=NUMERIC},#{electricMeterId,jdbcType=NUMERIC} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_inverter_meter( null,inverter_id,meter_id ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.inverterId,jdbcType=NUMERIC},#{item.electricMeterId,jdbcType=NUMERIC} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.InverterToMeterPO">
+		update pvmts_inverter_meter set inverter_id=#{inverterId,jdbcType=NUMERIC},meter_id=#{electricMeterId,jdbcType=NUMERIC} where null=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.InverterToMeterPO">
+		update pvmts_inverter_meter
+        <set>
+            <if test="inverterId != null "> 
+                inverter_id = #{inverterId,jdbcType=NUMERIC},
+            </if>
+            <if test="electricMeterId != null "> 
+                meter_id = #{electricMeterId,jdbcType=NUMERIC},
+            </if>
+        </set>
+         where null=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_inverter_meter where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.InverterToMeterPO">
+		delete from pvmts_inverter_meter
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

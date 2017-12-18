@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.SparepartMappingPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.SparepartMappingPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="sparepartId" column="sparepartId" jdbcType="NUMERIC" />
+            <result property="workorderNum" column="workorderNum" jdbcType="VARCHAR" />
+            <result property="receivenum" column="receivenum" jdbcType="NUMERIC" />
+            <result property="receivetype" column="receivetype" jdbcType="NUMERIC" />
+            <result property="receiveuser" column="receiveuser" jdbcType="VARCHAR" />
+            <result property="specificationId" column="specificationId" jdbcType="NUMERIC" />
+            <result property="updateTime" column="update_time" />
+            <result property="createTime" column="create_time" />
+            
+            <result property="specificationName" column="specification_name" jdbcType="VARCHAR" />
+            <result property="sparepartName" column="sparepart_name" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		t1.id,t1.sparepartId,t1.workorderNum, t1.receivenum, t1.receivetype, t1.receiveuser, t1.specificationId,t1.create_time,t1.update_time,t2.sparepart_name, t3.specification_name 
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "sparepartId != null ">	and t1.sparepartId = #{sparepartId,jdbcType=NUMERIC }</if>
+            <if test= "workorderNum != null ">	and t1.workorderNum = #{workorderNum,jdbcType=VARCHAR }</if>
+            <if test= "receivenum != null ">	and t1.receivenum = #{receivenum,jdbcType=NUMERIC }</if>
+            <if test= "receivetype != null ">	and t1.receivetype = #{receivetype,jdbcType=NUMERIC }</if>
+            <if test= "receiveuser != null ">	and t1.receiveuser = #{receiveuser,jdbcType=VARCHAR }</if>
+            <if test= "specificationId != null ">	and t1.specificationId = #{specificationId,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and t1.create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and t1.update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "sparepartId != null ">	and t1.sparepartId = #{sparepartId,jdbcType=NUMERIC }</if>
+            <if test= "workorderNum != null ">	and t1.workorderNum = #{workorderNum,jdbcType=VARCHAR }</if>
+            <if test= "receivenum != null ">	and t1.receivenum = #{receivenum,jdbcType=NUMERIC }</if>
+            <if test= "receivetype != null ">	and t1.receivetype = #{receivetype,jdbcType=NUMERIC }</if>
+            <if test= "receiveuser != null ">	and t1.receiveuser like "%"#{receiveuser}"%"</if>
+            <if test= "specificationId != null ">	and t1.specificationId = #{specificationId,jdbcType=NUMERIC }</if>
+             <if test= "createTime != null ">   and t1.create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and t1.update_time = #{updateTime }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "sparepartId != null ">	or t1.sparepartId = #{sparepartId,jdbcType=NUMERIC }</if>
+            <if test= "workorderNum != null ">	or t1.workorderNum = #{workorderNum,jdbcType=VARCHAR }</if>
+            <if test= "receivenum != null ">	or t1.receivenum = #{receivenum,jdbcType=NUMERIC }</if>
+            <if test= "receivetype != null ">	or t1.receivetype = #{receivetype,jdbcType=NUMERIC }</if>
+            <if test= "receiveuser != null ">	or t1.receiveuser = #{receiveuser,jdbcType=VARCHAR }</if>
+            <if test= "specificationId != null ">	or t1.specificationId = #{specificationId,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">   or t1.create_time = #{createTime }</if>
+            <if test= "updateTime != null ">   or t1.update_time = #{updateTime }</if>         
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_sparepartmap t1 LEFT JOIN pvmts_workorder_sparepart t2 ON t1.sparepartId = t2.id LEFT JOIN pvmts_workorder_specification t3 ON t1.specificationId = t3.id
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by t1.${sortName} t1.${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_sparepartmap t1 LEFT JOIN pvmts_workorder_sparepart t2 ON t1.sparepartId = t2.id LEFT JOIN pvmts_workorder_specification t3 ON t1.specificationId = t3.id 
+		<where>
+			<if test="_parameter != null">
+				t1.id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_sparepartmap t1 LEFT JOIN pvmts_workorder_sparepart t2 ON t1.sparepartId = t2.id LEFT JOIN pvmts_workorder_specification t3 ON t1.specificationId = t3.id where t1.id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.SparepartMappingPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_workorder_sparepartmap( id,sparepartId,workorderNum,receivenum,receivetype,receiveuser,specificationId,create_time,update_time) values (#{id,jdbcType=INTEGER},#{sparepartId,jdbcType=NUMERIC},#{workorderNum,jdbcType=VARCHAR},#{receivenum,jdbcType=NUMERIC},#{receivetype,jdbcType=NUMERIC},#{receiveuser,jdbcType=VARCHAR},#{specificationId,jdbcType=NUMERIC},#{createTime},#{updateTime} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_workorder_sparepartmap( id,sparepartId,workorderNum,receivenum,receivetype,receiveuser,specificationId,create_time,update_time) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.sparepartId,jdbcType=NUMERIC},#{item.workorderNum,jdbcType=VARCHAR},#{item.receivenum,jdbcType=NUMERIC},#{item.receivetype,jdbcType=NUMERIC},#{item.receiveuser,jdbcType=VARCHAR},#{item.specificationId,jdbcType=NUMERIC},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.SparepartMappingPO">
+		update pvmts_workorder_sparepartmap set sparepartId=#{sparepartId,jdbcType=NUMERIC},workorderNum=#{workorderNum,jdbcType=VARCHAR},receivenum=#{receivenum,jdbcType=NUMERIC},receivetype=#{receivetype,jdbcType=NUMERIC},receiveuser=#{receiveuser,jdbcType=VARCHAR},specificationId=#{specificationId,jdbcType=NUMERIC},create_time=#{createTime},update_time=#{updateTime} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.SparepartMappingPO">
+		update pvmts_workorder_sparepartmap
+        <set>
+            <if test="sparepartId != null "> 
+                sparepartId = #{sparepartId,jdbcType=NUMERIC},
+            </if>
+            <if test="workorderNum != null "> 
+                workorderNum = #{workorderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="receivenum != null "> 
+                receivenum = #{receivenum,jdbcType=NUMERIC},
+            </if>
+            <if test="receivetype != null "> 
+                receivetype = #{receivetype,jdbcType=NUMERIC},
+            </if>
+            <if test="receiveuser != null "> 
+                receiveuser = #{receiveuser,jdbcType=VARCHAR},
+            </if>
+            <if test="specificationId != null "> 
+                specificationId = #{specificationId,jdbcType=NUMERIC},
+            </if>
+            ,update_time=SYSDATE()
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_workorder_sparepartmap where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.SparepartMappingPO">
+		delete from pvmts_workorder_sparepartmap
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

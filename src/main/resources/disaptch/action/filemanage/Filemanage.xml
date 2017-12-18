@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--缺陷故障反馈表处理 -->
+<mapper namespace="filemanage">
+
+   	<resultMap type="java.util.HashMap" id="cheakMap">
+		<result property="n" column="n"/>
+		<result property="id" column="id"/>
+		<result property="archieve_num" column="archieve_num"/>
+        <result property="name" column="name"/>
+        <result property="endtime" column="endtime"/>
+        <result property="remarks" column="remarks"/>
+    </resultMap>
+    
+<!--   	<select id="loadcheak"  resultMap="cheakMap"> 	
+
+  		SELECT
+  		    ev.id id,
+			ev.ARCHIEVE_NUM archieve_num,
+			pr. NAME name,
+			TO_CHAR(ev.endtime,'yyyy-mm-dd') endtime,
+			ev.remarks remarks
+		FROM
+			MT_EVENT ev
+		LEFT JOIN MT_PROJECT pr ON ev.pro_id = pr. ID
+		where 1=1 and ev.state='1' 
+		<if test="proname != null and proname != ''">
+						and name like '%${proname}%'
+		</if>
+		<if test="anum != null and anum != ''">
+						and archieve_num like '%${anum}%'
+		</if>  
+		<if test="startdate != null and startdate != ''">
+			and endtime &gt; to_date('${startdate}', 'yyyy-mm-dd')
+		</if>
+		<if test="enddate != null and enddate != ''">
+			and endtime &lt; to_date('${enddate}', 'yyyy-mm-dd')+1
+		</if>
+  	</select> -->
+  	
+  	<select id="loadcheaktotal"  resultType="java.lang.Integer"> 	
+
+  		SELECT
+  		    count(*)
+		FROM
+			MT_EVENT ev
+		LEFT JOIN MT_PROJECT pr ON ev.pro_id = pr. ID
+		LEFT JOIN MT_USER mr on pr.company_id=mr.company_id
+		where 1=1 and ev.state='1' and mr.id='${id}'
+		<if test="proname != null and proname != ''">
+						and name like '%${proname}%'
+		</if>
+		<if test="anum != null and anum != ''">
+						and archieve_num like '%${anum}%'
+		</if>  
+		<if test="startdate != null and startdate != ''">
+			and endtime &gt; to_date('${startdate}', 'yyyy-mm-dd hh24:mi:ss')
+		</if>
+		<if test="enddate != null and enddate != ''">
+			and endtime &lt; to_date('${enddate}', 'yyyy-mm-dd hh24:mi:ss')+1
+		</if>
+  	</select>
+  	
+  	
+  	 	<select id="loadcheak"  resultMap="cheakMap"> 	
+
+  		SELECT
+		    b.n n,
+			b.ID ID,
+			b.ARCHIEVE_NUM archieve_num,
+			b. NAME NAME,
+			b.endtime endtime,
+			b.remarks remarks
+		FROM
+			(
+				SELECT
+					ROWNUM n,
+					A .*
+				FROM
+					(
+						SELECT
+							ev. ID ID,
+							ev.ARCHIEVE_NUM archieve_num,
+							pr. NAME NAME,
+							TO_CHAR (ev.endtime, 'yyyy-mm-dd hh24:mi:ss') endtime,
+							ev.remarks remarks
+						FROM
+							MT_EVENT ev
+						LEFT JOIN MT_PROJECT pr ON ev.pro_id = pr. ID
+						LEFT JOIN MT_USER mr on pr.company_id=mr.company_id
+						
+						WHERE
+							1 = 1 and ev.state='1' and mr.id='${id}'
+							<if test="proname != null and proname != ''">
+											and name like '%${proname}%'
+							</if>
+							<if test="anum != null and anum != ''">
+											and archieve_num like '%${anum}%'
+							</if>  
+							<if test="startdate != null and startdate != ''">
+								and endtime &gt; to_date('${startdate}', 'yyyy-mm-dd hh24:mi:ss')
+							</if>
+							<if test="enddate != null and enddate != ''">
+								and endtime &lt; to_date('${enddate}', 'yyyy-mm-dd hh24:mi:ss')+1
+							</if>
+					) a
+			) b
+		<if test="page != null and page != ''">
+				where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows} order by b.endtime
+			</if>
+  	</select>
+  	
+  	
+  		<resultMap type="java.util.HashMap" id="cheakeidMap">
+  		<result property="n" column="n"/>
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="url" column="url"/>
+		<result property="sheet_id" column="sheet_id"/>
+        <result property="form_flow_num" column="form_flow_num"/>
+        <result property="record_user_id" column="record_user_id"/>
+        <result property="record_date" column="record_date"/>
+       	
+    </resultMap>
+<!--     根据pid查询 -->
+ <!--  	<select id="selectbyeid"  resultMap="cheakeidMap">
+  		SELECT
+			st.ID id,
+			st.NAME name,
+			st.url url,
+			sl.SHEET_ID sheet_id,
+			sl.form_flow_num form_flow_num,
+			sl.RECORD_USER_ID record_user_id,
+			TO_CHAR(sl.RECORD_DATE,'yyyy-mm-dd') record_date
+			 
+		FROM
+			MT_CENTER_WORKLOG cw
+		LEFT JOIN MT_SHEET_LIST sl ON cw. ID = sl.worklog_id
+		LEFT JOIN MT_SHEET_TYPE st ON sl.sheet_type = st. ID
+		where 1=1 and st.ID is not null
+		<if test="_parameter != null and _parameter !=''" >
+		and  cw.EVENT_ID = #{_parameter}
+	 </if>
+  	</select> -->
+  	
+  	  <select id="selectbyeid"  resultMap="cheakeidMap">
+  		SELECT
+		    b.n n,
+			b.ID id,
+			b.NAME name,
+			b.url url,
+			b.SHEET_ID sheet_id,
+			b.form_flow_num form_flow_num,
+			b.RECORD_USER_ID record_user_id,
+			b.RECORD_DATE record_date
+		FROM
+			(
+				SELECT
+					ROWNUM n,
+					A .*
+				FROM
+					(
+						SELECT
+					st.ID id,
+					st.NAME name,
+					st.url url,
+					sl.SHEET_ID sheet_id,
+					sl.form_flow_num form_flow_num,
+					uu.realname record_user_id,
+					TO_CHAR(sl.RECORD_DATE,'yyyy-mm-dd hh24:mi:ss') record_date
+					 
+				FROM
+					MT_CENTER_WORKLOG cw
+				LEFT JOIN MT_SHEET_LIST sl ON cw. ID = sl.worklog_id
+				LEFT JOIN MT_SHEET_TYPE st ON sl.sheet_type = st. ID
+				LEFT JOIN MT_USER uu on uu.id=sl.RECORD_USER_ID
+				where 1=1 and st.ID is not null
+				<if test="eid != null and eid != ''">
+				and  cw.EVENT_ID = ${eid}
+			    </if>
+					) a
+			) b
+		<if test="page != null and page != ''">
+				where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows} order by b.id
+		</if>
+  	</select>
+  	
+  	
+    <select id="selectbyeidtotal"  resultType="java.lang.Integer"> 	
+  		SELECT
+  		    count(*)
+		FROM
+			MT_CENTER_WORKLOG cw
+		LEFT JOIN MT_SHEET_LIST sl ON cw. ID = sl.worklog_id
+		LEFT JOIN MT_SHEET_TYPE st ON sl.sheet_type = st. ID
+		where 1=1 and st.ID is not null
+		<if test="eid != null and eid != ''">
+				and  cw.EVENT_ID = ${eid}
+	    </if>
+  	</select>
+  	
+</mapper>

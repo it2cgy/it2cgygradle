@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.MessageSystemInfoPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.MessageSystemInfoPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="title" column="title" jdbcType="VARCHAR" />
+            <result property="content" column="content" jdbcType="VARCHAR" />
+            <result property="messageType" column="message_type" jdbcType="NUMERIC" />
+            <result property="messageId" column="message_id" jdbcType="NUMERIC" />
+            <result property="massageStatus" column="massage_status" jdbcType="NUMERIC" />
+            <result property="addressUser" column="address_user" jdbcType="VARCHAR" />
+            <result property="forcedPush" column="forced_push" jdbcType="NUMERIC" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="userId" column="user_id" />
+            <result property="isread" column="isread" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,title,content,message_type,message_id,massage_status,address_user,forced_push,create_time,update_time
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "title != null ">	and title = #{title,jdbcType=VARCHAR }</if>
+            <if test= "content != null ">	and content = #{content,jdbcType=VARCHAR }</if>
+            <if test= "messageType != null ">	and message_type = #{messageType,jdbcType=NUMERIC }</if>
+            <if test= "messageId != null ">	and message_id = #{messageId,jdbcType=NUMERIC }</if>
+            <if test= "massageStatus != null ">	and massage_status = #{massageStatus,jdbcType=NUMERIC }</if>
+            <if test= "addressUser != null ">	and address_user = #{addressUser,jdbcType=VARCHAR }</if>
+            <if test= "forcedPush != null ">	and forced_push = #{forcedPush,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "title != null ">	and title like "%"#{title}"%"</if>
+            <if test= "content != null ">	and content like "%"#{content}"%"</if>
+            <if test= "messageType != null ">	and message_type = #{messageType,jdbcType=NUMERIC }</if>
+            <if test= "messageId != null ">	and message_id = #{messageId,jdbcType=NUMERIC }</if>
+            <if test= "massageStatus != null ">	and massage_status = #{massageStatus,jdbcType=NUMERIC }</if>
+            <if test= "addressUser != null ">	and address_user like "%"#{addressUser}"%"</if>
+            <if test= "forcedPush != null ">	and forced_push = #{forcedPush,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "title != null ">	or title = #{title,jdbcType=VARCHAR }</if>
+            <if test= "content != null ">	or content = #{content,jdbcType=VARCHAR }</if>
+            <if test= "messageType != null ">	or message_type = #{messageType,jdbcType=NUMERIC }</if>
+            <if test= "messageId != null ">	or message_id = #{messageId,jdbcType=NUMERIC }</if>
+            <if test= "massageStatus != null ">	or massage_status = #{massageStatus,jdbcType=NUMERIC }</if>
+            <if test= "addressUser != null ">	or address_user = #{addressUser,jdbcType=VARCHAR }</if>
+            <if test= "forcedPush != null ">	or forced_push = #{forcedPush,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_message_system
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		order by create_time desc
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_message_system  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getCountByMap" resultType="int" >
+		select DISTINCT count(m.id) from pvmts_message_system m LEFT JOIN pvmts_message_user u 
+	on m.id = u.mid   where  u.user_id=#{userId} and m.message_type = #{massageType}  or (m.forced_push = 1 and  m.message_type = #{massageType} ) 
+	</select>
+	
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_message_system  where id in (${_parameter})
+	</select>		
+
+
+	<!-- 查看未读条数 -->
+	<select id="getNoRead" resultType="int">
+		select count(m.id) from pvmts_message_system m LEFT JOIN pvmts_message_user u 
+		on m.id = u.mid where u.isread = 0 and m.message_type = #{massageType}  and u.user_id = #{userId}
+		 <if test="massageStatus != null "> 
+		 <if test="massageStatus != 0 "> 
+              and  m.massage_status = #{massageStatus,jdbcType=NUMERIC}
+            </if>
+             </if>
+	</select>
+	<!-- 根据消息类型及登录用户是否是收件人获取List -->
+	<select id="getMassageByType"  resultMap="result">
+	select 
+		DISTINCT m.id,m.title,m.content,m.message_type,m.message_id,m.massage_status,m.forced_push,m.address_user,m.create_time,m.update_time,u.user_id user_id,u.isread isread,info.alarm_grade alarmgrade 
+	from pvmts_message_system m 
+		LEFT JOIN pvmts_message_user u 
+	on m.id = u.mid 
+	left join pvmts_alarm_info info on info.id = m.message_id 
+	where  u.user_id=#{userId} 
+	and (m.message_type = #{massageType} or  (m.forced_push = 1 and  m.message_type = #{massageType}))  
+	order by  m.create_time desc  limit #{startRow},#{pageSize}
+	</select>
+	
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.MessageSystemInfoPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_message_system( id,title,content,message_type,message_id,massage_status,address_user,forced_push,create_time,update_time ) values (#{id,jdbcType=INTEGER},#{title,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{messageType,jdbcType=NUMERIC},#{messageId,jdbcType=NUMERIC},#{massageStatus,jdbcType=NUMERIC},#{addressUser,jdbcType=VARCHAR},#{forcedPush,jdbcType=NUMERIC},NOW(),NOW())
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_message_system( id,title,content,message_type,message_id,massage_status,address_user,forced_push,create_time,update_time ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.title,jdbcType=VARCHAR},#{item.content,jdbcType=VARCHAR},#{item.messageType,jdbcType=NUMERIC},#{item.messageId,jdbcType=NUMERIC},#{item.massageStatus,jdbcType=NUMERIC},#{item.addressUser,jdbcType=VARCHAR},#{item.forcedPush,jdbcType=NUMERIC},NOW(),NOW() )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.MessageSystemInfoPO">
+		update pvmts_message_system set title=#{title,jdbcType=VARCHAR},content=#{content,jdbcType=VARCHAR},message_type=#{messageType,jdbcType=NUMERIC},message_id=#{messageId,jdbcType=NUMERIC},massage_status=#{massageStatus,jdbcType=NUMERIC},address_user=#{addressUser,jdbcType=VARCHAR},forced_push=#{forcedPush,jdbcType=NUMERIC},update_time=NOW() where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.MessageSystemInfoPO">
+		update pvmts_message_system
+        <set>
+            <if test="title != null "> 
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null "> 
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="messageType != null "> 
+                message_type = #{messageType,jdbcType=NUMERIC},
+            </if>
+            <if test="messageId != null "> 
+                message_id = #{messageId,jdbcType=NUMERIC},
+            </if>
+            <if test="massageStatus != null "> 
+                massage_status = #{massageStatus,jdbcType=NUMERIC},
+            </if>
+            <if test="addressUser != null "> 
+                address_user = #{addressUser,jdbcType=VARCHAR},
+            </if>
+            <if test="forcedPush != null "> 
+                forced_push = #{forcedPush,jdbcType=NUMERIC},
+            </if>
+                update_time = NOW(),
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_message_system where id = #{id,jdbcType=INTEGER}
+	</delete>	
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.MessageSystemInfoPO">
+		delete from pvmts_message_system
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

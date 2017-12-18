@@ -1,0 +1,627 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="monitorDatail">
+	<resultMap type="java.util.HashMap" id="monitorMap">
+		<result property="ID" column="AMINFOID"/>
+		<result property="AMINFONAME" column="NAME"/>
+		<result property="ITJED" column="ITJED"/>
+		<result property="ITJEM" column="ITJEM"/>
+		<result property="ITJEY" column="ITJEY"/>
+		<result property="POELET_ID" column="POELET_ID"/>
+		<result property="POELEU_ID" column="POELEU_ID"/>
+		<result property="POELEG_ID" column="POELEG_ID"/>
+		<result property="POELEP_ID" column="POELEP_ID"/>
+		<result property="ITJEA_ID" column="ITJEA_ID"/>
+		<result property="FITJED" column="FITJED"/>
+		<result property="FITJEM" column="FITJEM"/>
+		<result property="FITJEY" column="FITJEY"/>
+		<result property="FPOELEP_ID" column="FPOELEP_ID"/>
+		<result property="FPOELEG_ID" column="FPOELEG_ID"/>
+		<result property="FPOELEU_ID" column="FPOELEU_ID"/>
+		<result property="FPOELET_ID" column="FPOELET_ID"/>
+		<result property="FITJEA_ID" column="FITJEA_ID"/>
+		<result property="PEAKP" column="PEAKP"/>
+		<result property="VALLEYP" column="VALLEYP"/>
+		<result property="GENERATP" column="GENERATP"/>
+		<result property="TIPP" column="TIPP"/>
+		<result property="ACVA_ID" column="ACVA_ID"/>
+		<result property="ACVB_ID" column="ACVB_ID"/>
+		<result property="ACVC_ID" column="ACVC_ID"/>	
+	
+		<result property="ACIA_ID" column="ACIA_ID"/>
+		<result property="ACIB_ID" column="ACIB_ID"/>
+		<result property="ACIC_ID" column="ACIC_ID"/>
+		
+		<result property="ACPA_ID" column="ACPA_ID"/>
+		<result property="ACPB_ID" column="ACPB_ID"/>
+		<result property="ACPC_ID" column="ACPC_ID"/>
+		
+		<result property="P_ID" column="P_ID"/>
+		<result property="Q_ID" column="Q_ID"/>
+		<result property="F_ID" column="F_ID"/>
+		<result property="HZ_ID" column="HZ_ID"/>
+		
+		<result property="PEAKPRICE" column="PEAKPRICE"/>
+		<result property="NORMALPRICE" column="NORMALPRICE"/>
+		<result property="TIPPRICE" column="TIPPRICE"/>
+		<result property="EBPRICE" column="EBPRICE"/>
+		<result property="NETPRICE" column="NETPRICE"/>
+		<result property="SUBSIDY" column="SUBSIDY"/>
+		<result property="DISCOUNT" column="DISCOUNT"/>
+		<result property="PERFID" column="PERFID"/>
+	</resultMap>
+	<!-- 加载页面初始化数据 -->
+	<select id="loadData" parameterType="java.util.HashMap" resultMap="monitorMap">
+
+		SELECT
+			*
+		FROM
+			measurementtype a
+		WHERE
+			a.ID IN (
+			SELECT
+				t.TYPE
+			FROM
+				analoginput t
+			WHERE
+				t.EQUIPMENTCONTAINER_TABLEID = 5
+			AND t.EQUIPMENTCONTAINER_ID = 1
+		)
+	</select>
+	
+	<resultMap type="java.util.HashMap" id="monitornbqMap">
+		<result property="ID" column="ID"/>
+		<result property="name" column="name"/>
+	</resultMap>
+	
+	<select id="loadnbqData" parameterType="java.util.HashMap" resultMap="monitornbqMap">
+		SELECT 
+			info.farmid farmid,
+			info.ID ID,
+			info.name name,
+			(SELECT name FROM MT_PROJECT WHERE id = info.farmid) AS faname
+			from mc_inverter info
+			where 
+			FARMID = #{_parameter}
+	</select>
+	<!-- <select id="loadnbqData" parameterType="java.util.HashMap" resultMap="monitornbqMap">
+		SELECT 
+			info.farm_id farmid,
+			info.ID ID,
+			info.name name,
+			(SELECT name FROM pvmts_base_farm_info WHERE id = info.farm_id) AS faname
+			from pvmts_base_inverter_info info
+			where 
+			FARM_ID = #{_parameter}
+	</select> -->
+	<select id="loadnbqDataTable" parameterType="java.util.HashMap" resultType="java.lang.String">
+		SELECT 
+			NAME 
+		FROM 
+			measurementtype 
+		WHERE 
+			id in (
+				SELECT 
+					TYPE 
+				from 
+					analoginput 
+				WHERE 
+					EQUIPMENTCONTAINER_ID=#{_parameter} 
+				AND 
+					EQUIPMENTCONTAINER_TABLEID=3)
+	</select>
+	 
+	<resultMap type="java.util.HashMap" id="nbqMap">
+		<result property="hdtime" column="hdtime"/>
+		<result property="value" column="value"/>
+	</resultMap>
+<!-- 	 <select id="loadnbqLine" parameterType="java.util.HashMap" resultMap="nbqMap"> -->
+<!-- 		SELECT HDTIME hdtime, VALUE value FROM ${table} WHERE id='${id}'  -->
+	
+<!-- 	 	<if test="startdate != null and startdate != ''"> -->
+<!-- 			and  UNIX_TIMESTAMP(hdtime) &gt; '${startdate}' -->
+<!-- 		</if> -->
+<!-- 		<if test="enddate != null and enddate != ''"> -->
+<!-- 			and  UNIX_TIMESTAMP(hdtime) &lt;  '${enddate}' -->
+<!-- 		</if>  -->
+<!-- 		 ORDER BY HDTIME -->
+<!-- 	</select> -->
+	<!-- <resultMap type="java.util.HashMap" id="monitorairMap">
+		<result property="tranrad" column="tranrad"/>
+		<result property="envtem" column="envtem"/>
+		<result property="packtemp" column="packtemp"/>
+		<result property="envhum" column="envhum"/>
+		<result property="windsp" column="windsp"/>
+	    <result property="winddir" column="winddir"/>
+	</resultMap>
+	
+	<select id="loadairData" parameterType="java.util.HashMap" resultMap="monitorairMap">
+				SELECT 
+					(SELECT sndvalue FROM MC_POINT WHERE pid = info.TRANRAD_ID) AS tranrad,
+					(SELECT sndvalue FROM MC_POINT WHERE pid = info.ENVTEM_ID) AS envtem,
+					(SELECT sndvalue FROM MC_POINT WHERE pid = info.PACKTEMP_ID) AS packtemp,
+					(SELECT sndvalue FROM MC_POINT WHERE pid = info.ENVHUM_ID) AS envhum,
+					(SELECT sndvalue FROM MC_POINT WHERE pid = info.WINDSP_ID) AS windsp,
+					(SELECT sndvalue FROM MC_POINT WHERE pid = info.WINDDIR_ID) AS winddir
+				FROM MC_METEORINFO info
+				where 1=1
+		<if test="_parameter != null and _parameter !=''" >
+				and info.farmid= #{_parameter}
+		</if>
+		 
+	</select> -->
+	<resultMap type="java.util.HashMap" id="mcmeteormonitor">
+		<result property="id" column="id"/>
+		<result property="equipmenttypeid" column="equipmenttypeid"/>
+		<result property="type" column="type"/>
+		<result property="name" column="name"/>
+	</resultMap>
+	
+	<select id="loadairData" parameterType="java.util.HashMap" resultMap="mcmeteormonitor">
+		  select id,equipmenttypeid from  mc_meteor_monitor where farmid = #{_parameter}
+	</select>
+	<select id="loadairDataTypeId" parameterType="java.util.HashMap" resultType="java.lang.String">
+		select name from measurementtype where id in (select 
+		  	type 
+		  from 
+		  	analoginput 
+		  where 
+		  	equipmentcontainer_id = ${id}
+		  and 
+		  	equipmentcontainer_tableid = ${equipmenttypeid})
+	</select>
+	<!-- <select id="loadairDataType" parameterType="java.util.HashMap" resultMap="mcmeteormonitor">
+		  select name from measurementtype where id = ${type}
+	</select> -->
+	
+		<resultMap type="java.util.HashMap" id="tjMap">
+		<result property="itstate" column="itstate"/>
+	
+	</resultMap>
+	
+	<select id="loadtjLine" parameterType="java.util.HashMap" resultMap="tjMap">
+				SELECT 
+					(SELECT SNIVALUE FROM MC_POINT WHERE pid = info.ITSTATE_ID) AS itstate
+				FROM MC_ITINFO info
+				where 1=1
+		<if test="_parameter != null and _parameter !=''" >
+				and info.farmid= #{_parameter}
+		</if>
+		 
+	</select>
+	
+	
+	<resultMap type="java.util.HashMap" id="timeMap">
+		<result property="MCTIME" column="MCTIME"/>
+		<result property="MONITORP" column="MONITORP"/>
+	</resultMap>
+	<!-- 加载曲线数据 -->
+	<select id="loadLineData" parameterType="java.util.HashMap" resultMap="timeMap">
+<!--		 	SELECT TO_CHAR(TO_DATE(19700101, 'yyyymmdd') + (DATATIME+28800) / 86400,'hh24:mi') AS MCTIME,P AS MONITORP-->
+<!--	 		 FROM MC_AMINFOARCH-->
+<!--			WHERE FARMID = ${monId} and AMINFOID=${aId}-->
+<!--			 AND TO_CHAR(TO_DATE(19700101, 'yyyymmdd') +(DATATIME+28800) / 86400,'yyyy-mm-dd')='2016-09-02'-->
+<!--			 ORDER BY DATATIME-->
+			 
+		SELECT
+			DATE_FORMAT(HDTIME, '%H:%i') AS MCTIME,
+		VALUE
+			AS MONITORP
+		FROM
+			${tableName}
+		WHERE
+			ID = 561 order by HDTIME
+	</select>
+
+	<!-- 保存设置数据 -->
+ 	<insert id="savePre" parameterType="java.util.HashMap">
+    	
+		insert into MC_PERFORMANCEINFO (FARMID,PEAKPRICE,NORMALPRICE,TIPPRICE,EBPRICE,NETPRICE,SUBSIDY,DISCOUNT,AID) values (
+			${farmid},
+			${peakprice},
+			${normalprice},
+			${tipprice},
+			${ebprice},
+			${netprice},
+			${subsidy},
+			${discount},
+			${aId}
+		)
+	</insert> 
+	
+	<update id="updatePre" parameterType="java.util.HashMap">
+		UPDATE MC_PERFORMANCEINFO T
+   		SET T.PEAKPRICE  = ${peakprice},
+	       T.NORMALPRICE = ${normalprice},
+	       T.TIPPRICE    = ${tipprice},
+	       T.EBPRICE     = ${ebprice},
+	       T.NETPRICE    = ${netprice},
+	       T.SUBSIDY     = ${subsidy},
+	       T.DISCOUNT    = ${discount}
+ 		WHERE T.ID=${perfId}
+	</update>
+	
+	
+	<insert id="saveFarm" parameterType="java.util.HashMap">
+		insert into MC_FARMTIMEINFO(FARMID,TTYPE,BEGINTIME,ENDTIME,AID) values (
+			${farmid},
+			${timeType},
+			'${beginTime}',
+			'${endTime}',
+			${aId}
+		)
+	</insert> 
+	<update id="updateFarm" parameterType="java.util.HashMap">
+		UPDATE MC_FARMTIMEINFO T
+   		SET T.TTYPE=${timeType},
+	        T.BEGINTIME='${beginTime}',
+	        T.ENDTIME='${endTime}'
+ 		WHERE T.ID=${infoId}
+	</update>
+	<resultMap type="java.util.HashMap" id="setMap">
+		<result property="ID" column="ID"/>
+		<result property="TTYPE" column="TTYPE"/>
+		<result property="BEGINTIME" column="BEGINTIME"/>
+		<result property="ENDTIME" column="ENDTIME"/>
+	</resultMap>
+	<!-- 加载曲线数据 -->
+	<select id="loadDeSet" parameterType="java.util.HashMap" resultMap="setMap">
+		 	SELECT T.ID,T.TTYPE,T.BEGINTIME,T.ENDTIME FROM MC_FARMTIMEINFO  T WHERE T.FARMID=${farmid} and T.AID=${aId} ORDER BY T.ID
+	</select>
+	
+	<delete id="delDataByid" parameterType="java.util.HashMap"  >
+		DELETE FROM MC_FARMTIMEINFO WHERE  ID= ${infoId}
+	</delete>
+	
+	
+	
+	<resultMap type="java.util.HashMap" id="cheakeidMap">
+  		<result property="n" column="n"/>
+		<result property="inp" column="inp"/>
+		<result property="itp" column="itp"/>
+		<result property="pofactor" column="pofactor"/>
+		<result property="ittemp" column="ittemp"/>
+        <result property="dgencap" column="dgencap"/>
+        <result property="MCTIME" column="MCTIME"/>
+        <result property="DATATIME" column="DATATIME"/>
+       	
+    </resultMap>
+	
+	<select id="selectbyeid"  resultMap="cheakeidMap">
+  		SELECT
+		    b.n n,
+			b.inp inp,
+			b.itp itp,
+			b.pofactor pofactor,
+			b.ittemp ittemp,
+			b.dgencap dgencap,
+			b.MCTIME MCTIME,
+			b.DATATIME DATATIME
+		FROM
+			(
+				SELECT
+					ROWNUM n,
+					A .*
+				FROM
+					(
+						SELECT
+							inp inp,
+							itp itp,
+							pofactor pofactor,
+							ittemp ittemp,
+							dgencap dgencap,
+							TO_CHAR (
+								TO_DATE (19700101, 'yyyymmdd ') + (DATATIME + 28800) / 86400,
+								'yyyymmdd hh24:mi'
+							) AS MCTIME,
+							TO_CHAR (
+								TO_DATE (19700101, 'yyyymmdd ') + (DATATIME + 28800) / 86400,
+								'yyyy-mm-dd hh24:mi:ss'
+							) AS DATATIME
+						FROM
+							MC_ITINFOARCH
+						WHERE
+							1 = 1
+						<if test="id != null and id != ''">
+							and farmid = '${id}' <!-- and DATATIME &gt; 1473240718 and DATATIME &lt; 1473241718  TO_CHAR(sl.RECORD_DATE,'yyyy-mm-dd hh24:mi:ss') -->
+						</if>	
+					 	<if test="startdate != null and startdate != ''">
+							and  DATATIME  &gt; '${startdate}'
+						</if>
+						<if test="enddate != null and enddate != ''">
+							and  DATATIME  &lt;  '${enddate}'
+						</if> 
+						<if test="iid != null and iid != ''">
+							and  itinfoid =   '${iid}'
+						</if> 
+						 ORDER BY DATATIME
+					) a
+			) b
+		<if test="page != null and page != ''">
+				where b.n &gt; (${page}-1)*${rows}*${timebw} and b.n &lt;= ${page}*${rows}*${timebw} order by DATATIME
+		</if>
+  	</select>
+  	
+  	
+    <select id="selectbyeidtotal"  resultType="java.lang.Integer"> 	
+  		SELECT
+  		    count(*)
+		FROM
+			MC_ITINFOARCH
+		WHERE
+			1 = 1
+		<if test="id != null and id != ''">
+			and farmid = '${id}' <!-- and DATATIME &gt; 1473240718 and DATATIME &lt; 1473241718  TO_CHAR(sl.RECORD_DATE,'yyyy-mm-dd hh24:mi:ss') -->
+		</if>	
+	 	<if test="startdate != null and startdate != ''">
+			and  DATATIME  &gt; '${startdate}'
+		</if>
+		<if test="enddate != null and enddate != ''">
+			and  DATATIME  &lt;  '${enddate}'
+		</if> 
+		<if test="iid != null and iid != ''">
+			and  itinfoid =   '${iid}'
+		</if> 
+		 ORDER BY DATATIME
+  	</select>
+  	
+  	
+  	  <select id="loadcountLine"  resultType="java.lang.Integer"> 	
+			SELECT 
+				count(*)
+			FROM MC_ITINFO info
+			where 1=1
+		<if test="_parameter != null and _parameter !=''" >
+				and info.farmid= #{_parameter}
+		</if>
+  	</select>
+  	
+  	
+  	<select id="loadallpLine"  resultType="java.lang.Integer"> 	
+			 SELECT    
+				SUM((SELECT sndvalue FROM MC_POINT WHERE pid = info.P_ID)) AS allp
+		     FROM MC_AMINFO info   where 1=1     
+		<if test="_parameter != null and _parameter !=''" >
+				and info.farmid= #{_parameter}
+		</if>
+  	</select>
+  	
+  	
+  	<select id="loadfitjeaLine"  resultType="java.lang.Integer"> 	
+			 	 SELECT    
+					SUM((SELECT sndvalue FROM MC_POINT WHERE pid = info.FITJEA_ID)) AS fitjea
+				 FROM MC_AMINFO info   where 1=1
+		<if test="_parameter != null and _parameter !=''" >
+				and info.farmid= #{_parameter}
+		</if>
+  	</select>
+  	
+  	 <select id="loadinstallLine"  resultType="java.lang.Integer"> 	
+			 	 SELECT INSTALL_CAPACITY FROM  MT_PROJECT where 1=1
+		<if test="_parameter != null and _parameter !=''" >
+				and id= #{_parameter}
+		</if>
+  	</select>
+  	
+  	 <select id="loaddirradiationLine"  resultType="java.lang.Integer"> 	
+			  SELECT    
+				(SELECT sndvalue FROM MC_POINT WHERE pid = info.DIRRADIATION_ID) AS dirradiation
+			  FROM MC_METEORINFO info   where 1=1 
+		<if test="_parameter != null and _parameter !=''" >
+				and info.farmid= #{_parameter}
+		</if>
+  	</select>
+
+  	<resultMap type="java.util.HashMap" id="loadStationDataMap">
+		<result property="ID" column="ID"/>
+		<result property="FORM_ID" column="FORM_ID"/>
+		<result property="TIME" column="TIME"/>
+		<result property="CreateTIME" column="CreateTIME"/>
+		<result property="Generation" column="Generation"/>
+		<result property="GenerationLosed" column="GenerationLosed"/>
+		<result property="GenerationOnLine" column="GenerationOnLine"/>
+		<result property="GenerationSelfUse" column="GenerationSelfUse"/>
+		<result property="SaveCoal" column="SaveCoal"/>
+		<result property="ReduceCarbonDioxode" column="ReduceCarbonDioxode"/>
+		<result property="EleIncome" column="EleIncome"/>
+		<result property="OnLineIncome" column="OnLineIncome"/>
+		<result property="SelfUseIncome" column="SelfUseIncome"/>
+		<result property="SubsidyIncome" column="SubsidyIncome"/>
+		<result property="TotalIncome" column="TotalIncome"/>
+		<result property="MCTIME" column="MCTIME"/>
+		<result property="MONITORP" column="MONITORP"/>
+		<result property="HDTIME" column="HDTIME"/>
+		<result property="VALUE" column="VALUE"/>
+		<result property="QUALITYCODE" column="QUALITYCODE"/>
+		<result property="INSTALL_CAPACITY" column="INSTALL_CAPACITY"/>
+		
+	</resultMap>
+	<select id="loadStation" resultMap="loadStationDataMap">
+  		SELECT 
+  			INSTALL_CAPACITY 
+  		FROM 
+  			mt_project 
+  		WHERE 
+  			ID = #{_parameter}
+  	</select>
+  	<select id="loadStationDayData" resultMap="loadStationDataMap">
+  		SELECT 
+  			* 
+  		FROM 
+  			mc_daily_generation 
+  		WHERE 
+  			FORM_ID = ${id} 
+  		AND 
+  			TIME = '${time}'
+  	</select>
+  	<select id="loadStationDayDataList" resultMap="loadStationDataMap">
+  		SELECT 
+  			* 
+  		FROM 
+  			mc_daily_generation 
+  		WHERE 
+  			FORM_ID = ${id} 
+  		AND 
+  			TIME &gt; '${startime}'
+  		AND TIME &lt; '${stoptime}'
+  	</select>
+  	<select id="loadStationMonthData" resultMap="loadStationDataMap">
+  		SELECT 
+  			* 
+  		FROM 
+  			mc_Month_generation 
+  		WHERE 
+  			FORM_ID = ${id} 
+  		AND 
+  			TIME = '${time}'
+  	</select>
+  	<select id="loadStationMonthDataList" resultMap="loadStationDataMap">
+  		SELECT 
+  			* 
+  		FROM 
+  			mc_Month_generation 
+  		WHERE 
+  			FORM_ID = ${id} 
+  		AND 
+  			TIME &gt; '${startime}'
+  		AND TIME &lt; '${stoptime}'
+  	</select>
+  	<select id="loadStationYearData" resultMap="loadStationDataMap">
+  		SELECT 
+  			* 
+  		FROM 
+  			mc_Year_generation 
+  		WHERE 
+  			FORM_ID = ${id} 
+  		AND 
+  			TIME = '${time}'
+  	</select>
+  	<select id="loadStationAllData" resultMap="loadStationDataMap">
+  		SELECT 
+  			* 
+  		FROM 
+  			mc_generation 
+  		WHERE 
+  			FORM_ID = ${id} 
+  	</select>
+  	<select id="loadStationEnergyLine" resultMap="loadStationDataMap">
+  		SELECT 
+  				time,Generation, GenerationLosed
+  			from 
+  				mc_daily_generation 
+  			WHERE 
+  				FORM_ID = ${id} 
+  			AND 
+  				TIME &gt; '${startime}' AND TIME &lt;'${stoptime}'
+  	</select>
+  	<select id="loadStationMonthEnergyLine" resultMap="loadStationDataMap">
+  		SELECT 
+  				time,Generation, GenerationLosed
+  			from 
+  				mc_month_generation 
+  			WHERE 
+  				FORM_ID = ${id} 
+  			AND 
+  				TIME &gt; '${startime}' AND TIME &lt;'${stoptime}'
+  	</select>
+  	<select id="loadStationP" resultMap="loadStationDataMap">
+  		SELECT * 
+  			from 
+  				${tablename} 
+	  		WHERE 
+	  			ID=(
+	  				SELECT id 
+				  		from 
+				  			analoginput 
+				  		WHERE 
+				  			EQUIPMENTCONTAINER_ID =${id}  
+				  		and 
+				  			EQUIPMENTCONTAINER_TABLEID=0 
+				  		AND TYPE = 561)
+  	</select>
+  	<select id="loadStationPTableEXIST" resultType="java.lang.String">
+  	select COUNT(table_name) 
+	  	from 
+	  		information_schema.`TABLES` 
+	  	where 
+	  		table_schema = 'davinci' 
+	  	and 
+	  		table_name = '${tablename}'
+  	</select>
+  	
+ 
+
+    
+<!--      	<select id="loadid"  resultType="java.lang.Integer"> 	 -->
+<!-- 				SELECT -->
+<!-- 					id -->
+<!-- 				FROM -->
+<!-- 					analoginput -->
+<!-- 				WHERE -->
+<!-- 					TYPE = '${type}' -->
+<!-- 				AND EQUIPMENTCONTAINER_ID = '${iid}' -->
+<!-- 				AND EQUIPMENTCONTAINER_TABLEID = '3'; -->
+<!--   	</select> -->
+  	
+  		<select id="loadname"  resultType="java.lang.Integer"> 	
+				SELECT
+					id
+				FROM
+					analoginput
+				WHERE
+					TYPE = '${type}'
+				AND EQUIPMENTCONTAINER_ID = '${iid}'
+				AND EQUIPMENTCONTAINER_TABLEID = '3';
+  	</select>
+  	
+ 	<resultMap type="java.util.HashMap" id="tabletimeMap">
+		<result property="table_name" column="table_name"/>
+	</resultMap>
+<!-- 	<select id="tables" parameterType="java.util.HashMap" resultMap="tabletimeMap"> -->
+<!-- 		 	SELECT -->
+<!-- 				table_name -->
+<!-- 			FROM -->
+<!-- 				information_schema.TABLES -->
+<!-- 			WHERE -->
+<!-- 				table_schema = 'yunengzhe' -->
+<!-- 			AND table_name &gt;= '${startTable}' -->
+<!-- 			AND table_name &lt;= '${endTable}' -->
+<!-- 	</select>  -->
+  	
+  	<!-- 加载页面发电时段数据 -->
+ 	<resultMap type="java.util.HashMap" id="setDataMap">
+		<result property="peakprice" column="peakprice"/>
+		<result property="pefrId" column="pefrId"/>
+		<result property="normalprice" column="normalprice"/>
+		<result property="tipprice" column="tipprice"/>
+		<result property="ebprice" column="ebprice"/>
+		<result property="netprice" column="netprice"/>
+		<result property="subsidy" column="subsidy"/>
+		<result property="discount" column="discount"/>
+		
+	</resultMap>
+	<select id="loadSetData" parameterType="java.util.HashMap" resultMap="setDataMap">
+		SELECT
+			t.id as pefrId,
+			t.peakprice,
+			t.normalprice,
+			t.tipprice,
+			t.ebprice,
+			t.netprice,
+			t.subsidy,
+			t.discount
+		FROM
+			mc_performanceinfo T
+		WHERE 1=1
+		
+		 <if test="farmid != null and farmid !=''" >
+				and T.FARMID = ${farmid}
+		  </if>
+		  <if test="aId != null and aId !=''" >
+				and T.aId = ${aId}
+		  </if>
+		ORDER BY
+			T.ID
+	</select> 
+</mapper>

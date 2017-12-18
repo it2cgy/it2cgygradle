@@ -1,0 +1,21 @@
+
+drop table if exists pvmts_version_info;
+
+/*==============================================================*/
+/* Table: pvmts_version_info                                    */
+/*==============================================================*/
+create table pvmts_version_info
+(
+   id                   int auto_increment not null,
+   version_type         varchar(64),
+   version_number       varchar(64),
+   version_status       int,
+   dowload_url          varchar(512),
+   version_message      varchar(1024),
+   craete_time          datetime,
+   update_time          datetime,
+   primary key (id)
+);
+
+INSERT INTO `pvmts_version_info` VALUES (1, '1', '1.0.4', 0, 'https://www.pgyer.com/2X9l', '更新', '2017-10-31 13:08:59', '2017-10-31 13:08:59');
+INSERT INTO `pvmts_version_info` VALUES (2, '2', '11.0.3', 0, 'https://www.pgyer.com/2X9l', '更新', '2017-10-31 13:08:59', '2017-10-31 13:08:59');

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.VersionInfoPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.VersionInfoPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="versionType" column="version_type" jdbcType="VARCHAR" />
+            <result property="versionNumber" column="version_number" jdbcType="VARCHAR" />
+            <result property="versionStatus" column="version_status" jdbcType="NUMERIC" />
+            <result property="dowloadUrl" column="dowload_url" jdbcType="VARCHAR" />
+            <result property="versionMessage" column="version_message" jdbcType="VARCHAR" />
+            <result property="craeteTime" column="craete_time" />
+            <result property="updateTime" column="update_time" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,version_type,version_number,version_status,dowload_url,version_message,craete_time,update_time
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "versionType != null ">	and version_type = #{versionType,jdbcType=VARCHAR }</if>
+            <if test= "versionNumber != null ">	and version_number = #{versionNumber,jdbcType=VARCHAR }</if>
+            <if test= "versionStatus != null ">	and version_status = #{versionStatus,jdbcType=NUMERIC }</if>
+            <if test= "dowloadUrl != null ">	and dowload_url = #{dowloadUrl,jdbcType=VARCHAR }</if>
+            <if test= "versionMessage != null ">	and version_message = #{versionMessage,jdbcType=VARCHAR }</if>
+            <if test= "craeteTime != null ">	and craete_time = #{craeteTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "versionType != null ">	and version_type like "%"#{versionType}"%"</if>
+            <if test= "versionNumber != null ">	and version_number like "%"#{versionNumber}"%"</if>
+            <if test= "versionStatus != null ">	and version_status = #{versionStatus,jdbcType=NUMERIC }</if>
+            <if test= "dowloadUrl != null ">	and dowload_url like "%"#{dowloadUrl}"%"</if>
+            <if test= "versionMessage != null ">	and version_message like "%"#{versionMessage}"%"</if>
+            <if test= "craeteTime != null ">	and craete_time = #{craeteTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "versionType != null ">	or version_type = #{versionType,jdbcType=VARCHAR }</if>
+            <if test= "versionNumber != null ">	or version_number = #{versionNumber,jdbcType=VARCHAR }</if>
+            <if test= "versionStatus != null ">	or version_status = #{versionStatus,jdbcType=NUMERIC }</if>
+            <if test= "dowloadUrl != null ">	or dowload_url = #{dowloadUrl,jdbcType=VARCHAR }</if>
+            <if test= "versionMessage != null ">	or version_message = #{versionMessage,jdbcType=VARCHAR }</if>
+            <if test= "craeteTime != null ">	or craete_time = #{craeteTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_version_info
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_version_info  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_version_info  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.VersionInfoPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_version_info( id,version_type,version_number,version_status,dowload_url,version_message,craete_time,update_time ) values (#{id,jdbcType=INTEGER},#{versionType,jdbcType=VARCHAR},#{versionNumber,jdbcType=VARCHAR},#{versionStatus,jdbcType=NUMERIC},#{dowloadUrl,jdbcType=VARCHAR},#{versionMessage,jdbcType=VARCHAR},#{craeteTime},#{updateTime} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_version_info( id,version_type,version_number,version_status,dowload_url,version_message,craete_time,update_time ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.versionType,jdbcType=VARCHAR},#{item.versionNumber,jdbcType=VARCHAR},#{item.versionStatus,jdbcType=NUMERIC},#{item.dowloadUrl,jdbcType=VARCHAR},#{item.versionMessage,jdbcType=VARCHAR},#{item.craeteTime},#{item.updateTime} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.VersionInfoPO">
+		update pvmts_version_info set version_type=#{versionType,jdbcType=VARCHAR},version_number=#{versionNumber,jdbcType=VARCHAR},version_status=#{versionStatus,jdbcType=NUMERIC},dowload_url=#{dowloadUrl,jdbcType=VARCHAR},version_message=#{versionMessage,jdbcType=VARCHAR},craete_time=#{craeteTime},update_time=#{updateTime} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.VersionInfoPO">
+		update pvmts_version_info
+        <set>
+            <if test="versionType != null "> 
+                version_type = #{versionType,jdbcType=VARCHAR},
+            </if>
+            <if test="versionNumber != null "> 
+                version_number = #{versionNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="versionStatus != null "> 
+                version_status = #{versionStatus,jdbcType=NUMERIC},
+            </if>
+            <if test="dowloadUrl != null "> 
+                dowload_url = #{dowloadUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="versionMessage != null "> 
+                version_message = #{versionMessage,jdbcType=VARCHAR},
+            </if>
+            <if test="craeteTime != null "> 
+                craete_time = #{craeteTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_version_info where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.VersionInfoPO">
+		delete from pvmts_version_info
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

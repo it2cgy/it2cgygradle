@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="proInformation">
+	<!-- 查询电站列表 -->
+	<resultMap type="java.util.HashMap" id="proMap">
+		<result property="proId" column="PROID"/>
+        <result property="proName" column="PRONAME"/>
+        <result property="role_proId" column="ROLE_PROID"/>
+    </resultMap>
+    <select id="loadProList"  parameterType="java.util.HashMap"  resultMap="proMap">
+  		 SELECT PRO.NAME AS PRONAME,PRO.ID AS PROID,R.ROLE_ID AS ROLE_PROID
+		  FROM MT_PROJECT PRO
+		  LEFT JOIN R_MT_PRO_USER_ROLE R
+		    ON PRO.ID = R.PRO_ID
+		 WHERE 1=1
+		 <if test="userId != null and userId !=''" >
+			and R.USER_ID = ${userId} 
+		 </if>
+		  <if test="proId != null and proId !=''" >
+			and PRO.ID = ${proId} 
+		 </if>
+		ORDER BY PRO.ID
+  	</select>
+  	
+  	
+  	
+  	<select id="getProInfoById"  parameterType="java.util.HashMap"  resultMap="proMap">
+  		 SELECT PRO.NAME AS PRONAME,PRO.ID AS PROID
+		  FROM MT_PROJECT PRO
+		 WHERE 1=1
+		 <if test="proId != null and proId !=''" >
+			and PRO.ID = ${proId} 
+		 </if>
+		ORDER BY PRO.ID
+  	</select>
+</mapper>
+

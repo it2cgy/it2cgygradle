@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--事项处理 -->
+<mapper namespace="matterHandle">
+  <!-- 加载处理人员列表  -->
+  <resultMap type="java.util.HashMap" id="listMap">
+	  <result property="id" column="ID"/>
+      <result property="text" column="REALNAME"/>
+  </resultMap>
+  <select id="getUsers" parameterType="java.util.HashMap" resultMap="listMap">
+  	  SELECT T.ID,T.REALNAME FROM MT_USER T LEFT JOIN R_MT_PRO_USER_ROLE R ON T.ID=R.USER_ID 
+  	  WHERE 1=1
+  	  	<if test="proId != null and proId !=''" ><!-- 电站ID -->
+			AND  R.PRO_ID=${proId}
+		</if>
+		<if test="roleId != null and roleId !=''" ><!-- 用户角色 -->
+			AND  R.ROLE_ID=${roleId}
+		</if>
+  </select>
+  	<!-- 事项表字段 -->
+ 	<sql id="processList" >
+   		id, parent_id,form_flow_code,pro_id,process_user_role,process_time,create_date,create_user_id,form_id,remarks,process_id,form_name,protype,form_flow_num,state
+ 	</sql>
+ 	<!-- 创建事项 -->
+	<insert id="saveProcess" parameterType="workFlow">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+      	 	select SEQ_MT_WORKFLOW_ITEM_ID.nextval as id from dual 
+  	 	</selectKey>
+			insert into MT_WORKFLOW_ITEM (<include refid="processList"/>) values (
+			#{id,jdbcType=INTEGER},
+			#{parent_id,jdbcType=INTEGER},
+			#{form_flow_code,jdbcType=INTEGER},
+			#{pro_id,jdbcType=INTEGER},
+			#{process_user_role,jdbcType=INTEGER},
+			to_date(#{process_time,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			to_date(#{create_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			#{create_user_id,jdbcType=VARCHAR},
+			#{form_id,jdbcType=INTEGER},
+			#{remarks,jdbcType=VARCHAR},
+			#{processId,jdbcType=INTEGER},
+			#{form_name,jdbcType=VARCHAR},
+			#{proType,jdbcType=INTEGER},
+			#{form_flow_num,jdbcType=VARCHAR},
+			0
+			)
+	</insert>
+	
+
+	<select id="getEventId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT T.ID FROM MT_EVENT T
+		WHERE T.STATE='0'
+		 <if test="_parameter != null and _parameter !=''" >
+			and T.PRO_ID= #{_parameter}
+		  </if>
+	</select>
+	<!-- 獲取調度中心是否派人 -->
+	<select id="getCenterNum" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT COUNT(*) FROM MT_FAULT_ANALYSIS T WHERE T.IS_SEND_PEOPLE=1 
+		 <if test="_parameter != null and _parameter !=''" >
+			AND T.EVENT_ID= #{_parameter}
+		 </if>
+	</select>
+	<!-- 获取调度中心工作日志表 -->
+	<select id="getWorklogId" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT T.ID FROM  MT_CENTER_WORKLOG T WHERE T.EVENT_ID= #{_parameter}
+	</select>
+	
+	<!-- ${processId} -->
+	<insert id="addEvent" parameterType="java.util.HashMap">
+		insert into MT_EVENT (id,pro_id,begintime) values (
+			${eventId},${proId},sysdate
+		)
+	</insert> 
+	 
+	 <!-- 增加投诉记录表数据-->
+	<insert id="addComplain" parameterType="java.util.HashMap">
+		insert into MT_COMPLAINT (id,pro_id,process_id,form_flow_num) values (
+			${complainId},${proId},${processId},'${flowNum}'
+		)
+	</insert> 
+	<select id="getCheckupId"  resultType="java.lang.String">
+		select SEQ_MT_CHECKUP_ID.nextval as id from dual
+	</select>
+	 
+ 	<!-- 创建电站体检 -->
+	<insert id="addCheckUp" parameterType="checkup">
+			insert into mt_checkup (id,event_id,process_id,form_flow_num) values (
+				#{id,jdbcType=INTEGER},
+				#{event_id,jdbcType=INTEGER},
+				#{processid,jdbcType=INTEGER},
+				#{form_flow_num,jdbcType=VARCHAR}
+			)
+	</insert><!--
+	
+	
+	
+	 --><!-- 查询待办事项 -->
+	 <resultMap type="java.util.HashMap" id="proMap">
+		<result property="ID" column="ID"/>
+		<result property="PARENT_ID" column="PARENT_ID"/>
+		<result property="PRO_ID" column="PRO_ID"/>
+		<result property="CREATE_DATE" column="CREATE_DATE"/>
+		<result property="REALNAME" column="REALNAME"/>
+		<result property="REMARKS" column="REMARKS"/>
+		<result property="PROCESSNAME" column="PROCESSNAME"/>
+		<result property="ROLENAME" column="ROLENAME"/>
+		<result property="PRONAME" column="PRONAME"/>
+		<result property="ARCHIEVENUM" column="ARCHIEVENUM"/>
+		<result property="PROCESS_ID" column="PROCESS_ID"/>
+		<result property="FORMNAME" column="FORMNAME"/>
+		<result property="STATENAME" column="STATENAME"/>
+		<result property="WORKLOGID" column="WORKLOGID"/>
+		<result property="FORM_FLOW_NUM" column="FORM_FLOW_NUM"/>
+	</resultMap>
+	<select id="loadMatter" parameterType="java.util.HashMap" resultMap="proMap">
+	      SELECT A.ID,
+	           A.PARENT_ID,
+	           A.PRO_ID,
+	           TO_CHAR(A.CREATE_DATE,'yyyy-MM-dd hh24:mi:ss') as CREATE_DATE,
+	           D.REALNAME,
+	           A.REMARKS,
+	           C.NAME AS ROLENAME,
+	          (CASE WHEN A.PROTYPE=1 THEN '故障反馈' WHEN A.PROTYPE=2 THEN '电站体检' WHEN A.PROTYPE=3 THEN '投诉记录' WHEN A.PROTYPE=4 THEN '离场申请' END) AS PROCESSNAME,
+	           E.NAME AS PRONAME,
+	           B.ARCHIEVE_NUM AS ARCHIEVENUM,
+	           B.ID AS EVENTID,A.PROCESS_ID ,  
+	         <if test="type == 4 and type !='' and type != null"><!--区分事项类型 -->
+				 (CASE WHEN A.FORM_NAME='startevent1' THEN '待处理-离场申请' 
+	                   WHEN A.FORM_NAME='leaveFlow1' THEN '待处理-调度中心审核'
+	                   WHEN A.FORM_NAME='leaveFlow2' THEN '待处理-电站病历表填写'
+	                   WHEN A.FORM_NAME='leaveFlow3' THEN '待处理-调度中心审核'
+	                   WHEN A.FORM_NAME='leaveFlow4' THEN '待处理-现场工作总结表'
+	                   WHEN A.FORM_NAME='leaveFlow5' THEN '待处理-调度中心审核'
+	                   WHEN A.FORM_NAME='leaveFlow6' THEN '待处理-调度中心工作日志表'
+	              END) AS STATENAME,
+			 </if>
+	         <if test="type == 3 and type !='' and type != null"><!--区分事项类型 -->
+				 (CASE WHEN A.FORM_NAME='startEvent' THEN '待处理-投诉记录'
+	                   WHEN A.FORM_NAME='complain' THEN '待处理-投诉记录'
+	                   WHEN A.FORM_NAME='centerAnalysis' THEN '待处理-调度中心审核'
+	              END) AS STATENAME,
+			 </if>
+	         <if test="type == 2 and type !='' and type != null"><!--区分事项类型 -->
+				 (CASE WHEN A.FORM_NAME='startEvent' THEN '待处理-电站体检'
+	                   WHEN A.FORM_NAME='powercheck' THEN '待处理-调度中心审核'
+	                   WHEN A.FORM_NAME='centerAnalysis' THEN '待处理-调度中心审核'
+	              END) AS STATENAME,
+			 </if>
+			 <if test="type == 1 and type !='' and type != null"><!--区分事项类型 -->
+				 (CASE WHEN A.FORM_NAME='startEvent' THEN '待处理-故障反馈'
+	                   WHEN A.FORM_NAME='faultFeedback' THEN '待处理-调度中心分析'
+	                   WHEN A.FORM_NAME='centerAnalysis' THEN '待处理-检修工作单'
+	                   WHEN A.FORM_NAME='isSendpeople' THEN '待处理-检修计划表'
+	                   WHEN A.FORM_NAME='plans' THEN '待处理-实际缺陷故障表'
+	                   WHEN A.FORM_NAME='actualDefect' THEN '待处理-故障缺陷处理'
+	              END
+	             ) AS STATENAME,
+	          </if> 
+	             A.FORM_NAME AS FORMNAME,
+	             F.ID AS WORKLOGID,
+	             A.FORM_FLOW_NUM
+		      FROM MT_WORKFLOW_ITEM A
+		      LEFT JOIN MT_EVENT B
+		        ON A.FORM_ID = B.ID
+		      LEFT JOIN MT_USERROLE C
+		        ON A.PROCESS_USER_ROLE = C.ID
+		      LEFT JOIN MT_USER D
+		        ON A.CREATE_USER_ID = D.ID
+		      LEFT JOIN MT_PROJECT E
+		        ON E.ID=A.PRO_ID
+		      LEFT JOIN MT_CENTER_WORKLOG F 
+                ON B.ID=F.EVENT_ID
+			   WHERE 1=1
+			 <if test="type != null and type !=''" ><!--区分事项类型 -->
+				AND A.PROTYPE=${type}
+			</if>
+			<if test="proId != null and proId !=''" ><!-- 根据电站ID 来区分流程 -->
+				AND A.PRO_ID=${proId}
+			</if>
+			<if test="ids != null and ids !=''" ><!-- 根据电站ID 来区分流程 -->
+				AND A.PROCESS_ID in (${ids})
+			</if>
+			<if test="pname != null and pname !=''" ><!--电站名称-->
+				 AND E.NAME LIKE '%${pname}%'
+			</if>
+			<if test="startDate != null and startDate !=''" ><!-- 根据电站ID 来区分流程 -->
+				<![CDATA[AND TO_CHAR(A.CREATE_DATE,'yyyy-MM-dd hh24:mi:ss') > '${startDate}']]>	
+			</if>
+			<if test="endDate != null and endDate !=''" ><!-- 根据电站ID 来区分流程 -->
+				<![CDATA[AND TO_CHAR(A.CREATE_DATE,'yyyy-MM-dd hh24:mi:ss') < '${endDate}']]>	
+			</if>
+				ORDER BY A.CREATE_DATE
+	</select>
+	
+	<!-- 加载已处理事项 -->
+	<select id="loadMatterProcess" parameterType="java.util.HashMap" resultMap="proMap">
+	      SELECT A.ID,
+	           A.PARENT_ID,
+	           A.PRO_ID,
+	           TO_CHAR(A.CREATE_DATE,'yyyy-MM-dd hh24:mi:ss') as CREATE_DATE,
+	           D.REALNAME,
+	           A.REMARKS,
+	           C.NAME AS ROLENAME,
+	          (CASE WHEN A.PROTYPE=1 THEN '故障反馈' WHEN A.PROTYPE=2 THEN '电站体检' WHEN A.PROTYPE=3 THEN '投诉记录' WHEN A.PROTYPE=4 THEN '离场申请' END) AS PROCESSNAME,
+	           E.NAME AS PRONAME,
+	           B.ARCHIEVE_NUM AS ARCHIEVENUM,
+	           B.ID AS EVENTID,A.PROCESS_ID ,  
+	         <if test="type == 4 and type !='' and type != null"><!--区分事项类型 -->
+				 (CASE WHEN A.FORM_NAME='startevent1' THEN '待处理-离场申请' 
+	                   WHEN A.FORM_NAME='leaveFlow1' THEN '待处理-调度中心审核'
+	                   WHEN A.FORM_NAME='leaveFlow2' THEN '待处理-电站病历表填写'
+	                   WHEN A.FORM_NAME='leaveFlow3' THEN '待处理-调度中心审核'
+	                   WHEN A.FORM_NAME='leaveFlow4' THEN '待处理-现场工作总结表'
+	                   WHEN A.FORM_NAME='leaveFlow5' THEN '待处理-调度中心审核'
+	                   WHEN A.FORM_NAME='leaveFlow6' THEN '待处理-调度中心工作日志表'
+	              END) AS STATENAME,
+			 </if>
+	         <if test="type == 3 and type !='' and type != null"><!--区分事项类型 -->
+				 (CASE WHEN A.FORM_NAME='startEvent' THEN '待处理-投诉记录'
+	                   WHEN A.FORM_NAME='complain' THEN '待处理-投诉记录'
+	                   WHEN A.FORM_NAME='centerAnalysis' THEN '待处理-调度中心审核'
+	              END) AS STATENAME,
+			 </if>
+	         <if test="type == 2 and type !='' and type != null"><!--区分事项类型 -->
+				 (CASE WHEN A.FORM_NAME='startEvent' THEN '待处理-电站体检'
+	                   WHEN A.FORM_NAME='powercheck' THEN '待处理-调度中心审核'
+	                   WHEN A.FORM_NAME='centerAnalysis' THEN '待处理-调度中心审核'
+	              END) AS STATENAME,
+			 </if>
+			 <if test="type == 1 and type !='' and type != null"><!--区分事项类型 -->
+				 (CASE WHEN A.FORM_NAME='startEvent' THEN '待处理-故障反馈'
+	                   WHEN A.FORM_NAME='faultFeedback' THEN '待处理-调度中心分析'
+	                   WHEN A.FORM_NAME='centerAnalysis' THEN '待处理-检修工作单'
+	                   WHEN A.FORM_NAME='isSendpeople' THEN '待处理-检修计划表'
+	                   WHEN A.FORM_NAME='plans' THEN '待处理-实际缺陷故障表'
+	                   WHEN A.FORM_NAME='actualDefect' THEN '待处理-故障缺陷处理'
+	              END
+	             ) AS STATENAME,
+	          </if> 
+	             A.FORM_NAME AS FORMNAME,
+	             F.ID AS WORKLOGID,
+	             A.FORM_FLOW_NUM
+		      FROM MT_WORKFLOW_ITEM A
+		      LEFT JOIN MT_EVENT B
+		        ON A.FORM_ID = B.ID
+		      LEFT JOIN MT_USERROLE C
+		        ON A.PROCESS_USER_ROLE = C.ID
+		      LEFT JOIN MT_USER D
+		        ON A.CREATE_USER_ID = D.ID
+		      LEFT JOIN MT_PROJECT E
+		        ON E.ID=A.PRO_ID
+		      LEFT JOIN MT_CENTER_WORKLOG F 
+                ON B.ID=F.EVENT_ID AND F.PROCESS_ID=A.PROCESS_ID
+			   WHERE 1=1
+			 <if test="type != null and type !=''" ><!--区分事项类型 -->
+				AND A.PROTYPE=${type}
+			</if>
+			<if test="proId != null and proId !=''" ><!-- 根据电站ID 来区分流程 -->
+				AND A.PRO_ID=${proId}
+			</if>
+			<if test="ids != null and ids !=''" ><!-- 根据电站ID 来区分流程 -->
+				AND A.PROCESS_ID not in (${ids})
+			</if>
+			<if test="pname != null and pname !=''" ><!--电站名称-->
+				 AND E.NAME LIKE '%${pname}%'
+			</if>
+			<if test="startDate != null and startDate !=''" ><!-- 根据电站ID 来区分流程 -->
+				<![CDATA[AND TO_CHAR(A.CREATE_DATE,'yyyy-MM-dd hh24:mi:ss') > '${startDate}']]>	
+			</if>
+			<if test="endDate != null and endDate !=''" ><!-- 根据电站ID 来区分流程 -->
+				<![CDATA[AND TO_CHAR(A.CREATE_DATE,'yyyy-MM-dd hh24:mi:ss') < '${endDate}']]>	
+			</if>
+				ORDER BY A.CREATE_DATE
+	</select>
+	
+	<!-- 获取投诉记录的ID -->
+	<select id="getComplainId"  resultType="java.lang.String">
+		 select SEQ_MT_COMPLAINT_ID.nextval as id from dual
+	</select>
+	<!--新增离场申请表 -->
+	<insert id="addLeaveCheck" parameterType="leaveCheck">
+			insert into MT_LEAVE_CHECK (id,event_id,process_id,form_flow_num) values (
+				#{id,jdbcType=INTEGER},
+				#{event_id,jdbcType=INTEGER},
+				#{processid,jdbcType=INTEGER},
+				'0002'
+			)
+	</insert> 
+	
+	<select id="getLeaveCheckId"  resultType="java.lang.String">
+	   select SEQ_MT_LEAVE_CHECK_ID.nextval as id from dual
+	</select>
+	
+	
+	<resultMap type="java.util.HashMap" id="itemMap">
+		<result property="ITEMID" column="ID"/>
+		<result property="ITEMNAME" column="NAME"/>
+	</resultMap>
+	<select id="getItemType" parameterType="java.util.HashMap" resultMap="itemMap">
+	     SELECT ID,NAME FROM MT_CHECKUP_ITEM_TYPE
+	</select>
+	<insert id="addItem" parameterType="java.util.HashMap">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+          select SEQ_MT_CHECKUP_RESULT_ID.nextval as id from dual
+    	</selectKey>
+			insert into MT_CHECKUP_RESULT (id,checkup_id,item_type) values (
+				#{id,jdbcType=INTEGER},
+				#{checkid,jdbcType=INTEGER},
+				#{ITEMID,jdbcType=INTEGER}
+			)
+	</insert> 
+	
+	<insert id="addLeaveItem" parameterType="java.util.HashMap">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+          select SEQ_MT_LEAVE_CHECK_RESULT_ID.nextval as id from dual
+    	</selectKey>
+			insert into MT_LEAVE_CHECK_RESULT (id,checkup_id,item_type) values (
+				#{id,jdbcType=INTEGER},
+				#{checkup_id,jdbcType=INTEGER},
+				#{ITEMID,jdbcType=INTEGER}
+			)
+	</insert> 
+	
+	<resultMap type="java.util.HashMap" id="leaveCheckMap">
+		<result property="ITEMID" column="ID"/>
+		<result property="ITEMNAME" column="NAME"/>
+	</resultMap>
+	<select id="getCheckItemList" parameterType="java.util.HashMap" resultMap="leaveCheckMap">
+	    SELECT ID,NAME FROM MT_LEAVE_CHECK_ITEM_TYPE
+	</select>
+	
+	<!-- 新增电站病例表 -->
+	<insert id="addMTcase" parameterType="java.util.HashMap">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+          select SEQ_MT_CASE_ID.nextval as id from dual
+    	</selectKey>
+			insert into MT_CASE(id,event_id,process_id,form_flow_num) values (
+				#{id,jdbcType=INTEGER},
+				#{eventId,jdbcType=INTEGER},
+				#{processId,jdbcType=INTEGER},
+				'0003'
+			)
+	</insert> 
+	
+	
+		<!-- 新增现场总结表 -->
+	<insert id="addMTsummary" parameterType="java.util.HashMap">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+       		 select SEQ_MT_SUMMARY_ID.nextval as id from dual
+    	</selectKey>
+			insert into MT_SUMMARY(id,event_id,process_id,form_flow_num) values (
+				#{id,jdbcType=INTEGER},
+				#{eventId,jdbcType=INTEGER},
+				#{processId,jdbcType=INTEGER},
+				'0004'
+			)
+	</insert> 
+	
+		<!-- 新增调度中心工作日志表 -->
+	<insert id="addCenterworklog" parameterType="java.util.HashMap">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+       		 select SEQ_MT_CENTER_WORKLOG_ID.nextval as id from dual
+    	</selectKey>
+			insert into MT_CENTER_WORKLOG(id,event_id,process_id,form_flow_num) values (
+				#{id,jdbcType=INTEGER},
+				#{eventId,jdbcType=INTEGER},
+				#{processId,jdbcType=INTEGER},
+				'0001'
+			)
+	</insert> 
+	
+	  <!-- 加载当前电站是否存在未完成的流程  -->
+  <resultMap type="java.util.HashMap" id="pMap">
+	  <result property="id" column="ID"/>
+  </resultMap>
+  <select id="getProcessItem" parameterType="java.util.HashMap" resultMap="pMap">
+  		SELECT T.ID FROM MT_WORKFLOW_ITEM T LEFT JOIN MT_EVENT M ON T.FORM_ID=M.ID WHERE M.STATE=0 
+  		<if test="proType != null and proType !=''" >
+			AND T.PROTYPE=${proType}
+		</if>
+  		<if test="proId != null and proId !=''" >
+			AND T.PRO_ID=${proId}
+		</if>
+  </select>
+  
+  	<!-- 更新电站体检表流水号 -->
+	<update id="updateFlownum" parameterType="java.util.HashMap">
+		UPDATE mt_checkup 
+			SET form_flow_num='${nextNum}',STATE=${state}
+			WHERE process_id= ${processId}
+	</update>
+	
+	<update id="updateComplainNum" parameterType="java.util.HashMap">
+		UPDATE MT_COMPLAINT 
+			SET form_flow_num='${nextNum}',state=1
+			WHERE process_id= ${processId}
+	</update>
+	<update id="updateComplainCenter" parameterType="java.util.HashMap">
+		UPDATE MT_COMPLAINT_CONTENT 
+			SET state=1,respondent_userid=${userId}
+			WHERE process_id= ${processId}
+	</update>
+</mapper>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.NoticeReaderPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.NoticeReaderPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="noticeId" column="notice_id" jdbcType="NUMERIC" />
+            <result property="userId" column="user_id" jdbcType="NUMERIC" />
+            <result property="type" column="type" jdbcType="NUMERIC" />
+            <result property="readTime" column="read_time" />
+            <result property="counts" column="counts" jdbcType="NUMERIC" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,notice_id,user_id,type,read_time,counts,create_time,update_time
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "noticeId != null ">	and notice_id = #{noticeId,jdbcType=NUMERIC }</if>
+            <if test= "userId != null ">	and user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "type != null ">	and type = #{type,jdbcType=NUMERIC }</if>
+            <if test= "readTime != null ">	and read_time = #{readTime }</if>
+            <if test= "counts != null ">	and counts = #{counts,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "noticeId != null ">	and notice_id = #{noticeId,jdbcType=NUMERIC }</if>
+            <if test= "userId != null ">	and user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "type != null ">	and type = #{type,jdbcType=NUMERIC }</if>
+            <if test= "readTime != null ">	and read_time = #{readTime }</if>
+            <if test= "counts != null ">	and counts = #{counts,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "noticeId != null ">	or notice_id = #{noticeId,jdbcType=NUMERIC }</if>
+            <if test= "userId != null ">	or user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "type != null ">	or type = #{type,jdbcType=NUMERIC }</if>
+            <if test= "readTime != null ">	or read_time = #{readTime }</if>
+            <if test= "counts != null ">	or counts = #{counts,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_notice_read
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_notice_read  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_notice_read  where id in (${_parameter})
+	</select>	
+	
+	<select id="selectByNoticeIds" parameterType="com.yunengzhe.PVMTS.domain.dto.NoticeOwnerDTO" resultMap="result" >
+		select 
+		<include refid="base_field" /> 
+		from pvmts_notice_read  where user_id = ${userId} and notice_id in (${ids})
+	</select>
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.NoticeReaderPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_notice_read( id,notice_id,user_id,type,read_time,counts,create_time,update_time ) values (#{id,jdbcType=INTEGER},#{noticeId,jdbcType=NUMERIC},#{userId,jdbcType=NUMERIC},#{type,jdbcType=NUMERIC},#{readTime},#{counts,jdbcType=NUMERIC},#{createTime},#{updateTime} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_notice_read( id,notice_id,user_id,type,read_time,counts,create_time,update_time ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.noticeId,jdbcType=NUMERIC},#{item.userId,jdbcType=NUMERIC},#{item.type,jdbcType=NUMERIC},#{item.readTime},#{item.counts,jdbcType=NUMERIC},#{item.createTime},#{item.updateTime} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.NoticeReaderPO">
+		update pvmts_notice_read set notice_id=#{noticeId,jdbcType=NUMERIC},user_id=#{userId,jdbcType=NUMERIC},type=#{type,jdbcType=NUMERIC},read_time=#{readTime},counts=#{counts,jdbcType=NUMERIC},create_time=#{createTime},update_time=#{updateTime} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.NoticeReaderPO">
+		update pvmts_notice_read
+        <set>
+            <if test="noticeId != null "> 
+                notice_id = #{noticeId,jdbcType=NUMERIC},
+            </if>
+            <if test="userId != null "> 
+                user_id = #{userId,jdbcType=NUMERIC},
+            </if>
+            <if test="type != null "> 
+                type = #{type,jdbcType=NUMERIC},
+            </if>
+            <if test="readTime != null "> 
+                read_time = #{readTime},
+            </if>
+            <if test="counts != null "> 
+                counts = #{counts,jdbcType=NUMERIC},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_notice_read where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.NoticeReaderPO">
+		delete from pvmts_notice_read
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

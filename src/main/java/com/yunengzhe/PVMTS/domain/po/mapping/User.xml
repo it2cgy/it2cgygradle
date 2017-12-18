@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.UserPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.UserPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="username" column="username" jdbcType="VARCHAR" />
+            <result property="password" column="password" jdbcType="VARCHAR" />
+            <result property="sex" column="sex" jdbcType="NUMERIC" />
+            <result property="nickname" column="nickname" jdbcType="VARCHAR" />
+            <result property="headshot" column="headshot" jdbcType="VARCHAR" />
+            <result property="telephone" column="telephone" jdbcType="VARCHAR" />
+            <result property="email" column="email" jdbcType="VARCHAR" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="status" column="status" jdbcType="NUMERIC" />
+            <result property="companyId" column="company_id" jdbcType="NUMERIC" />
+            <result property="wxheadurl" column="wxheadurl" jdbcType="VARCHAR" />
+            <result property="wxsex" column="wxsex" jdbcType="VARCHAR" />
+            <result property="wxnickname" column="wxnickname" jdbcType="VARCHAR" />
+            <result property="wxopenid" column="wxopenid" jdbcType="VARCHAR" />
+            <result property="wxunionid" column="wxunionid" jdbcType="VARCHAR" />
+  			<result property="companyname" column="company_name" jdbcType="VARCHAR" />
+  			<result property="createUserid" column="create_userid" jdbcType="INTEGER" />
+  			<result property="createNickname" column="create_nickname" jdbcType="VARCHAR" /> 
+            <result property="inputCompany" column="input_company" jdbcType="VARCHAR" />
+            <result property="isDelete" column="is_delete" jdbcType="INTEGER" />
+            
+	</resultMap>
+	<resultMap id="UserListVO" type="com.yunengzhe.PVMTS.domain.vo.UserListVO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="username" column="username" jdbcType="VARCHAR" />
+            <result property="password" column="password" jdbcType="VARCHAR" />
+            <result property="sex" column="sex" jdbcType="NUMERIC" />
+            <result property="nickname" column="nickname" jdbcType="VARCHAR" />
+            <result property="headshot" column="headshot" jdbcType="VARCHAR" />
+            <result property="telephone" column="telephone" jdbcType="VARCHAR" />
+            <result property="email" column="email" jdbcType="VARCHAR" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="status" column="status" jdbcType="NUMERIC" />
+            <result property="companyId" column="company_id" jdbcType="NUMERIC" />
+            <result property="wxheadurl" column="wxheadurl" jdbcType="VARCHAR" />
+            <result property="wxsex" column="wxsex" jdbcType="VARCHAR" />
+            <result property="wxnickname" column="wxnickname" jdbcType="VARCHAR" />
+            <result property="wxopenid" column="wxopenid" jdbcType="VARCHAR" />
+            <result property="wxunionid" column="wxunionid" jdbcType="VARCHAR" />
+  			<result property="companyname" column="company_name" jdbcType="VARCHAR" />
+  			<result property="createUserid" column="create_userid" jdbcType="INTEGER" />
+  			<result property="createNickname" column="create_nickname" jdbcType="VARCHAR" /> 
+            <result property="inputCompany" column="input_company" jdbcType="VARCHAR" />
+            <result property="isDelete" column="is_delete" jdbcType="INTEGER" />
+            <result property="roleId" column="role_id" jdbcType="NUMERIC" />
+            <result property="roleName" column="role_name" jdbcType="VARCHAR" />
+            
+	</resultMap>
+	<resultMap id="resultInfo" type="com.yunengzhe.PVMTS.domain.po.UserInfoPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="username" column="username" jdbcType="VARCHAR" />
+            <result property="password" column="password" jdbcType="VARCHAR" />
+            <result property="sex" column="sex" jdbcType="NUMERIC" />
+            <result property="nickname" column="nickname" jdbcType="VARCHAR" />
+            <result property="headshot" column="headshot" jdbcType="VARCHAR" />
+            <result property="telephone" column="telephone" jdbcType="VARCHAR" />
+            <result property="email" column="email" jdbcType="VARCHAR" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="status" column="status" jdbcType="NUMERIC" /> 
+            <result property="companyId" column="company_id" jdbcType="NUMERIC" />
+			<collection property="roleList" resultMap="roleIdResult" />
+	</resultMap>
+	<resultMap id="roleIdResult" type="com.yunengzhe.PVMTS.domain.po.RolePO">
+            <id property="id" column="role_id" jdbcType="INTEGER" />
+			<result property="roleName" column="role_name" jdbcType="VARCHAR" />
+			
+	</resultMap>
+
+	<sql id="base_field">
+	t1.id,t1.username,t1.password,t1.sex,t1.nickname,t1.headshot,t1.telephone,t1.email,t1.create_time,t1.update_time,t1.status,t1.company_id,t1.wxheadurl,t1.wxsex,t1.wxnickname,t1.wxopenid,t1.wxunionid,t2.company_name,t1.create_userid,tu.nickname as create_nickname,t1.input_company,t1.is_delete 
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "username != null ">	and t1.username = #{username,jdbcType=VARCHAR }</if>
+            <if test= "password != null ">	and t1.password = #{password,jdbcType=VARCHAR }</if>
+            <if test= "sex != null ">	and t1.sex = #{sex,jdbcType=NUMERIC }</if>
+            <if test= "nickname != null ">	and t1.nickname = #{nickname,jdbcType=VARCHAR }</if>
+            <if test= "headshot != null ">	and t1.headshot = #{headshot,jdbcType=VARCHAR }</if>
+            <if test= "telephone != null ">	and t1.telephone = #{telephone,jdbcType=VARCHAR }</if>
+            <if test= "email != null ">	and t1.email = #{email,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	and t1.create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and t1.update_time = #{updateTime }</if>
+            <if test= "status != null ">	and t1.status = #{status,jdbcType=NUMERIC }</if>
+            <if test= "companyId != null ">	and t1.company_id = #{companyId,jdbcType=NUMERIC }</if>
+            <if test= "wxheadurl != null ">	and t1.wxheadurl = #{wxheadurl,jdbcType=VARCHAR }</if>
+            <if test= "wxsex != null ">	and t1.wxsex = #{wxsex,jdbcType=VARCHAR }</if>
+            <if test= "wxnickname != null ">	and t1.wxnickname = #{wxnickname,jdbcType=VARCHAR }</if>
+            <if test= "wxopenid != null ">	and t1.wxopenid = #{wxopenid,jdbcType=VARCHAR }</if>
+            <if test= "wxunionid != null ">	and t1.wxunionid = #{wxunionid,jdbcType=VARCHAR }</if>
+            <if test= "isDelete != null "> and t1.is_delete = #{isDelete,jdbcType=VARCHAR }</if> 
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "username != null ">	and t1.username like "%"#{username}"%"</if>
+            <if test= "password != null ">	and t1.password like "%"#{password}"%"</if>
+            <if test= "sex != null ">	and t1.sex = #{sex,jdbcType=NUMERIC }</if>
+            <if test= "nickname != null ">	and t1.nickname like "%"#{nickname}"%"</if>
+            <if test= "headshot != null ">	and t1.headshot like "%"#{headshot}"%"</if>
+            <if test= "telephone != null ">	and t1.telephone like "%"#{telephone}"%"</if>
+            <if test= "email != null ">	and t1.email like "%"#{email}"%"</if>
+            <if test= "createTime != null ">	and t1.create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and t1.update_time = #{updateTime }</if>
+            <if test= "status != null ">	and t1.status = #{status,jdbcType=NUMERIC }</if>
+            <if test= "companyId != null ">	and t1.company_id = #{companyId,jdbcType=NUMERIC }</if>
+            <if test= "wxheadurl != null ">	and t1.wxheadurl like "%"#{wxheadurl}"%"</if>
+            <if test= "wxsex != null ">	and t1.wxsex like "%"#{wxsex}"%"</if>
+            <if test= "wxnickname != null ">	and t1.wxnickname like "%"#{wxnickname}"%"</if>
+            <if test= "wxopenid != null ">	and t1.wxopenid like "%"#{wxopenid}"%"</if>
+            <if test= "wxunionid != null ">	and t1.wxunionid like "%"#{wxunionid}"%"</if>
+            <if test= "inputCompany != null "> and t1.input_company like "%"#{inputCompany}"%"</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "username != null ">	or t1.username = #{username,jdbcType=VARCHAR }</if>
+            <if test= "password != null ">	or t1.password = #{password,jdbcType=VARCHAR }</if>
+            <if test= "sex != null ">	or t1.sex = #{sex,jdbcType=NUMERIC }</if>
+            <if test= "nickname != null ">	or t1.nickname = #{nickname,jdbcType=VARCHAR }</if>
+            <if test= "headshot != null ">	or t1.headshot = #{headshot,jdbcType=VARCHAR }</if>
+            <if test= "telephone != null ">	or t1.telephone = #{telephone,jdbcType=VARCHAR }</if>
+            <if test= "email != null ">	or t1.email = #{email,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	or t1.create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or t1.update_time = #{updateTime }</if>
+            <if test= "status != null ">	or t1.status = #{status,jdbcType=NUMERIC }</if>
+            <if test= "companyId != null ">	or t1.company_id = #{companyId,jdbcType=NUMERIC }</if>
+            <if test= "wxheadurl != null ">	or t1.wxheadurl = #{wxheadurl,jdbcType=VARCHAR }</if>
+            <if test= "wxsex != null ">	or t1.wxsex = #{wxsex,jdbcType=VARCHAR }</if>
+            <if test= "wxnickname != null ">	or t1.wxnickname = #{wxnickname,jdbcType=VARCHAR }</if>
+            <if test= "wxopenid != null ">	or t1.wxopenid = #{wxopenid,jdbcType=VARCHAR }</if>
+            <if test= "wxunionid != null ">	or t1.wxunionid = #{wxunionid,jdbcType=VARCHAR }</if>
+            <if test= "inputCompany != null "> and t1.input_company = #{inputCompany,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_user t1 left join pvmts_user tu on t1.create_userid=tu.id left join pvmts_company t2 on t1.company_id=t2.id
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		
+		and t1.is_delete!=1 
+		
+    <if test="nameKey != null "> and t1.username like "%${nameKey}%"</if>
+    <if test="nickKey != null "> and t1.nickname like "%${nickKey}%"</if>
+    <if test="createDateKey != null "> and DATE_FORMAT(t1.create_time,"%Y-%m-%d")="${createDateKey}"</if>
+		<if test="sortName != null">
+			order by t1.${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="UserListVO" >
+			select
+			t1.id,t1.username,t1.password,t1.sex,t1.nickname,t1.headshot,t1.telephone,t1.email,t1.create_time,t1.update_time,t1.status,t1.company_id,t1.wxheadurl,t1.wxsex,t1.wxnickname,t1.wxopenid,t1.wxunionid,t2.company_name,t1.create_userid,tu.nickname as create_nickname,
+			t1.input_company,t1.is_delete,
+			t4.role_id,
+			t3.role_name
+			from pvmts_user t1 
+			left join pvmts_user tu on t1.create_userid=tu.id 
+			left join pvmts_company t2 on t1.company_id=t2.id
+			LEFT JOIN pvmts_user_role t4 ON t1.id = t4.user_id
+			LEFT JOIN pvmts_roles t3 ON t4.role_id = t3.id
+			<choose>
+			    <when test="findBy != null">
+			      	<where>
+						<include refid="other-condition" />
+					</where>
+			    </when>
+			    <when test="findByLike != null">
+			      	<where>
+						<include refid="like-condition" />
+					</where>
+			    </when>
+			    
+			     <when test="oneEqual != null">
+			      	<where>
+						<include refid="one-equal-condition" />
+					</where>
+			    </when>
+			</choose>
+			
+			and t1.is_delete!=1 
+			
+	    <if test="nameKey != null "> and t1.username like "%${nameKey}%"</if>
+	    <if test="nickKey != null "> and t1.nickname like "%${nickKey}%"</if>
+	    <if test="createDateKey != null "> and DATE_FORMAT(t1.create_time,"%Y-%m-%d")="${createDateKey}"</if>
+		<if test="sortName != null"> order by t1.${sortName} ${sortBy} </if>
+		<if test="roleNamestr != null">  and t3.role_name like "%${roleNamestr}%" </if>
+		limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_user t1 left join pvmts_user tu on t1.create_userid=tu.id  left join pvmts_company t2 on t1.company_id=t2.id
+		<where>
+			<if test="_parameter != null">
+				t1.id = #{id,jdbcType=INTEGER} and t1.is_delete!=1
+			</if>
+		</where>
+	</select>
+	
+	<select id="findByRoleId" resultMap="resultInfo" >
+		select
+		t2.id,t2.username,t2.password,t2.sex,t2.nickname,t2.headshot,
+		t2.telephone,t2.email,t2.create_time,t2.update_time,t2.status,t2.company_id,t1.role_id 
+		from pvmts_user_role t1 LEFT JOIN pvmts_user t2 ON t1.user_id = t2.id where t1.role_id=#{roleId,jdbcType=INTEGER}
+	</select>
+	<select id="findByCompanyId" resultMap="resultInfo" >
+		SELECT
+			t2.id,
+			t2.username,
+			t2. PASSWORD,
+			t2.sex,
+			t2.nickname,
+			t2.headshot,
+			t2.telephone,
+			t2.email,
+			t2.create_time,
+			t2.update_time,
+			t2. STATUS,
+			t2.company_id,
+			t1.role_id,
+			t3.role_name
+		FROM
+			pvmts_user t2
+		LEFT JOIN pvmts_user_role t1 ON t2.id = t1.user_id
+		LEFT JOIN pvmts_roles t3 ON t1.role_id = t3.id
+		WHERE
+			1 = 1
+	<if test ="companyId != null"> and t2.company_id = #{companyId,jdbcType=INTEGER} </if>
+	<if test ="realName != null"> and t2.nickname like "%"#{realName}"%" </if>
+	<if test ="roleId != null">	and t1.role_id = #{roleId,jdbcType=INTEGER} </if>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_user t1 left join pvmts_user tu on t1.create_userid=tu.id  left join pvmts_company t2 on t1.company_id=t2.id  where t1.id in (${_parameter})
+	</select>		
+
+    <select id="setDeleteByIds" >
+        update pvmts_user set is_delete=1 where id in (${_parameter})
+    </select>   
+    
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.UserPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_user( id,username,password,sex,nickname,headshot,telephone,email,create_time,update_time,status,company_id,wxheadurl,wxsex,wxnickname,wxopenid,wxunionid,input_company,create_userid ) values (#{id,jdbcType=INTEGER},#{username,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},#{sex,jdbcType=NUMERIC},#{nickname,jdbcType=VARCHAR},#{headshot,jdbcType=VARCHAR},#{telephone,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{createTime},#{updateTime},#{status,jdbcType=NUMERIC},#{companyId,jdbcType=NUMERIC},#{wxheadurl,jdbcType=VARCHAR},#{wxsex,jdbcType=VARCHAR},#{wxnickname,jdbcType=VARCHAR},#{wxopenid,jdbcType=VARCHAR},#{wxunionid,jdbcType=VARCHAR},#{inputCompany,jdbcType=VARCHAR},#{createUserid,jdbcType=INTEGER} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_user( id,username,password,sex,nickname,headshot,telephone,email,create_time,update_time,status,company_id,wxheadurl,wxsex,wxnickname,wxopenid,wxunionid,input_company,create_userid ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.username,jdbcType=VARCHAR},#{item.password,jdbcType=VARCHAR},#{item.sex,jdbcType=NUMERIC},#{item.nickname,jdbcType=VARCHAR},#{item.headshot,jdbcType=VARCHAR},#{item.telephone,jdbcType=VARCHAR},#{item.email,jdbcType=VARCHAR},#{item.createTime},#{item.updateTime},#{item.status,jdbcType=NUMERIC},#{item.companyId,jdbcType=NUMERIC},#{item.wxheadurl,jdbcType=VARCHAR},#{item.wxsex,jdbcType=VARCHAR},#{item.wxnickname,jdbcType=VARCHAR},#{item.wxopenid,jdbcType=VARCHAR},#{item.wxunionid,jdbcType=VARCHAR},#{item.inputCompany,jdbcType=VARCHAR}  )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.UserPO">
+		update pvmts_user set username=#{username,jdbcType=VARCHAR},password=#{password,jdbcType=VARCHAR},sex=#{sex,jdbcType=NUMERIC},nickname=#{nickname,jdbcType=VARCHAR},headshot=#{headshot,jdbcType=VARCHAR},telephone=#{telephone,jdbcType=VARCHAR},email=#{email,jdbcType=VARCHAR},create_time=#{createTime},update_time=#{updateTime},status=#{status,jdbcType=NUMERIC},company_id=#{companyId,jdbcType=NUMERIC},wxheadurl=#{wxheadurl,jdbcType=VARCHAR},wxsex=#{wxsex,jdbcType=VARCHAR},wxnickname=#{wxnickname,jdbcType=VARCHAR},wxopenid=#{wxopenid,jdbcType=VARCHAR},wxunionid=#{wxunionid,jdbcType=VARCHAR},input_company=#{inputCompany,jdbcType=VARCHAR},create_userid=#{createUserid,jdbcType=INTEGER} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.UserPO">
+		update pvmts_user
+        <set>
+            <if test="username != null "> 
+                username = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null "> 
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null "> 
+                sex = #{sex,jdbcType=NUMERIC},
+            </if>
+            <if test="nickname != null "> 
+                nickname = #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="headshot != null "> 
+                headshot = #{headshot,jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null "> 
+                telephone = #{telephone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null "> 
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+            <if test="status != null "> 
+                status = #{status,jdbcType=NUMERIC},
+            </if>
+            <if test="companyId != null "> 
+                company_id = #{companyId,jdbcType=NUMERIC},
+            </if>
+            <if test="wxheadurl != null "> 
+                wxheadurl = #{wxheadurl,jdbcType=VARCHAR},
+            </if>
+            <if test="wxsex != null "> 
+                wxsex = #{wxsex,jdbcType=VARCHAR},
+            </if>
+            <if test="wxnickname != null "> 
+                wxnickname = #{wxnickname,jdbcType=VARCHAR},
+            </if>
+            <if test="wxopenid != null "> 
+                wxopenid = #{wxopenid,jdbcType=VARCHAR},
+            </if>
+            <if test="wxunionid != null "> 
+                wxunionid = #{wxunionid,jdbcType=VARCHAR},
+            </if>
+            <if test="inputCompany != null "> 
+                input_company = #{inputCompany,jdbcType=VARCHAR},
+            </if>
+            
+             <if test="isDelete != null "> 
+                is_delete = #{isDelete,jdbcType=VARCHAR},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_user where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.UserPO">
+		delete from pvmts_user
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

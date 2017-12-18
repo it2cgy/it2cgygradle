@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="reportQuery">
+<!--     oralce -->
+   <!--   <resultMap type="java.util.HashMap" id="cheakMap">
+		<result property="n" column="n"/>
+		<result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="create_time" column="create_time"/>
+        <result property="type" column="type"/>
+    </resultMap>
+  	 	<select id="loadData"  resultMap="cheakMap"> 	
+       SELECT 
+			  b.n n,
+			  b.id id,
+			  b.name name, 
+			  b.create_time create_time, 
+			  b.type type  
+		FROM
+			(
+				SELECT
+					ROWNUM n,
+					A .*
+				FROM
+					(
+						SELECT 
+						        mr.id id,
+								mr.name name,
+						    TO_CHAR (
+											mr.CREATE_TIME,
+											'yyyy-MM-dd hh24:mi:ss'
+										) create_time,    
+						    CASE WHEN mr.type='1' THEN '月报表'
+								WHEN mr.type='0' then '日报表' end type
+						FROM
+							MC_RUN_REPORT mr
+						
+						where 1=1  
+						<if test="type != null and type != ''">
+						            and mr.type  = '${type}'
+						</if>
+					    <if test="name != null and name != ''">
+									and mr.name like '%${name}%'
+						</if>
+						<if test="startdate != null and startdate != ''">
+							        and  mr.create_time  &gt; TO_DATE ('${startdate}', 'yyyy-MM-dd hh24:mi:ss')
+						</if>
+						<if test="enddate != null and enddate != ''">
+							        and  mr.create_time  &lt;  TO_DATE ('${enddate}', 'yyyy-MM-dd hh24:mi:ss')
+						</if>
+						<if test="id != null and id != ''">
+							        and  mr.farmid=  '${id}'
+						</if> 
+										
+					) a
+			) b
+		<if test="page != null and page != ''">
+				where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows} order by b.create_time
+		</if>
+  	</select> -->
+  	
+  	<!-- mysql -->
+  	  <resultMap type="java.util.HashMap" id="cheakMap">
+		<result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="create_time" column="create_time"/>
+        <result property="type" column="type"/>
+    </resultMap>
+  	 	<select id="loadData"  resultMap="cheakMap"> 	
+    
+						SELECT 
+						        mr.id id,
+								mr.name name,
+								date_format (
+									mr.CREATE_TIME,
+									'%Y-%m-%d %H:%i:%s'
+								) create_time,  
+						    CASE WHEN mr.type='1' THEN '月报表'
+								WHEN mr.type='0' then '日报表' end type
+						FROM
+							MC_RUN_REPORT mr
+						where 1=1  
+						<if test="type != null and type != ''">
+						            and mr.type  = '${type}'
+						</if>
+					    <if test="name != null and name != ''">
+									and mr.name like '%${name}%'
+						</if>
+						<if test="startdate != null and startdate != ''">
+							        and  mr.create_time  &gt; str_to_date ('${startdate}', '%Y-%m-%d %H:%i:%s')
+						</if>
+						<if test="enddate != null and enddate != ''">
+							        and  mr.create_time  &lt;  str_to_date ('${enddate}', '%Y-%m-%d %H:%i:%s')
+						</if>
+						<if test="id != null and id != ''">
+							        and  mr.farmid=  '${id}'
+						</if> 
+			
+		<if test="page != null and page != ''">
+				order by create_time limit ${code}, ${rows}
+		</if>
+  	</select>
+
+     <!-- oracle -->
+  	 	<!-- <select id="loadDatatotal"  resultType="java.lang.Integer"> 	
+     
+						SELECT 
+						        count(*)
+						FROM
+							MC_RUN_REPORT mr
+						
+						where 1=1  
+						<if test="type != null and type != ''">
+						            and mr.type  = '${type}'
+						</if>
+					    <if test="name != null and name != ''">
+									and mr.name like '%${name}%'
+						</if>
+						<if test="startdate != null and startdate != ''">
+							        and  mr.create_time  &gt; TO_DATE ('${startdate}', 'yyyy-MM-dd hh24:mi:ss')
+						</if>
+						<if test="enddate != null and enddate != ''">
+							        and  mr.create_time  &lt;  TO_DATE ('${enddate}', 'yyyy-MM-dd hh24:mi:ss')
+						</if>
+						<if test="id != null and id != ''">
+							        and  mr.farmid=  '${id}'
+						</if> 
+										
+		
+  	</select> -->
+  	<!-- mysql -->
+  	<select id="loadDatatotal"  resultType="java.lang.Integer"> 	
+     
+						SELECT 
+						        count(*)
+						FROM
+							MC_RUN_REPORT mr
+						
+						where 1=1  
+						<if test="type != null and type != ''">
+						            and mr.type  = '${type}'
+						</if>
+					    <if test="name != null and name != ''">
+									and mr.name like '%${name}%'
+						</if>
+						<if test="startdate != null and startdate != ''">
+							        and  mr.create_time  &gt;  str_to_date ('${startdate}', '%Y-%m-%d %H:%i:%s')
+						</if>
+						<if test="enddate != null and enddate != ''">
+							        and  mr.create_time  &lt;  str_to_date ('${enddate}', '%Y-%m-%d %H:%i:%s')
+						</if>
+						<if test="id != null and id != ''">
+							        and  mr.farmid=  '${id}'
+						</if> 
+										
+		
+  	</select>
+  	
+  	<resultMap type="java.util.HashMap" id="findbyidMap">
+		<result property="id" column="id"/>
+        <result property="total_eq" column="total_eq"/>
+        <result property="peak_eq" column="peak_eq"/>
+        <result property="valley_eq" column="valley_eq"/>
+        <result property="flat_eq" column="flat_eq"/>
+        <result property="sharp_eq" column="sharp_eq"/>
+        <result property="inp" column="inp"/>
+        <result property="max_jlp" column="max_jlp"/>
+        <result property="max_temperature" column="max_temperature"/>
+        <result property="avg_itpower" column="avg_itpower"/>
+        <result property="nbqtotal_eq" column="nbqtotal_eq"/>
+        <result property="name" column="name"/>
+        <result property="itname" column="itname"/>
+    </resultMap>
+  	 	<select id="findbyid"  resultMap="findbyidMap"> 	
+					<!-- SELECT
+					    mp.id id,
+						mp.TOTAL_EQ total_eq,
+						mp.PEAK_EQ peak_eq,
+						mp.VALLEY_EQ valley_eq,
+						mp.FLAT_EQ flat_eq,
+						mp.SHARP_EQ sharp_eq,
+						mr.INP inp,
+						mr.MAX_JLP max_jlp,
+						mr.MAX_TEMPERATURE max_temperature,
+						mr.AVG_ITPOWER avg_itpower,
+						mr.TOTAL_EQ nbqtotal_eq,
+						ma.name name,
+						mfo.name itname
+					FROM
+						MC_RUN_REPORT_PASS mp
+					LEFT JOIN MC_RUN_REPORT_IVT mr ON mr.PASS_ID = mp. ID 
+					LEFT JOIN mc_electric_meter ma on ma.id=mp.PASS_ID
+					LEFT JOIN mc_inverter mfo on mfo.id= mr.INVERTER_ID
+					WHERE -->
+						
+									
+				SELECT
+				mr.INP inp,
+				mr.MAX_JLP max_jlp,
+				mr.MAX_TEMPERATURE max_temperature,
+				mr.AVG_ITPOWER avg_itpower,
+				mr.TOTAL_EQ nbqtotal_eq,
+			mp.id id,
+				mp.TOTAL_EQ total_eq,
+				mp.PEAK_EQ peak_eq,
+				mp.VALLEY_EQ valley_eq,
+				mp.FLAT_EQ flat_eq,
+				mp.SHARP_EQ sharp_eq,
+				ma. NAME NAME,
+			mfo. NAME itname
+			 FROM MC_RUN_REPORT_IVT mr 
+			LEFT JOIN mc_electric_meter ma ON ma.id = mr.PASS_ID 
+			LEFT JOIN mc_inverter mfo ON mfo.id = mr.INVERTER_ID
+			LEFT JOIN MC_RUN_REPORT_PASS mp ON mp.pass_id=MA.id AND mr.REPORT_ID =Mp.REPORT_ID
+			WHERE 
+			1 = 1
+					<if test="id != null and id != ''">
+						        and  mp.REPORT_ID=  '${id}'
+					</if> 
+					order by mp.id
+		
+  	</select>
+  	
+  	
+  	
+  	<resultMap type="java.util.HashMap" id="findbyoneMap">
+		<result property="name" column="name"/>
+        <result property="create_time" column="create_time"/>
+        <result property="irradiation" column="irradiation"/>
+        <result property="max_irr_intensity" column="max_irr_intensity"/>
+        <result property="max_irr_time" column="max_irr_time"/>
+        <result property="max_windspeed" column="max_windspeed"/>
+        <result property="max_temperature" column="max_temperature"/>
+        <result property="max_component_temp" column="max_component_temp"/>
+        <result property="run_status_descrip" column="run_status_descrip"/>
+    </resultMap>
+  	 	<select id="findbyone"  resultMap="findbyoneMap"> 	
+					SELECT
+					    p.name name,
+						mr.CREATE_TIME create_time,
+					    mr.IRRADIATION irradiation,
+						mr.MAX_IRR_INTENSITY max_irr_intensity,
+						mr.max_irr_time max_irr_time,
+						mr.max_windspeed max_windspeed,
+						mr.max_temperature max_temperature,
+						mr.MAX_COMPONENT_TEMP max_component_temp,
+						mr.run_status_descrip run_status_descrip
+					FROM
+						MC_RUN_REPORT mr LEFT JOIN MT_PROJECT p
+					    on mr.FARMID=p.id
+					  WHERE
+					     1=1
+						<if test="id != null and id != ''">
+							        and  mr.id=  '${id}'
+						</if> 
+  	</select>
+  	
+  	
+  	<!-- oracle -->
+ <!--  	<resultMap type="java.util.HashMap" id="findbymooneMap">
+		<result property="id" column="id"/>
+        <result property="max_temperature" column="max_temperature"/>
+        <result property="min_temperature" column="min_temperature"/>
+        <result property="irradiation" column="irradiation"/>
+        <result property="total_eq" column="total_eq"/>
+        <result property="create_time" column="create_time"/>
+        <result property="itname" column="itname"/>
+        </resultMap>
+  	 	<select id="findbymoone"  resultMap="findbymooneMap"> 	
+					SELECT distinct
+					mr.id id,
+					mr.MAX_TEMPERATURE max_temperature,
+					mr.min_temperature min_temperature,
+					mr.IRRADIATION irradiation,
+					mv.TOTAL_EQ total_eq,
+					mr.CREATE_TIME create_time,
+					mf.itname itname
+					FROM
+					  MC_RUN_REPORT mr
+					  LEFT JOIN MC_RUN_REPORT_PASS mp
+					  on mp.REPORT_ID=mr.id
+					  left join MC_RUN_REPORT_IVT mv
+					  on mv.REPORT_ID=mr.id
+					  left join MC_ITINFO mf
+					  on mv.inverter_id=mf.id
+					WHERE
+						TO_CHAR (mr.create_time, 'yyyy-mm') = TO_CHAR (
+							TO_DATE ('${timebw}', 'yyyy-mm'),
+							'yyyy-mm'
+						) and type=0 
+					ORDER BY mr.id
+  	</select> -->
+  	
+  	<!-- mysql -->
+  	 	<resultMap type="java.util.HashMap" id="findbymooneMap">
+			<result property="id" column="id"/>
+	        <result property="max_temperature" column="max_temperature"/>
+	        <result property="min_temperature" column="min_temperature"/>
+	        <result property="irradiation" column="irradiation"/>
+	        <result property="total_eq" column="total_eq"/>
+	        <result property="create_time" column="create_time"/>
+	        <result property="itname" column="itname"/>
+        </resultMap>
+  	 	<select id="findbymoone"  resultMap="findbymooneMap"> 	
+					SELECT distinct
+					mr.id id,
+					mr.MAX_TEMPERATURE max_temperature,
+					mr.min_temperature min_temperature,
+					mr.IRRADIATION irradiation,
+					mv.TOTAL_EQ total_eq,
+					mr.CREATE_TIME create_time,
+					mf.name itname
+					FROM
+					  MC_RUN_REPORT mr
+					  LEFT JOIN MC_RUN_REPORT_PASS mp
+					  on mp.REPORT_ID=mr.id
+					  left join MC_RUN_REPORT_IVT mv
+					  on mv.REPORT_ID=mr.id
+					  left join mc_inverter mf
+					  on mv.inverter_id=mf.id
+					WHERE
+						date_format (mr.create_time, '%Y-%m') = date_format (
+							str_to_date ('${timebw}', '%Y-%m'),
+							'%Y-%m'
+						) and type=0 
+					ORDER BY mr.id
+  	</select>
+
+  	
+  	<resultMap type="java.util.HashMap" id="timeMap">
+		<result property="create_time" column="create_time"/>
+    </resultMap>
+  	<select id="timeone"  resultMap="timeMap"> 	
+					SELECT distinct
+					mr.CREATE_TIME create_time
+					FROM
+					  MC_RUN_REPORT mr
+					WHERE
+					 mr.id =  '${id}'
+  	</select>
+  	
+  	
+  	
+  	
+  	<!-- mysql 投资方日报表-->
+  	  <resultMap type="java.util.HashMap" id="cheakInvestmentMap">
+		<result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="create_time" column="create_time"/>
+        <result property="type" column="type"/>
+      </resultMap>
+  	  <select id="loadInvestmentData"  resultMap="cheakInvestmentMap"> 	
+    
+						SELECT 
+						        mr.id id,
+								mr.name name,
+								date_format (
+									mr.createtime,
+									'%Y-%m-%d %H:%i:%s'
+								) create_time,  
+						    CASE WHEN mr.type='1' THEN '月报表'
+								WHEN mr.type='0' then '日报表' end type
+						FROM
+							mc_report_form mr
+						where 1=1  
+						<if test="type != null and type != ''">
+						            and mr.type  = '${type}'
+						</if>
+					    <if test="name != null and name != ''">
+									and mr.name like '%${name}%'
+						</if>
+						<if test="startdate != null and startdate != ''">
+							        and  mr.createtime  &gt; str_to_date ('${startdate}', '%Y-%m-%d %H:%i:%s')
+						</if>
+						<if test="enddate != null and enddate != ''">
+							        and  mr.createtime  &lt;  str_to_date ('${enddate}', '%Y-%m-%d %H:%i:%s')
+						</if>
+						<if test="id != null and id != ''">
+							        and  mr.ownerid=  '${id}'
+						</if> 
+			
+						<if test="page != null and page != ''">
+								order by createtime limit ${code}, ${rows}
+						</if>
+	  	</select>
+  	
+  	
+  	
+  	<select id="loadInvestmentDatatotal"  resultType="java.lang.Integer"> 	
+						SELECT 
+						        count(*)
+						FROM
+							mc_report_form mr
+						where 1=1  
+						<if test="type != null and type != ''">
+						            and mr.type  = '${type}'
+						</if>
+					    <if test="name != null and name != ''">
+									and mr.name like '%${name}%'
+						</if>
+						<if test="startdate != null and startdate != ''">
+							        and  mr.createtime  &gt;  str_to_date ('${startdate}', '%Y-%m-%d %H:%i:%s')
+						</if>
+						<if test="enddate != null and enddate != ''">
+							        and  mr.createtime  &lt;  str_to_date ('${enddate}', '%Y-%m-%d %H:%i:%s')
+						</if>
+						<if test="id != null and id != ''">
+							        and  mr.ownerid=  '${id}'
+						</if> 
+  	 </select>
+  	
+  	
+  	
+  	<resultMap type="java.util.HashMap" id="findInvestmentbyidMap">
+		<result property="id" column="id"/>
+        <result property="station_name" column="station_name"/>
+        <result property="installed_capacity" column="installed_capacity"/>
+        <result property="RadiantExposure" column="RadiantExposure"/>
+        <result property="Generation" column="Generation"/>
+        <result property="GenerationOnLine" column="GenerationOnLine"/>
+        <result property="GenerationSelfUs" column="GenerationSelfUs"/>
+        <result property="GenerationSelfUsPersent" column="GenerationSelfUsPersent"/>
+        <result property="GenerationLosed" column="GenerationLosed"/>
+        <result property="GenerationLosedPersent" column="GenerationLosedPersent"/>
+        <result property="SubsidyIncome" column="SubsidyIncome"/>
+        <result property="OnLineIncome" column="OnLineIncome"/>
+        <result property="SelfUsIncome" column="SelfUsIncome"/>
+        <result property="TotalIncome" column="TotalIncome"/>
+        <result property="descript" column="descript"/>
+    </resultMap>
+  	 	<select id="findInvestmentbyid"  resultMap="findInvestmentbyidMap"> 	
+					SELECT
+						id id,
+						station_name station_name,
+						installed_capacity installed_capacity,
+						ROUND(RadiantExposure,2) RadiantExposure,
+						ROUND(Generation,2) Generation,
+						ROUND(GenerationOnLine,2) GenerationOnLine,
+						ROUND(GenerationSelfUs,2) GenerationSelfUs,
+						ROUND(GenerationSelfUsPersent*100,2) GenerationSelfUsPersent,
+						ROUND(GenerationLosed,2) GenerationLosed,
+						ROUND(GenerationLosedPersent*100,2) GenerationLosedPersent,
+						ROUND(SubsidyIncome,2) SubsidyIncome,
+						ROUND(OnLineIncome,2) OnLineIncome,
+						ROUND(SelfUsIncome,2) SelfUsIncome,
+						ROUND(TotalIncome,2) TotalIncome,
+						descript descript
+					FROM
+						mc_report_form_base
+					WHERE
+						1 = 1
+						<if test="id != null and id != ''">
+							and        form_id=  '${id}'
+						</if> 
+						order by id
+		
+  	</select>
+  	
+  	
+  	
+  	
+  	<!-- mysql 投资方日报表-->
+  	  <resultMap type="java.util.HashMap" id="loadOwnerDataMap">
+		<result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="create_time" column="create_time"/>
+        <result property="type" column="type"/>
+     </resultMap>
+  	 <select id="loadOwnerData"  resultMap="loadOwnerDataMap"> 	
+    
+						SELECT 
+						        mr.id id,
+								mr.name name,
+								date_format (
+									mr.createtime,
+									'%Y-%m-%d %H:%i:%s'
+								) create_time,  
+						    CASE WHEN mr.type='1' THEN '月报表'
+								WHEN mr.type='2' then '年报表' end type
+						FROM
+							mc_owner_report_form mr
+						where 1=1  
+						<if test="type != null and type != ''">
+						            and mr.type  = '${type}'
+						</if>
+					    <if test="name != null and name != ''">
+									and mr.name like '%${name}%'
+						</if>
+						<if test="startdate != null and startdate != ''">
+							        and  mr.createtime  &gt; str_to_date ('${startdate}', '%Y-%m-%d %H:%i:%s')
+						</if>
+						<if test="enddate != null and enddate != ''">
+							        and  mr.createtime  &lt;  str_to_date ('${enddate}', '%Y-%m-%d %H:%i:%s')
+						</if>
+						<if test="id != null and id != ''">
+							        and  mr.stationID=  '${id}'
+						</if> 
+			
+						<if test="page != null and page != ''">
+								order by createtime limit ${code}, ${rows}
+						</if>
+		</select>
+				  	
+  	
+  	
+  	<select id="loadOwnerDatatotal"  resultType="java.lang.Integer"> 	
+						SELECT 
+						        count(*)
+						FROM
+							mc_owner_report_form mr
+						where 1=1  
+						<if test="type != null and type != ''">
+						            and mr.type  = '${type}'
+						</if>
+					    <if test="name != null and name != ''">
+									and mr.name like '%${name}%'
+						</if>
+						<if test="startdate != null and startdate != ''">
+							        and  mr.createtime  &gt;  str_to_date ('${startdate}', '%Y-%m-%d %H:%i:%s')
+						</if>
+						<if test="enddate != null and enddate != ''">
+							        and  mr.createtime  &lt;  str_to_date ('${enddate}', '%Y-%m-%d %H:%i:%s')
+						</if>
+						<if test="id != null and id != ''">
+							        and  mr.stationID=  '${id}'
+						</if> 
+	 </select>
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	 <resultMap type="java.util.HashMap" id="findmrbyidMap">
+		<result property="id" column="id"/>
+        <result property="GenerationAllUse" column="GenerationAllUse"/>
+        <result property="GenerationSelfUse" column="GenerationSelfUse"/>
+        <result property="GenerationUseOnLine" column="GenerationUseOnLine"/>
+        <result property="SaveCast" column="SaveCast"/>
+        <result property="createtime" column="createtime"/>
+        <result property="descript" column="descript"/>
+    </resultMap>
+  	<select id="findmrbyid"  resultMap="findmrbyidMap"> 	
+					      SELECT
+							id id,
+							ROUND(GenerationAllUse,2) GenerationAllUse,
+							ROUND(GenerationSelfUse,2) GenerationSelfUse,
+							ROUND(GenerationUseOnLine,2) GenerationUseOnLine,
+							ROUND(SaveCast,2) SaveCast,
+						    date_format (
+											createtime,
+											'%Y-%m-%d %H:%i:%s'
+										) createtime,  
+							descript descript
+						FROM
+							mc_owner_report_form_base
+						WHERE
+							1 = 1
+						<if test="id != null and id != ''">
+							and        formid=  '${id}'
+						</if> 
+						order by createtime
+		
+  	</select>
+  	
+</mapper>

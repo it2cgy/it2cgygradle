@@ -1,0 +1,95 @@
+/*修改components样式start*/
+.tiles .tile {
+    height: 200px;
+    width: 215px!important;
+}
+/*修改components样式end*/
+.singleAxis,
+.doubleAxis{
+	display: block;
+	width:82%;
+	height:80px;
+	margin:20px auto 0;
+	background: url(common/backgroundImg/singleAxis.png) no-repeat center;
+	background-size: 100% 100%;
+}
+.doubleAxis{
+	background: url(common/backgroundImg/doubleAxis.png) no-repeat center;
+	background-size: 100% 100%;
+}
+.doubleBox{
+	width: 50%;
+	height: 100%;
+	float: left;
+	position: relative;
+}
+.mess{
+	overflow:hidden;
+	margin-bottom:15px;
+}
+.page-sidebar-wrapper{
+	margin-top:60px!important;
+}
+
+/*修改2017-7-25*/
+.track-body{
+	padding:15px;
+	font-size:12px;
+	overflow:hidden;
+}
+.track-body dl img{
+	max-width: 55%;
+    float: none;
+    height: 100px;
+    margin: 15px auto;	
+}
+.track-body dd{
+	text-align:center;
+}
+.track-content{
+	padding:10px;
+	background:#3598dc;
+	color:#fff;
+}
+.track-content3{
+	background:#345ea2;
+}
+.singleImg{
+	width:28%;
+}
+@media only screen and (min-width: 1336px) and (max-width: 1440px) {
+	.track-body dl img{
+		max-width:80%;
+	}
+	.track-body dl .singleImg{
+		width:40%;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

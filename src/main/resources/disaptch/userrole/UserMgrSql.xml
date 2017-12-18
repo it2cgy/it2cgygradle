@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="userMgr">
+	<!-- 用户结果集 -->
+	<resultMap type="java.util.HashMap" id="userMap">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="password" column="password" />
+		<result property="roleid" column="roleid" />
+    	<result property="rolename" column="rolename" />
+		<result property="realname" column="realname"/>
+    	<result property="cellphone" column="cellphone" />
+    	<result property="email" column="email" />
+    	<result property="company" column="company"/>
+    	<result property="position" column="position" />
+    	<result property="dept" column="dept" />
+    	<result property="count" column="count" />
+    	<result property="registertime" column="registertime"/>
+    	<result property="status" column="status" />
+	</resultMap>
+	
+	<!-- 查询可以添加的电站 -->
+	<resultMap type="java.util.HashMap" id="queryPowerMap">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="n" column="n" />
+    	<result property="install_capacity" column="install_capacity" />
+    	<result property="code" column="code" />
+		<result property="user_id" column="user_id"/>
+    	<result property="role_id" column="role_id" />
+    	<result property="count" column="count" />
+		<result property="rolename" column="rolename" />
+		<result property="state" column="state" />
+	</resultMap>
+	
+	<select id="queryRole" resultType="roleBean">
+		select id,name from mt_userrole
+	</select>
+	
+	<select id="querySeqMtUserId" resultType="java.lang.Integer"> 
+		select seq_mt_user_id.nextval as id from dual
+	</select>
+
+	<insert id="creatUser">
+	    <!-- 建的有触发器所以不用写selectkey属性 -->
+		insert into mt_user(
+			id,company_id, name, realname, password, role_id, company, position,
+			cellphone, dept, email, registertime ,status
+			) values(
+				#{id,jdbcType=INTEGER},
+				#{company_id,jdbcType=INTEGER},
+				#{name,jdbcType=VARCHAR},
+				#{realname,jdbcType=VARCHAR},
+				#{password,jdbcType=VARCHAR},
+				#{role_id,jdbcType=INTEGER},
+				#{company,jdbcType=VARCHAR},
+				#{position,jdbcType=VARCHAR},
+				#{cellphone,jdbcType=VARCHAR},
+				#{dept,jdbcType=VARCHAR},
+				#{email,jdbcType=VARCHAR},
+				SYSDATE,
+				0
+		)
+	</insert>
+	
+	<update id="editUser"> <!-- parameterType="java.util.HashMap" name = #{name,jdbcType=VARCHAR}, -->
+		update mt_user
+	  	  set realname = #{realname jdbcType=VARCHAR},
+	   		<!-- password = #{password jdbcType=VARCHAR}, -->
+	   		role_id =  #{role_id,jdbcType=INTEGER},
+	   		
+	   		company = #{company,jdbcType=VARCHAR},
+	   		position = #{position jdbcType=VARCHAR},
+	   		cellphone = #{cellphone jdbcType=VARCHAR},
+	   		dept = #{dept,jdbcType=VARCHAR},
+	   		email = #{email,jdbcType=VARCHAR},
+	   		lastedittime = SYSDATE
+	   	  where id = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<resultMap type="java.util.HashMap" id="cheakcodeMap">
+		<result property="id" column="id"/>
+    </resultMap>
+    
+	<select id="checkid"  resultMap="cheakcodeMap">
+  		
+				
+				SELECT
+					md.id id
+				FROM
+					mt_user md
+				WHERE
+					1 = 1
+				                
+				<if test="_parameter != null and _parameter !=''" >
+					and  md.id = #{_parameter}
+				</if>
+								
+		
+  	</select>
+	<!-- 获取电站信息列表 -->
+	<select id="powerInfoList" parameterType="java.util.HashMap" resultMap="queryPowerMap">
+		<!-- select id, name, install_capacity, code from mt_project  -->
+		<!-- select id, name, install_capacity, code from mt_project mp
+	    	where mp.id not in (select pro_id id from r_mt_pro_user_role rmpur) --><!-- 有待优化 -->
+	    select distinct id, name, install_capacity, code
+			from mt_project mp, r_mt_pro_user_role rmpur
+				where mp.id = rmpur.pro_id
+				     and company_id = ${companyId}
+				<if test="powerName != null and powerName != ''">
+					and mp.name like '%${powerName}%'
+				</if>
+				<if test="ids != null and ids != ''">
+					and mp.id not in (${ids})	<!-- 已经添加到列表的id -->
+				</if>
+					and mp.id not in (select rmpur.pro_id id 
+											from r_mt_pro_user_role rmpur 
+												where rmpur.role_id = ${role_id}
+												and company_id = ${companyId}
+								  	<if test="role_id == 6">
+								  		union all
+										select rmpur.pro_id id 
+											from r_mt_pro_user_role rmpur, r_mt_pro_user_role rmpur_
+												where rmpur.pro_id = rmpur_.pro_id
+												    and company_id = ${companyId}
+													and rmpur.role_id = 4
+													and rmpur_.role_id = 5
+								  	</if>			  	
+								  	<if test="flag == 'yes' and userid != null and userid != ''"> 
+								  		union all  
+										select rmpur.pro_id id 
+											from r_mt_pro_user_role rmpur
+												where rmpur.user_id = ${userid} 
+												    and company_id = ${companyId}
+									</if>
+									)
+		union all 
+		select id, name, install_capacity, code
+			from mt_project mp
+				where company_id = ${companyId}
+				<if test="powerName != null and powerName != ''">
+					and mp.name like '%${powerName}%'
+				</if>
+				<if test="ids != null and ids != ''">
+					and mp.id not in (${ids})	<!-- 已经查出来的id -->
+				</if> 
+					and mp.id not in (select rmpur.pro_id id 
+										from r_mt_pro_user_role rmpur)
+	</select>
+	
+	<!-- 获取电站信息列表 -->
+	<select id="powerInfoListByUserid" parameterType="java.util.HashMap" resultMap="queryPowerMap"> 
+		select id, name, install_capacity, code from mt_project mp
+		where company_id = ${companyId} 
+		<if test="powerName != null and powerName != ''">
+			and mp.name like '%${powerName}%'
+		</if>
+		<if test="ids != null and ids != ''">
+			and mp.id not in (${ids})
+		</if>
+		<if test="userid != null and userid != ''">
+			and mp.id not in (select pro_id id from r_mt_pro_user_role where USER_ID=${userid})
+		</if>		 
+	</select>
+	
+	<!-- 获取已经选择的电站信息列表 -->
+	<!-- <select id="showSelectPowerList" parameterType="java.util.HashMap" resultMap="queryPowerMap">
+		select id, name, install_capacity, code from mt_project mp
+		    <if test="ids != null and ids != ''">
+				where mp.id in (${ids})
+			</if>
+			<if test="ids != null and ids == ''">
+				where mp.id in ('')
+			</if>
+			<if test="likeName != null and likeName != ''">
+				and mp.name like '%${likeName}%'
+			</if>
+		select rownum n, a.* from (
+			select distinct id, name, install_capacity, code,  
+				<if test="role_id == 6">rmpur.role_id</if>
+				<if test="role_id != 6">null role_id</if>
+				from mt_project mp, r_mt_pro_user_role rmpur
+					where mp.id = rmpur.pro_id
+						<if test="role_id == 6">
+							and rmpur.role_id != 1
+							and rmpur.role_id != 2
+							and rmpur.role_id != 3
+						</if>
+						and mp.id not in(select rmpur.pro_id id 
+											from r_mt_pro_user_role rmpur 
+													where rmpur.role_id = ${role_id}
+										<if test="role_id == 6">
+											union all
+												select rmpur.pro_id id 
+													from r_mt_pro_user_role rmpur, r_mt_pro_user_role rmpur_
+														where rmpur.pro_id = rmpur_.pro_id
+															and rmpur.role_id = 4
+															and rmpur_.role_id = 5
+												
+										</if>
+					   					) 
+					    <if test="ids != null and ids != ''">
+							 and mp.id in (${ids})
+						</if>
+						<if test="ids != null and ids == ''">
+							 and mp.id in ('')
+						</if>
+						<if test="likeName != null and likeName != ''">
+							and mp.name like '%${likeName}%'
+						</if>
+			<if test="role_id != 3 and role_id != 2">
+				union all 
+				select id, name, install_capacity, code, null role_id 
+					from mt_project mp
+						where mp.id not in (select rmpur.pro_id id 
+													from mt_project mp, r_mt_pro_user_role rmpur
+															where mp.id = rmpur.pro_id
+																and rmpur.role_id != 1)
+							<if test="ids != null and ids != ''">
+								 and mp.id in (${ids})
+							</if>
+							<if test="ids != null and ids == ''">
+								 and mp.id in ('')
+							</if>
+							<if test="likeName != null and likeName != ''">
+								and mp.name like '%${likeName}%'
+							</if>
+			</if>
+			<if test="role_id == 6">
+				union all 
+			    select distinct * from ( 
+					select id, name, install_capacity, code, null role_id 
+							from mt_project mp, r_mt_pro_user_role rmpur
+									where mp.id = rmpur.pro_id
+											and rmpur.role_id = 2
+					union all
+					select id, name, install_capacity, code, null role_id 
+									from mt_project mp, r_mt_pro_user_role rmpur
+											where mp.id = rmpur.pro_id
+													and rmpur.role_id = 3
+					)
+					where
+					<if test="ids != null and ids != ''">
+						 id in (${ids})
+					</if>
+					<if test="ids != null and ids == ''">
+						 id in ('')
+					</if>
+					<if test="likeName != null and likeName != ''">
+						and name like '%${likeName}%'
+					</if>
+						and id not in(
+								select rmpur.pro_id id 
+										from r_mt_pro_user_role rmpur
+												where rmpur.role_id = 4
+														or rmpur.role_id = 5
+						)
+			</if>
+		) a
+	</select> -->
+		<!-- 获取已经选择的电站信息列表 -->
+	<select id="showSelectPowerList" parameterType="java.util.HashMap" resultMap="queryPowerMap">
+		<!-- select id, name, install_capacity, code from mt_project mp
+		    <if test="ids != null and ids != ''">
+				where mp.id in (${ids})
+			</if>
+			<if test="ids != null and ids == ''">
+				where mp.id in ('')
+			</if>
+			<if test="likeName != null and likeName != ''">
+				and mp.name like '%${likeName}%'
+			</if> -->
+		select rownum n, a.* from (
+			select distinct id, name, install_capacity, code,  
+				<if test="role_id == 6">rmpur.role_id</if>
+				<if test="role_id != 6">null role_id</if>
+				from mt_project mp, r_mt_pro_user_role rmpur
+					where mp.id = rmpur.pro_id
+						<if test="role_id == 6">
+							and rmpur.role_id != 1
+							and rmpur.role_id != 2
+							and rmpur.role_id != 3
+						</if>
+						<if test="role_id != 6">
+						AND ROLE_ID=1
+						</if>
+						<!-- and mp.id not in(select rmpur.pro_id id 
+											from r_mt_pro_user_role rmpur 
+													where rmpur.role_id = ${role_id}
+										<if test="role_id == 6">
+											union all
+												select rmpur.pro_id id 
+													from r_mt_pro_user_role rmpur, r_mt_pro_user_role rmpur_
+														where rmpur.pro_id = rmpur_.pro_id
+															and rmpur.role_id = 4
+															and rmpur_.role_id = 5
+												
+										</if>
+					   					)  -->
+					    <if test="ids != null and ids != ''">
+							 and mp.id in (${ids})
+						</if>
+						<if test="ids != null and ids == ''">
+							 and mp.id in ('')
+						</if>
+						<if test="likeName != null and likeName != ''">
+							and mp.name like '%${likeName}%'
+						</if>
+			<if test="role_id != 3 and role_id != 2">
+				union all 
+				select id, name, install_capacity, code, null role_id 
+					from mt_project mp
+						where mp.id not in (select rmpur.pro_id id 
+													from mt_project mp, r_mt_pro_user_role rmpur
+															where mp.id = rmpur.pro_id
+																and rmpur.role_id != 1)
+							<if test="ids != null and ids != ''">
+								 and mp.id in (${ids})
+							</if>
+							<if test="ids != null and ids == ''">
+								 and mp.id in ('')
+							</if>
+							<if test="likeName != null and likeName != ''">
+								and mp.name like '%${likeName}%'
+							</if>
+			</if>
+			<if test="role_id == 6">
+				union all 
+			    select distinct * from ( 
+					select id, name, install_capacity, code, null role_id 
+							from mt_project mp, r_mt_pro_user_role rmpur
+									where mp.id = rmpur.pro_id
+											and rmpur.role_id = 2
+					union all
+					select id, name, install_capacity, code, null role_id 
+									from mt_project mp, r_mt_pro_user_role rmpur
+											where mp.id = rmpur.pro_id
+													and rmpur.role_id = 3
+					)
+					where
+					<if test="ids != null and ids != ''">
+						 id in (${ids})
+					</if>
+					<if test="ids != null and ids == ''">
+						 id in ('')
+					</if>
+					<if test="likeName != null and likeName != ''">
+						and name like '%${likeName}%'
+					</if>
+						and id not in(
+								select rmpur.pro_id id 
+										from r_mt_pro_user_role rmpur
+												where rmpur.role_id = 4
+														or rmpur.role_id = 5
+						)
+			</if>
+		) a
+		<if test="role_id == 4 or role_id == 5 or role_id == 6">
+		where rownum =1
+		</if>
+	</select>
+	<!-- <parameterMap type="" id=""></parameterMap> -->
+	<!-- 查询用户列表 -->
+	<select id="queryUserList" parameterType="java.util.HashMap" resultMap="userMap">
+		select b.* from 
+			(select rownum n, c.count, a.* from 
+				(select mu.id, mu.name, mur.name rolename, mu.role_id roleid, mu.company, mu.status,
+						mu.realname,mu.cellphone, to_char(mu.registertime,'YYYY-MM-DD HH24:MI:SS') registertime
+					from mt_user mu, mt_userrole mur
+						where mu.role_id = mur.id
+						    and company_id = ${companyId}
+							and mu.role_id &lt;&gt; 0 
+							and mu.role_id &lt;&gt; 1 
+						<if test="name != null and name != ''" ><!-- 用户名 -->
+							and mu.name like '%${name}%'
+						</if>
+						<if test="rolename_ != null and rolename_ != ''" ><!-- 角色名称 -->
+							and mur.name like '%${rolename_}%'
+						</if>
+						<if test="company_ != null and company_ != ''" ><!-- 单位名称 -->
+							and mu.company like '%${company_}%'
+						</if>
+						<if test="sort == 'registertime'">
+							order by mu.registertime ${order}
+						</if>
+						<if test="sort == 'rolename'">
+							order by mur.name ${order}
+						</if>
+				)a,
+				(select count(rownum) count
+					from mt_user mu, mt_userrole mur
+						where mu.role_id = mur.id 
+						    and company_id = ${companyId}
+							and mu.role_id &lt;&gt; 0
+							and mu.role_id &lt;&gt; 1 
+						<if test="name != null and name != ''" ><!-- 用户名 -->
+							and mu.name like '%${name}%'
+						</if>
+						<if test="rolename_ != null and rolename_ != ''" ><!-- 角色名称 -->
+							and mur.name like '%${rolename_}%'
+						</if>
+						<if test="company_ != null and company_ != ''" ><!-- 单位名称 -->
+							and mu.company like '%${company_}%'
+						</if>
+				) c 
+			) b 
+			where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows}	
+	</select>
+	
+	<select id="viewUserInfo" parameterType="java.util.HashMap" resultMap="userMap">
+		select u.id, u.name, u.realname, u.email, u.company, u.position, 
+				u.cellphone, u.dept, u.role_id roleid, u.company_id, ur.name as rolename 
+			from mt_user u, mt_userrole ur 
+				where u.id = ${id}
+					  and u.role_id = ur.id	
+	</select>
+	
+	<select id="viewPowerInfo" resultMap="queryPowerMap">
+		select b.* from 
+			(select rownum n, c.count, a.* from
+				(select mp.id, mp.name, mp.install_capacity, mp.code, mur.name rolename, mur.id role_id 
+					from mt_user mu, r_mt_pro_user_role rmpur, mt_project mp, mt_userrole mur
+						where mu.id = #{id}
+								and mu.id = rmpur.user_id
+								and mp.id = rmpur.pro_id
+								and mur.id = rmpur.role_id
+							<if test="powerName != null and powerName != ''">
+								and mp.name like '%${powerName}%'
+							</if>
+				)a,
+				(select count(rownum) count
+					from mt_user mu, r_mt_pro_user_role rmpur, mt_project mp, mt_userrole mur
+						where mu.id = #{id}
+							and mu.id = rmpur.user_id
+							and mp.id = rmpur.pro_id
+							and mur.id = rmpur.role_id
+						<if test="powerName != null and powerName != ''">
+							and mp.name like '%${powerName}%'
+						</if>
+				) c 
+			) b 
+			where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows}
+	</select>
+	<insert id="insertProUserRole"> 
+		insert into r_mt_pro_user_role 
+		<foreach item="item" collection="list" separator="union all">
+			select ${item.pro_id}, ${item.user_id}, ${item.role_id}, sysdate, null from dual 
+		</foreach>
+	</insert>
+	
+	<!-- <insert id="newAddUserPower">
+		insert into r_mt_pro_user_role 
+		<foreach item="item" collection="list" separator="union all">
+			select ${item.pro_id}, ${item.user_id}, ${item.role_id}, sysdate, null from dual 
+		</foreach>
+	</insert> -->
+	
+	<delete id="delUserList" parameterType="java.util.HashMap">
+		<!-- 可以进行级联删除，所以不用写另一个Sql了 -->
+		delete from mt_user where id in (${ids})
+	</delete>
+	
+	<delete id="delUserPowerInfo" parameterType="java.util.HashMap">
+		delete from r_mt_pro_user_role 
+			where user_id = ${userId} 
+				and pro_id in (${delIds})
+	</delete>
+	<delete id="delUserProject">
+		delete from r_mt_pro_user_role 
+			where user_id = ${id} 
+	</delete>
+	
+	<select id="editUserPowerList" resultMap="queryPowerMap">
+		select mp.id, mp.name, mp.install_capacity, mp.code, mur.name rolename, mur.id role_id, 0 as state
+			from mt_user mu, r_mt_pro_user_role rmpur, mt_project mp, mt_userrole mur
+				where mu.id = ${userid}
+					and mu.id = rmpur.user_id
+					and mp.id = rmpur.pro_id
+					and mur.id = rmpur.role_id
+					<if test="roleid == 6">
+						and (rmpur.role_id = 6 or rmpur.role_id = 4 or rmpur.role_id = 5)
+					</if>
+					<if test="roleid != 6">
+						and rmpur.role_id = ${roleid}
+					</if>
+					<if test="likeName != null and likeName !=''">
+						and mp.name like '%${likeName}%'
+					</if>
+		<if test="roleid == 6">
+			union all 
+			select a.*, 1 as state from
+			(select mp.id, mp.name, mp.install_capacity, mp.code, mur.name rolename, mur.id role_id
+					from mt_user mu, r_mt_pro_user_role rmpur, mt_project mp, mt_userrole mur
+							where mu.id = rmpur.user_id
+								and mp.id = rmpur.pro_id
+								and mur.id = rmpur.role_id
+								<if test="roleid == 6">
+									and (rmpur.role_id = 6 or rmpur.role_id = 4 or rmpur.role_id = 5)
+								</if>
+								<if test="roleid != 6">
+									and rmpur.role_id = ${roleid}
+								</if>
+								<if test="likeName != null and likeName !=''">
+									and mp.name like '%${likeName}%'
+								</if>
+								and rmpur.role_id != 3
+								and rmpur.role_id != 2
+								and rmpur.pro_id in (select rmpur_.pro_id 
+														from r_mt_pro_user_role rmpur_ 
+																where rmpur_.user_id = ${userid})
+			minus 		
+			select mp.id, mp.name, mp.install_capacity, mp.code, mur.name rolename, mur.id role_id
+					from mt_user mu, r_mt_pro_user_role rmpur, mt_project mp, mt_userrole mur
+						where mu.id = ${userid}
+							and mu.id = rmpur.user_id
+							and mp.id = rmpur.pro_id
+							and mur.id = rmpur.role_id
+							<if test="roleid == 6">
+								and (rmpur.role_id = 6 or rmpur.role_id = 4 or rmpur.role_id = 5)
+							</if>
+							<if test="roleid != 6">
+								and rmpur.role_id = ${roleid}
+							</if>
+							<if test="likeName != null and likeName !=''">
+								and mp.name like '%${likeName}%'
+							</if>
+			) a
+		</if>
+	</select> 
+	<update id="updataUserPowerRole">
+		update r_mt_pro_user_role 
+			set role_id = ${roleid},
+				grant_time = sysdate
+			where pro_id = ${proid}
+				and user_id = ${userid}
+	</update>
+	
+	<update id="updateUserStatus" >
+		update mt_user  set STATUS = ${status} where ID='${userid}'
+	</update>
+	
+	<select id="checkUserAccount" resultType="java.lang.Integer">
+		select count(id) count from mt_user where name = '${name}'
+	</select>
+	<update id="editPsw">
+		update mt_user set password=#{password} where id = #{userId}
+	</update>
+	
+	<select id="getUserStatus" resultType="java.lang.Integer">
+		select STATUS from mt_user where ID='${userid}'
+	</select>
+	
+	<select id="ManagerCount" resultType ="java.lang.Integer">
+		SELECT
+			count(*)
+		FROM
+			MT_USER
+		WHERE
+			ROLE_ID = 1
+		<if test="company_id != '' and company_id != null">
+			AND COMPANY_ID = ${company_id}
+		</if>
+		
+	</select>
+	<select id="CompanyManager" resultType ="userBean">
+		SELECT
+			*
+		FROM
+			(
+				SELECT
+					MT_USER.*, ROWNUM rm
+				FROM
+					(select * from MT_USER order by MT_USER.REGISTERTIME desc)MT_USER
+				WHERE
+					ROLE_ID = 1
+					<if test="company_id != '' and company_id != null">
+						AND COMPANY_ID = ${company_id}
+					</if>
+				<if test="end != -1">	
+				AND ROWNUM &lt; ${end}
+				</if>
+			)
+			<if test="start != -1">	
+		WHERE
+			rm &gt; ${start}
+			</if>
+	</select>
+	<!-- select b.* from (select rownum n, a.* from 
+	(select * from mt_user where 1=1 order by registertime) a) b 
+where b.n > 5 and b.n<= 10; -->
+
+<!-- 
+select mp.id, mp.name, mp.install_capacity, mp.code, mur.name rolename, mur.id role_id, 0 as state
+		from mt_user mu, r_mt_pro_user_role rmpur, mt_project mp, mt_userrole mur
+				where mu.id = 65
+						and mu.id = rmpur.user_id
+						and mp.id = rmpur.pro_id
+						and mur.id = rmpur.role_id -->
+</mapper>

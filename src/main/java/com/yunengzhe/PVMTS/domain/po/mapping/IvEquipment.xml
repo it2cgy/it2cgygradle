@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.IvEquipmentPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.IvEquipmentPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="name" column="name" jdbcType="VARCHAR" />
+            <result property="farmid" column="farm_id" jdbcType="NUMERIC" />
+            <result property="equipnum" column="equipnum" jdbcType="VARCHAR" />
+            <result property="model" column="model" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,name,farm_id,equipnum,model
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "name != null ">	and name = #{name,jdbcType=VARCHAR }</if>
+            <if test= "farmid != null ">	and farm_id = #{farmid,jdbcType=NUMERIC }</if>
+            <if test= "equipnum != null ">	and equipnum = #{equipnum,jdbcType=VARCHAR }</if>
+            <if test= "model != null ">	and model = #{model,jdbcType=VARCHAR }</if>
+            <if test= "isThird != null ">	and (name like '%Module208%' or name like '%Module207%')</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "name != null ">	and name like "%"#{name}"%"</if>
+            <if test= "farmid != null ">	and farm_id = #{farmid,jdbcType=NUMERIC }</if>
+            <if test= "equipnum != null ">	and equipnum like "%"#{equipnum}"%"</if>
+            <if test= "model != null ">	and model like "%"#{model}"%"</if>
+ 			<if test= "isThird != null ">	and (name like '%Module208%' or name like '%Module207%')</if>
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "name != null ">	or name = #{name,jdbcType=VARCHAR }</if>
+            <if test= "farmid != null ">	or farm_id = #{farmid,jdbcType=NUMERIC }</if>
+            <if test= "equipnum != null ">	or equipnum = #{equipnum,jdbcType=VARCHAR }</if>
+            <if test= "model != null ">	or model = #{model,jdbcType=VARCHAR }</if>
+ 			<if test= "isThird != null ">	and (name like '%Module208%' or name like '%Module207%')</if>
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from mc_iv_device_channel
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from mc_iv_device_channel  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from mc_iv_device_channel  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.IvEquipmentPO" useGeneratedKeys="true" keyProperty="id">
+		insert into mc_iv_device_channel( id,name,farm_id,equipnum,model ) values (#{id,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{farmid,jdbcType=NUMERIC},#{equipnum,jdbcType=VARCHAR},#{model,jdbcType=VARCHAR} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into mc_iv_device_channel( id,name,farm_id,equipnum,model ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.farmid,jdbcType=NUMERIC},#{item.equipnum,jdbcType=VARCHAR},#{item.model,jdbcType=VARCHAR} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.IvEquipmentPO">
+		update mc_iv_device_channel set name=#{name,jdbcType=VARCHAR},farm_id=#{farmid,jdbcType=NUMERIC},equipnum=#{equipnum,jdbcType=VARCHAR},model=#{model,jdbcType=VARCHAR} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.IvEquipmentPO">
+		update mc_iv_device_channel
+        <set>
+            <if test="name != null "> 
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="farmid != null "> 
+                farm_id = #{farmid,jdbcType=NUMERIC},
+            </if>
+            <if test="equipnum != null "> 
+                equipnum = #{equipnum,jdbcType=VARCHAR},
+            </if>
+            <if test="model != null "> 
+                model = #{model,jdbcType=VARCHAR},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from mc_iv_device_channel where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.IvEquipmentPO">
+		delete from mc_iv_device_channel
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

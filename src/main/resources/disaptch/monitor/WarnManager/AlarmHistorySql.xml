@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="alarmHistory">
+     <resultMap type="java.util.HashMap" id="alarmMap">
+		<result property="statusName" column="statusName"/>
+        <result property="alarmDescr" column="alarmDescr"/>
+        <result property="alarmValue" column="alarmValue"/>
+        <result property="alarmLevel" column="alarmLevel"/>
+        <result property="alarmTime" column="alarmTime"/>
+        <result property="alarmConfirmTime" column="alarmConfirmTime"/>
+        <result property="confirmState" column="confirmState"/>
+    </resultMap>
+    <select id="loadHistoryData" resultMap="alarmMap">	
+      	 select
+			h.alarmstring as alarmDescr,
+			h.objvalue as alarmValue,
+			h.alarmpriority as alarmLevel,
+			DATE_FORMAT(h.dttimestamp ,'%Y-%m-%d %H:%i:%s') AS alarmTime,
+			DATE_FORMAT(h.dtack,'%Y-%m-%d %H:%i:%s') as alarmConfirmTime,
+			h.confirmstate as confirmState
+		 from(
+		<foreach item="item" collection="list" separator="union all">
+		 	select
+				hd.alarmstring,
+				hd.objvalue,
+				hd.alarmpriority,
+				hd.dttimestamp
+				<choose>
+				 <when test="item.ackName != null and item.ackName !=''">
+					 ,ack.dtack,
+					(case when ack.dtack is null then '0' else '1' end) as confirmstate
+				</when>
+				 <otherwise>
+					,"" as dtack,
+					 "" as confirmstate
+				 </otherwise>
+				 </choose>
+				from
+					${item.tableName} hd left join statusinput s ON hd.objid = s.id
+					<if test="item.ackName != null and item.ackName !=''" >
+						left join ${item.ackName} ack on hd.alarmid=ack.alarmid
+			  		</if>
+			  		LEFT JOIN mc_inverter a ON  s.EQUIPMENTCONTAINER_ID = a.ID 
+				where
+						hd.objid = 89 
+				<if test="item.alarmlevel != null and item.alarmlevel !=''" ><!-- 电站id -->
+					and a.farmid=${item.farmid}
+				</if>	
+				<if test="item.startTime != null and item.startTime !=''" ><!-- 报警开始时间 -->
+						and unix_timestamp(hd.dttimestamp) &gt; unix_timestamp('${item.startTime}')
+				</if>
+				<if test="item.endTime != null and item.endTime !=''" ><!-- 报警截止时间 -->
+						and unix_timestamp(hd.dttimestamp) &lt; unix_timestamp('${item.endTime} ')
+				</if>
+				<if test="item.alarmlevel != null and item.alarmlevel !=''" ><!-- 报警级别 -->
+					and hd.alarmpriority=${item.alarmlevel}
+				</if>
+				<if test="item.alarminfo != null and item.alarminfo !=''" ><!-- 报警文本 -->
+					and hd.alarmstring like concat(concat('%','${item.alarminfo}','%'))
+				</if>
+				<if test="item.ackName != null and item.ackName !=''" ><!--and ack.dtack is报警确认状态 -->
+						 ${item.state}
+			  	</if>
+				
+				<if test="item.delName != null and item.delName !=''" ><!-- 排除存在于报警删除表中的数据 -->
+					and hd.alarmid not in (select alarmid from ${item.delName} )
+				</if>
+		</foreach>
+	) h  order by h.dttimestamp
+  	</select>
+  	
+  	
+  	
+    <!-- 获取时间段内的历史表名称 -->
+    <resultMap type="java.util.Map" id="tableNameMap">
+    	<result property="tableName" column="tableName" />
+    </resultMap>
+    <select id="getTableName" resultMap="tableNameMap">
+		SELECT
+			table_name as tableName
+		FROM
+			information_schema.`TABLES`
+		WHERE
+			table_schema = 'davinci'
+		<if test="startName != null and startName !=''" >
+				AND (table_name &gt; '${startName}' or table_name ='${startName}')
+		</if>	
+		<if test="startName != null and startName !=''" >
+				AND (table_name &lt; '${endName}' or table_name='${endName}')
+		</if>	
+		order by CREATE_TIME
+    </select>
+  	
+    <select id="getTableByName"  parameterType="java.lang.String" resultMap="tableNameMap">
+		SELECT
+			table_name as tableName
+		FROM
+			information_schema.`TABLES`
+		WHERE
+			table_schema = 'davinci' 
+		 <if test="_parameter != null and _parameter !=''" >
+				AND  table_name = #{_parameter}
+		</if>	
+    </select>
+  	
+</mapper>

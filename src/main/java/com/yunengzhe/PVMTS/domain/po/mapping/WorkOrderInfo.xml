@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.WorkOrderInfoPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.WorkOrderInfoPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="orderNumber" column="order_number" jdbcType="NUMERIC" />
+            <result property="createUser" column="create_user" jdbcType="NUMERIC" />
+            <result property="createTime" column="create_time" />
+            <result property="maintenanceUser" column="maintenance_user" jdbcType="NUMERIC" />
+            <result property="allocateTime" column="allocate_time" />
+            <result property="state" column="state" jdbcType="NUMERIC" />
+            <result property="updateTime" column="update_time" />
+            <result property="remarks" column="remarks" jdbcType="VARCHAR" />
+            <result property="physicalState" column="physicalState" jdbcType="NUMERIC" />
+            <result property="departureState" column="departureState" jdbcType="NUMERIC" />
+            <result property="powerstationId" column="powerStation_id" jdbcType="NUMERIC" />
+            <result property="powerstationName" column="powerStation_name" jdbcType="VARCHAR" />
+ 			<result property="maintenanceName" column="maintenance_name" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="base_field">
+			t1.id,
+			t1.order_number,
+			t1.create_user,
+			t1.create_time,
+			t1.maintenance_user,
+			t1.allocate_time,
+			t1.state,
+			t1.update_time,
+			t1.remarks,
+			t1.physicalState,
+			t1.departureState,
+			t1.powerStation_id,
+			t1.powerStation_name,
+			t2.username as maintenance_name
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "orderNumber != null ">	and t1.order_number = #{orderNumber,jdbcType=VARCHAR }</if>
+            <if test= "createUser != null ">	and t1.create_user = #{createUser,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and t1.create_time = #{createTime }</if>
+            <if test= "maintenanceUser != null ">	and t1.maintenance_user = #{maintenanceUser,jdbcType=NUMERIC }</if>
+            <if test= "allocateTime != null ">	and t1.allocate_time = #{allocateTime }</if>
+            <if test= "state != null ">	and t1.state = #{state,jdbcType=NUMERIC }</if>
+            <if test= "updateTime != null ">	and t1.update_time = #{updateTime }</if>
+            <if test= "remarks != null ">	and t1.remarks = #{remarks,jdbcType=VARCHAR }</if>
+            <if test= "physicalState != null ">	and t1.physicalState = #{physicalState,jdbcType=NUMERIC }</if>
+            <if test= "departureState != null ">	and t1.departureState = #{departureState,jdbcType=NUMERIC }</if>
+            <if test= "powerstationId != null ">	and t1.powerStation_id = #{powerstationId,jdbcType=NUMERIC }</if>
+            <if test= "powerstationName != null ">	and t1.powerStation_name = #{powerstationName,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "orderNumber != null ">	and t1.order_number = #{orderNumber,jdbcType=VARCHAR }</if>
+            <if test= "createUser != null ">	and t1.create_user = #{createUser,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and t1.create_time = #{createTime }</if>
+            <if test= "maintenanceUser != null ">	and t1.maintenance_user = #{maintenanceUser,jdbcType=NUMERIC }</if>
+            <if test= "allocateTime != null ">	and t1.allocate_time = #{allocateTime }</if>
+            <if test= "state != null ">	and t1.state = #{state,jdbcType=NUMERIC }</if>
+            <if test= "updateTime != null ">	and t1.update_time = #{updateTime }</if>
+            <if test= "remarks != null ">	and t1.remarks like "%"#{remarks}"%"</if>
+            <if test= "physicalState != null ">	and t1.physicalState = #{physicalState,jdbcType=NUMERIC }</if>
+            <if test= "departureState != null ">	and t1.departureState = #{departureState,jdbcType=NUMERIC }</if>
+            <if test= "powerstationId != null ">	and t1.powerStation_id = #{powerstationId,jdbcType=NUMERIC }</if>
+            <if test= "powerstationName != null ">	and t1.powerStation_name like "%"#{powerstationName}"%"</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "orderNumber != null ">	or t1.order_number = #{orderNumber,jdbcType=VARCHAR }</if>
+            <if test= "createUser != null ">	or t1.create_user = #{createUser,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	or t1.create_time = #{createTime }</if>
+            <if test= "maintenanceUser != null ">	or t1.maintenance_user = #{maintenanceUser,jdbcType=NUMERIC }</if>
+            <if test= "allocateTime != null ">	or t1.allocate_time = #{allocateTime }</if>
+            <if test= "state != null ">	or t1.state = #{state,jdbcType=NUMERIC }</if>
+            <if test= "updateTime != null ">	or t1.update_time = #{updateTime }</if>
+            <if test= "remarks != null ">	or t1.remarks = #{remarks,jdbcType=VARCHAR }</if>
+            <if test= "physicalState != null ">	or t1.physicalState = #{physicalState,jdbcType=NUMERIC }</if>
+            <if test= "departureState != null ">	or t1.departureState = #{departureState,jdbcType=NUMERIC }</if>
+            <if test= "powerstationId != null ">	or t1.powerStation_id = #{powerstationId,jdbcType=NUMERIC }</if>
+            <if test= "powerstationName != null ">	or t1.powerStation_name = #{powerstationName,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		FROM pvmts_workorder_info t1
+		LEFT JOIN pvmts_user t2 ON t1.maintenance_user = t2.id
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by t1.${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		FROM pvmts_workorder_info t1
+		LEFT JOIN pvmts_user t2 ON t1.maintenance_user = t2.id  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		FROM pvmts_workorder_info t1
+		LEFT JOIN pvmts_user t2 ON t1.maintenance_user = t2.id where t1.id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.WorkOrderInfoPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_workorder_info( id,order_number,create_user,create_time,maintenance_user,allocate_time,state,update_time,remarks,physicalState,departureState,powerStation_id,powerStation_name ) values (#{id,jdbcType=INTEGER},#{orderNumber,jdbcType=VARCHAR},#{createUser,jdbcType=NUMERIC},#{createTime},#{maintenanceUser,jdbcType=NUMERIC},#{allocateTime},#{state,jdbcType=NUMERIC},#{updateTime},#{remarks,jdbcType=VARCHAR},#{physicalState,jdbcType=NUMERIC},#{departureState,jdbcType=NUMERIC},#{powerstationId,jdbcType=NUMERIC},#{powerstationName,jdbcType=VARCHAR} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_workorder_info( id,order_number,create_user,create_time,maintenance_user,allocate_time,state,update_time,remarks,physicalState,departureState,powerStation_id,powerStation_name ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.orderNumber,jdbcType=VARCHAR},#{item.createUser,jdbcType=NUMERIC},#{item.createTime},#{item.maintenanceUser,jdbcType=NUMERIC},#{item.allocateTime},#{item.state,jdbcType=NUMERIC},#{item.updateTime},#{item.remarks,jdbcType=VARCHAR},#{item.physicalState,jdbcType=NUMERIC},#{item.departureState,jdbcType=NUMERIC},#{item.powerstationId,jdbcType=NUMERIC},#{item.powerstationName,jdbcType=VARCHAR} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.WorkOrderInfoPO">
+		update pvmts_workorder_info set order_number=#{orderNumber,jdbcType=VARCHAR},create_user=#{createUser,jdbcType=NUMERIC},create_time=#{createTime},maintenance_user=#{maintenanceUser,jdbcType=NUMERIC},allocate_time=#{allocateTime},state=#{state,jdbcType=NUMERIC},update_time=#{updateTime},remarks=#{remarks,jdbcType=VARCHAR},physicalState=#{physicalState,jdbcType=NUMERIC},departureState=#{departureState,jdbcType=NUMERIC},powerStation_id=#{powerstationId,jdbcType=NUMERIC},powerStation_name=#{powerstationName,jdbcType=VARCHAR} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.WorkOrderInfoPO">
+		update pvmts_workorder_info
+        <set>
+            <if test="orderNumber != null "> 
+                order_number = #{orderNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="createUser != null "> 
+                create_user = #{createUser,jdbcType=NUMERIC},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="maintenanceUser != null "> 
+                maintenance_user = #{maintenanceUser,jdbcType=NUMERIC},
+            </if>
+            <if test="allocateTime != null "> 
+                allocate_time = #{allocateTime},
+            </if>
+            <if test="state != null "> 
+                state = #{state,jdbcType=NUMERIC},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+            <if test="remarks != null "> 
+                remarks = #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="physicalState != null "> 
+                physicalState = #{physicalState,jdbcType=NUMERIC},
+            </if>
+            <if test="departureState != null "> 
+                departureState = #{departureState,jdbcType=NUMERIC},
+            </if>
+            <if test="powerstationId != null "> 
+                powerStation_id = #{powerstationId,jdbcType=NUMERIC},
+            </if>
+            <if test="powerstationName != null "> 
+                powerStation_name = #{powerstationName,jdbcType=VARCHAR},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_workorder_info where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.WorkOrderInfoPO">
+		delete from pvmts_workorder_info
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+	<!-- 查询当前人员下的输入时间段内所有已完成的工单信息 -->
+	<select id="findByTime" resultType="Integer">
+		SELECT
+			count(*)
+		FROM
+			pvmts_workorder_info
+		where state = 1
+		<if test="user != null">
+			and maintenance_user = #{userId}
+		</if>
+		<if test="updateTime!= null">
+				AND DATE_FORMAT(update_time,"%Y-%m-%d")= '${updateTime}'
+		</if>
+	</select>	
+</mapper>
+

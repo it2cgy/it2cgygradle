@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.AlarmConfigPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.AlarmConfigPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="pointId" column="point_id" jdbcType="NUMERIC" />
+            <result property="equipmentcontainerId" column="equipmentcontainer_id" jdbcType="NUMERIC" />
+            <result property="equipmentcontainerTableid" column="equipmentcontainer_tableid" jdbcType="NUMERIC" />
+            <result property="powerStationId" column="power_station_id" jdbcType="NUMERIC" />
+            <result property="userId" column="user_id" jdbcType="NUMERIC" />
+            <result property="valueOne" column="value_one" jdbcType="NUMERIC" />
+            <result property="valueTwo" column="value_two" jdbcType="NUMERIC" />
+            <result property="valueThree" column="value_three" jdbcType="NUMERIC" />
+            <result property="type" column="type" jdbcType="NUMERIC" />
+            <result property="message" column="message" jdbcType="VARCHAR" />
+            <result property="forbidden" column="forbidden" jdbcType="NUMERIC" />
+            <result property="createDate" column="create_date" />
+            <result property="updateDate" column="update_date" />
+            <result property="measurePointDiscription" column="measurementtype_description" jdbcType="VARCHAR" />
+			<result property="descriptionType" column="description_type" jdbcType="VARCHAR" />
+			<result property="equipmentcontainerName" column="equipmentcontainer_name" jdbcType="VARCHAR" />
+			<result property="pointEnglishName" column="point_english_name" jdbcType="VARCHAR" />
+			<result property="equipmentcontainerNameEn" column="equipmentcontainer_name_en" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		t1.id,t1.point_id,t1.user_id,t1.value_one,t1.value_two,t1.value_three,t1.type,t1.message,t1.forbidden,t1.create_date,t1.update_date,
+		t2.equipmentcontainer_id,t2.equipmentcontainer_tableid,t2.power_station_id,
+		t2.description_type,t2.equipmentcontainer_name,t2.measurementtype_description,
+		t2.point_english_name,t2.equipmentcontainer_name_en
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "pointId != null ">	and t1. point_id = #{pointId,jdbcType=NUMERIC }</if>
+            <if test= "userId != null ">	and t1.user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "valueOne != null ">	and t1.value_one = #{valueOne,jdbcType=NUMERIC }</if>
+            <if test= "valueTwo != null ">	and t1.value_two = #{valueTwo,jdbcType=NUMERIC }</if>
+            <if test= "valueThree != null ">	and t1.value_three = #{valueThree,jdbcType=NUMERIC }</if>
+            <if test= "type != null ">	and t1.type = #{type,jdbcType=NUMERIC }</if>
+            <if test= "message != null ">	and t1.message = #{message,jdbcType=VARCHAR }</if>
+            <if test= "forbidden != null ">	and t1.forbidden = #{forbidden,jdbcType=NUMERIC }</if>
+            <if test= "createDate != null ">	and t1.create_date = #{createDate }</if>
+            <if test= "updateDate != null ">	and t1.update_date = #{updateDate }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "pointId != null ">	and t1.point_id = #{pointId,jdbcType=NUMERIC }</if>
+            <if test= "userId != null ">	and t1.user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "valueOne != null ">	and t1.value_one = #{valueOne,jdbcType=NUMERIC }</if>
+            <if test= "valueTwo != null ">	and t1.value_two = #{valueTwo,jdbcType=NUMERIC }</if>
+            <if test= "valueThree != null ">	and t1.value_three = #{valueThree,jdbcType=NUMERIC }</if>
+            <if test= "type != null ">	and t1.type = #{type,jdbcType=NUMERIC }</if>
+            <if test= "message != null ">	and t1.message like "%"#{message}"%"</if>
+            <if test= "forbidden != null ">	and t1.forbidden = #{forbidden,jdbcType=NUMERIC }</if>
+            <if test= "createDate != null ">	and t1.create_date = #{createDate }</if>
+            <if test= "updateDate != null ">	and t1.update_date = #{updateDate }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "pointId != null ">	or t1.point_id = #{pointId,jdbcType=NUMERIC }</if>
+            <if test= "userId != null ">	or t1.user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "valueOne != null ">	or t1.value_one = #{valueOne,jdbcType=NUMERIC }</if>
+            <if test= "valueTwo != null ">	or t1.value_two = #{valueTwo,jdbcType=NUMERIC }</if>
+            <if test= "valueThree != null ">	or t1.value_three = #{valueThree,jdbcType=NUMERIC }</if>
+            <if test= "type != null ">	or t1.type = #{type,jdbcType=NUMERIC }</if>
+            <if test= "message != null ">	or t1.message = #{message,jdbcType=VARCHAR }</if>
+            <if test= "forbidden != null ">	or t1.forbidden = #{forbidden,jdbcType=NUMERIC }</if>
+            <if test= "createDate != null ">	or t1.create_date = #{createDate }</if>
+            <if test= "updateDate != null ">	or t1.update_date = #{updateDate }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_alarm_config t1 LEFT JOIN pvmts_point_info t2 ON t1.point_id = t2.analoginput_id where 1=1
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when> 
+		</choose>
+
+
+		<if test="powerStationId != null "> and t2.power_station_id=${powerStationId} </if>
+		<if test="equiptype != null "> and t2.equipmentcontainer_tableid=${equiptype} </if>
+		<if test="measurementtype != null "> and t2.measurementtype_id=${measurementtype} </if>
+		<if test="equipnamekey != null "> and t2.equipmentcontainer_name like "%"#{equipnamekey}"%" </if>
+				
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_alarm_config t1 LEFT JOIN pvmts_point_info t2 ON t1.point_id = t2.analoginput_id 
+		<where>
+			<if test="_parameter != null">
+				t1.id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_alarm_config t1 LEFT JOIN pvmts_point_info t2 ON t1.point_id = t2.analoginput_id  where t1.id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.AlarmConfigPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_alarm_config( id,point_id,user_id,value_one,value_two,value_three,type,message,forbidden,create_date,update_date ) values (#{id,jdbcType=INTEGER},#{pointId,jdbcType=NUMERIC},#{userId,jdbcType=NUMERIC},#{valueOne,jdbcType=NUMERIC},#{valueTwo,jdbcType=NUMERIC},#{valueThree,jdbcType=NUMERIC},#{type,jdbcType=NUMERIC},#{message,jdbcType=VARCHAR},#{forbidden,jdbcType=NUMERIC},#{createDate},#{updateDate} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_alarm_config( id,point_id,user_id,value_one,value_two,value_three,type,message,forbidden,create_date,update_date ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.pointId,jdbcType=NUMERIC},#{item.userId,jdbcType=NUMERIC},#{item.valueOne,jdbcType=NUMERIC},#{item.valueTwo,jdbcType=NUMERIC},#{item.valueThree,jdbcType=NUMERIC},#{item.type,jdbcType=NUMERIC},#{item.message,jdbcType=VARCHAR},#{item.forbidden,jdbcType=NUMERIC},#{item.createDate},#{item.updateDate} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.AlarmConfigPO">
+		update pvmts_alarm_config set point_id=#{pointId,jdbcType=NUMERIC},user_id=#{userId,jdbcType=NUMERIC},value_one=#{valueOne,jdbcType=NUMERIC},value_two=#{valueTwo,jdbcType=NUMERIC},value_three=#{valueThree,jdbcType=NUMERIC},type=#{type,jdbcType=NUMERIC},message=#{message,jdbcType=VARCHAR},forbidden=#{forbidden,jdbcType=NUMERIC},create_date=#{createDate},update_date=#{updateDate} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.AlarmConfigPO">
+		update pvmts_alarm_config
+        <set>
+            <if test="pointId != null "> 
+                point_id = #{pointId,jdbcType=NUMERIC},
+            </if>
+            <if test="userId != null "> 
+                user_id = #{userId,jdbcType=NUMERIC},
+            </if>
+            <if test="valueOne != null "> 
+                value_one = #{valueOne,jdbcType=NUMERIC},
+            </if>
+            <if test="valueTwo != null "> 
+                value_two = #{valueTwo,jdbcType=NUMERIC},
+            </if>
+            <if test="valueThree != null "> 
+                value_three = #{valueThree,jdbcType=NUMERIC},
+            </if>
+            <if test="type != null "> 
+                type = #{type,jdbcType=NUMERIC},
+            </if>
+            <if test="message != null "> 
+                message = #{message,jdbcType=VARCHAR},
+            </if>
+            <if test="forbidden != null "> 
+                forbidden = #{forbidden,jdbcType=NUMERIC},
+            </if>
+            <if test="createDate != null "> 
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null "> 
+                update_date = #{updateDate},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByIds">
+		delete from pvmts_alarm_config where id in (${_parameter})
+	</delete>
+	
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_alarm_config where id = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.AlarmConfigPO">
+		delete from pvmts_alarm_config
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

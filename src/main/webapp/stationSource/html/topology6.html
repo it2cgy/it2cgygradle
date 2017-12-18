@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+		<meta http-equiv="X-UA-Compatible" content="IE=9" />
+		<meta name="renderer" content="webkit">
+	    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"> 
+	    <link rel="stylesheet" type="text/css" href="../../assets/pages/css/ynz/scrollDefined.css"/>	
+	    
+		<title>拓扑图</title>
+		<style>
+			*{margin:0;padding:0;}
+			a{text-decoration:none;display:block;}
+			.topologyBox{
+				width:1600px;
+				margin:0 auto;
+				position:relative;
+				text-align:center;
+			}
+			.topologyBox a{
+				position:absolute;
+				width:30px;
+				height:30px;
+				background:pink;
+			    opacity:0;
+				filter:alpha(opacity=0);
+				
+			}    
+    		.returnBtn{
+    			position: absolute;
+    			top: 15px;
+    		}
+			.returnBtn a{
+				width:120px;
+				height:30px;
+				line-height: 30px;
+    			font-size: 15px;
+				text-align:center;
+				background-color: #E26A6A;
+    			border:0;
+    			color:#fff;
+    			opacity: 100;
+    			filter: alpha(opacity=1);
+			}
+			.returnBtn a:hover{
+				color: #fff;
+			    background-color: #da3f3f;
+			}
+			.topologyBox a[class^="clx"]{
+				top: 46%;
+				background:red;
+			}
+			.topologyBox a[class*="nbq"] {
+    			top: 51.333333%;
+    		}
+    		/* 测量箱start */
+			.clx1{
+				left: 38px;
+			}
+			.clx2{
+				left:75px;
+			}
+			.clx3{
+				left: 112px;
+			}
+			.clx4{
+				left: 153px;
+			}
+			.clx5 {
+			   	 left: 188px;
+			}
+			.clx6{
+				left: 224px;
+			}
+			.clx7{
+				left: 255px;
+			}
+			.clx8{
+				left: 288px;
+			}
+			.clx9{
+				left: 336px;
+			}
+			.clx10{
+				left: 369px;
+			}
+			.clx11{
+				left: 403px;
+			}
+			.clx12{
+				left: 435px;
+			}
+			.clx13{
+				left: 470px;
+			}
+			.clx14{
+				left: 504px;
+			}
+			.clx15{
+				left: 535px;
+			}
+			.clx16{
+				left: 568px;
+			}
+			.clx17{
+				left: 602px;
+			}
+			.clx18{
+				left: 635px;
+			}
+			.clx19{
+				left: 668px;
+			}
+			.clx20{
+				left: 719px;
+			}
+			.clx21{
+				left: 750px;
+			}
+			.clx22{
+				left: 782px;
+			}
+			.clx23{
+				right: 753px;
+			}
+			.clx24{
+				right: 720px;
+			}
+			.clx25{
+				right: 687px;
+			}
+			.clx26{
+				right: 655px;
+			}
+			.clx27{
+				right: 621px;
+			}
+			.clx28{
+				right: 588px;
+			}
+			.clx29{
+				right: 556px;
+			}
+			.clx30{
+				right: 522px;
+			}
+			.clx31{
+				right: 489px;
+			}
+			.clx32{
+				right: 453px;
+			}
+			.clx33{
+				right: 416px;
+			}
+			.clx34{
+				right: 360px;
+			}
+			.clx35{
+				right: 303px;
+			}
+			.clx36{
+				right: 247px;
+			}
+			/* 测量箱end */
+			/* 逆变器start */
+			.nbq1{
+				left: 38px;
+			}
+			.nbq2{
+				left:75px;
+			}
+			.nbq3{
+				left: 112px;
+			}
+			.nbq4{
+				left: 153px;
+			}
+			.nbq5 {
+			   	 left: 188px;
+			}
+			.nbq6{
+				left: 224px;
+			}
+			.nbq7{
+				left: 255px;
+			}
+			.nbq8{
+				left: 288px;
+			}
+			.nbq9{
+				left: 336px;
+			}
+			.nbq10{
+				left: 369px;
+			}
+			.nbq11{
+				left: 403px;
+			}
+			.nbq12{
+				left: 435px;
+			}
+			.nbq13{
+				left: 470px;
+			}
+			.nbq14{
+				left: 504px;
+			}
+			.nbq15{
+				left: 535px;
+			}
+			.nbq16{
+				left: 568px;
+			}
+			.nbq17{
+				left: 602px;
+			}
+			.nbq18{
+				left: 635px;
+			}
+			.nbq19{
+				left: 668px;
+			}
+			.nbq20{
+				left: 719px;
+			}
+			.nbq21{
+				left: 750px;
+			}
+			.nbq22{
+				left: 782px;
+			}
+			.nbq23{
+				right: 753px;
+			}
+			.nbq24{
+				right: 720px;
+			}
+			.nbq25{
+				right: 687px;
+			}
+			.nbq26{
+				right: 655px;
+			}
+			.nbq27{
+				right: 621px;
+			}
+			.nbq28{
+				right: 588px;
+			}
+			.nbq29{
+				right: 556px;
+			}
+			.nbq30{
+				right: 522px;
+			}
+			.nbq31{
+				right: 489px;
+			}
+			.nbq32{
+				right: 453px;
+			}
+			.nbq33{
+				right: 416px;
+			}
+			.nbq34{
+				right: 360px;
+			}
+			.nbq35{
+				right: 303px;
+			}
+			.nbq36{
+				right: 247px;
+			}
+			.bwg{
+				top: 86px;
+			    left: 1007px;
+			    width: 120px!important;
+			}
+			/* 逆变器end */
+			#tplink{ 
+			  background:#333;
+			  height:30px;
+			  line-height:30px;
+	          position:absolute;
+	          padding:0 8px;
+	          color:#fff;
+	          white-space:nowrap;
+	          font-size:13px;
+	          display:none;
+	          border-radius: 5px;
+	          -webkit-border-radius: 5px;
+	          -moz-border-radius: 5px;
+	          opacity:0.8;
+			  filter:alpha(opacity=80);
+	     	}
+	     	    
+		</style>
+	</head>
+	<body>
+		<div class="topologyBox" id="link">
+			<img class="topologyImg" alt="乐叶泰州电器系统图" src="../img/topology6.png">
+			<div class="returnBtn"><a href="../../index/6.do">返回</a></div>
+			<!-- 测量箱start -->
+			<a class="clx1 tplink"  title="#1-CL1"  target="_blank" href="../../inverterPage/inverterList.do?id=1&powerStationId=6">1</a>			
+			<a class="clx2 tplink"  title="#2-CL1"  target="_blank" href="../../inverterPage/inverterList.do?id=2&powerStationId=6">2</a>
+			<a class="clx3 tplink"  title="#3-CL1"  target="_blank" href="../../inverterPage/inverterList.do?id=3&powerStationId=6">3</a>
+			<a class="clx4 tplink"  title="#4-CL1"  target="_blank" href="../../inverterPage/inverterList.do?id=4&powerStationId=6">4</a>								
+			<a class="clx5 tplink"  title="#6-CL1"  target="_blank" href="../../inverterPage/inverterList.do?id=5&powerStationId=6">5</a>
+			<a class="clx6 tplink"  title="#6-CL2"  target="_blank" href="../../inverterPage/inverterList.do?id=6&powerStationId=6">6</a>
+			<a class="clx7 tplink"  title="#6-CL3"  target="_blank" href="../../inverterPage/inverterList.do?id=7&powerStationId=6">7</a>
+			<a class="clx8 tplink"  title="#6-CL4"  target="_blank" href="../../inverterPage/inverterList.do?id=8&powerStationId=6">8</a>
+			<a class="clx9 tplink"  title="#7-CL1"  target="_blank" href="../../inverterPage/inverterList.do?id=9&powerStationId=6">9</a>								
+			<a class="clx10 tplink" title="#7-CL2" target="_blank" href="../../inverterPage/inverterList.do?id=10&powerStationId=6">10</a>
+			<a class="clx11 tplink" title="#8-CL1" target="_blank" href="../../inverterPage/inverterList.do?id=11&powerStationId=6">11</a>
+			<a class="clx12 tplink" title="#8-CL2" target="_blank" href="../../inverterPage/inverterList.do?id=12&powerStationId=6">12</a>
+			<a class="clx13 tplink" title="#8-CL3" target="_blank" href="../../inverterPage/inverterList.do?id=13&powerStationId=6">13</a>
+			<a class="clx14 tplink" title="#8-CL4" target="_blank" href="../../inverterPage/inverterList.do?id=14&powerStationId=6">14</a>
+			<a class="clx15 tplink" title="#8-CL5" target="_blank" href="../../inverterPage/inverterList.do?id=15&powerStationId=6">15</a>
+			<a class="clx16 tplink" title="#9-CL1" target="_blank" href="../../inverterPage/inverterList.do?id=16&powerStationId=6">16</a>
+			<a class="clx17 tplink" title="#9-CL2" target="_blank" href="../../inverterPage/inverterList.do?id=17&powerStationId=6">17</a>								
+			<a class="clx18 tplink" title="#9-CL3" target="_blank" href="../../inverterPage/inverterList.do?id=18&powerStationId=6">18</a>
+			<a class="clx19 tplink" title="#9-CL4" target="_blank" href="../../inverterPage/inverterList.do?id=19&powerStationId=6">19</a>
+			<a class="clx20 tplink" title="#9-CL5" target="_blank" href="../../inverterPage/inverterList.do?id=20&powerStationId=6">20</a>
+			<a class="clx21 tplink" title="#9-CL6" target="_blank" href="../../inverterPage/inverterList.do?id=21&powerStationId=6">21</a>
+			<a class="clx22 tplink" title="#9-CL7" target="_blank" href="../../inverterPage/inverterList.do?id=22&powerStationId=6">22</a>								
+			<a class="clx23 tplink" title="#9-CL8" target="_blank" href="../../inverterPage/inverterList.do?id=23&powerStationId=6">23</a>
+			<a class="clx24 tplink" title="#9-CL9" target="_blank" href="../../inverterPage/inverterList.do?id=24&powerStationId=6">24</a>
+			<a class="clx25 tplink" title="#9-CL10" target="_blank" href="../../inverterPage/inverterList.do?id=25&powerStationId=6">25</a>
+			<a class="clx26 tplink" title="#10-CL1" target="_blank" href="../../inverterPage/inverterList.do?id=26&powerStationId=6">26</a>
+			<a class="clx27 tplink" title="#10-CL2" target="_blank" href="../../inverterPage/inverterList.do?id=27&powerStationId=6">27</a>
+			<a class="clx28 tplink" title="#11-CL1" target="_blank" href="../../inverterPage/inverterList.do?id=28&powerStationId=6">28</a>
+			<a class="clx29 tplink" title="#14-CL1" target="_blank" href="../../inverterPage/inverterList.do?id=39&powerStationId=6">29</a>
+			<a class="clx30 tplink" title="#14-CL2" target="_blank" href="../../inverterPage/inverterList.do?id=30&powerStationId=6">30</a>
+			<a class="clx31 tplink" title="#14-CL3" target="_blank" href="../../inverterPage/inverterList.do?id=31&powerStationId=6">31</a>
+			<a class="clx32 tplink" title="#14-CL4" target="_blank" href="../../inverterPage/inverterList.do?id=32&powerStationId=6">32</a>								
+			<a class="clx33 tplink" title="#12-CL1" target="_blank" href="../../inverterPage/inverterList.do?id=33&powerStationId=6">33</a>
+			<a class="clx34 tplink" title="#12-CL2" target="_blank" href="../../inverterPage/inverterList.do?id=34&powerStationId=6">34</a>
+			<a class="clx35 tplink" title="#13-CL1" target="_blank" href="../../inverterPage/inverterList.do?id=35&powerStationId=6">35</a>
+			<a class="clx36 tplink" title="#13-CL2" target="_blank" href="../../inverterPage/inverterList.do?id=36&powerStationId=6">36</a>
+			<!-- 测量箱end -->
+			<!-- 逆变器start -->
+			<a class="nbq1 tplink" title="#1-NBQ1"  target="_blank" href="../../inverterPage/inverterDetail/1.do?powerStationId=6">1</a>			
+			<a class="nbq2 tplink" title="#2-NBQ1"  target="_blank" href="../../inverterPage/inverterDetail/2.do?powerStationId=6">2</a>
+			<a class="nbq3 tplink" title="#3-NBQ1"  target="_blank" href="../../inverterPage/inverterDetail/3.do?powerStationId=6">3</a>
+			<a class="nbq4 tplink" title="#4-NBQ1"  target="_blank" href="../../inverterPage/inverterDetail/4.do?powerStationId=6">4</a>								
+			<a class="nbq5 tplink" title="#6-NBQ1"  target="_blank" href="../../inverterPage/inverterDetail/5.do?powerStationId=6">5</a>
+			<a class="nbq6 tplink" title="#6-NBQ2"  target="_blank" href="../../inverterPage/inverterDetail/6.do?powerStationId=6">6</a>
+			<a class="nbq7 tplink" title="#6-NBQ3"  target="_blank" href="../../inverterPage/inverterDetail/7.do?powerStationId=6">7</a>
+			<a class="nbq8 tplink" title="#6-NBQ4"  target="_blank" href="../../inverterPage/inverterDetail/8.do?powerStationId=6">8</a>
+			<a class="nbq9 tplink" title="#7-NBQ1"  target="_blank" href="../../inverterPage/inverterDetail/9.do?powerStationId=6">9</a>								
+			<a class="nbq10 tplink" title="#7-NBQ2" target="_blank" href="../../inverterPage/inverterDetail/10.do?powerStationId=6">10</a>
+			<a class="nbq11 tplink" title="#8-NBQ1" target="_blank" href="../../inverterPage/inverterDetail/11.do?powerStationId=6">11</a>
+			<a class="nbq12 tplink" title="#8-NBQ2" target="_blank" href="../../inverterPage/inverterDetail/12.do?powerStationId=6">12</a>
+			<a class="nbq13 tplink" title="#8-NBQ3" target="_blank" href="../../inverterPage/inverterDetail/13.do?powerStationId=6">13</a>
+			<a class="nbq14 tplink" title="#8-NBQ4" target="_blank" href="../../inverterPage/inverterDetail/14.do?powerStationId=6">14</a>
+			<a class="nbq15 tplink" title="#8-NBQ5" target="_blank" href="../../inverterPage/inverterDetail/15.do?powerStationId=6">15</a>
+			<a class="nbq16 tplink" title="#9-NBQ1" target="_blank" href="../../inverterPage/inverterDetail/16.do?powerStationId=6">16</a>
+			<a class="nbq17 tplink" title="#9-NBQ2" target="_blank" href="../../inverterPage/inverterDetail/17.do?powerStationId=6">17</a>								
+			<a class="nbq18 tplink" title="#9-NBQ3" target="_blank" href="../../inverterPage/inverterDetail/18.do?powerStationId=6">18</a>
+			<a class="nbq19 tplink" title="#9-NBQ4" target="_blank" href="../../inverterPage/inverterDetail/19.do?powerStationId=6">19</a>
+			<a class="nbq20 tplink" title="#9-NBQ5" target="_blank" href="../../inverterPage/inverterDetail/20.do?powerStationId=6">20</a>
+			<a class="nbq21 tplink" title="#9-NBQ6" target="_blank" href="../../inverterPage/inverterDetail/21.do?powerStationId=6">21</a>
+			<a class="nbq22 tplink" title="#9-NBQ7" target="_blank" href="../../inverterPage/inverterDetail/22.do?powerStationId=6">22</a>								
+			<a class="nbq23 tplink" title="#9-NBQ8" target="_blank" href="../../inverterPage/inverterDetail/23.do?powerStationId=6">23</a>
+			<a class="nbq24 tplink" title="#9-NBQ9" target="_blank" href="../../inverterPage/inverterDetail/24.do?powerStationId=6">24</a>
+			<a class="nbq25 tplink" title="#9-NBQ10" target="_blank" href="../../inverterPage/inverterDetail/25.do?powerStationId=6">25</a>
+			<a class="nbq26 tplink" title="#10-NBQ1" target="_blank" href="../../inverterPage/inverterDetail/26.do?powerStationId=6">26</a>
+			<a class="nbq27 tplink" title="#10-NBQ2" target="_blank" href="../../inverterPage/inverterDetail/27.do?powerStationId=6">27</a>
+			<a class="nbq28 tplink" title="#11-NBQ1" target="_blank" href="../../inverterPage/inverterDetail/28.do?powerStationId=6">28</a>
+			<a class="nbq29 tplink" title="#14-NBQ1" target="_blank" href="../../inverterPage/inverterDetail/29.do?powerStationId=6">29</a>
+			<a class="nbq30 tplink" title="#14-NBQ2" target="_blank" href="../../inverterPage/inverterDetail/30.do?powerStationId=6">30</a>
+			<a class="nbq31 tplink" title="#14-NBQ3" target="_blank" href="../../inverterPage/inverterDetail/31.do?powerStationId=6">31</a>
+			<a class="nbq32 tplink" title="#14-NBQ4" target="_blank" href="../../inverterPage/inverterDetail/32.do?powerStationId=6">32</a>								
+			<a class="nbq33 tplink" title="#12-NBQ1" target="_blank" href="../../inverterPage/inverterDetail/33.do?powerStationId=6">33</a>
+			<a class="nbq34 tplink" title="#12-NBQ2" target="_blank" href="../../inverterPage/inverterDetail/34.do?powerStationId=6">34</a>
+			<a class="nbq35 tplink" title="#13-NBQ1" target="_blank" href="../../inverterPage/inverterDetail/35.do?powerStationId=6">35</a>
+			<a class="nbq36 tplink" title="#13-NBQ2" target="_blank" href="../../inverterPage/inverterDetail/36.do?powerStationId=6">36</a>
+			<!-- 逆变器end -->
+			<!-- 并网柜 -->
+			<a class="bwg" title="" target="_blank" href="../../gridarkPageController/gridarkPage/6?powerStationId=6">并网柜</a>
+		</div>
+	</body>
+	<script src="jquery-1.11.3.min.js"></script>
+	<script>
+		$(function(){
+  	          var x=2;
+  	          var y=-30;
+  	          $("a.tplink").mouseover(function(e){
+  	              this.myTitle=this.title;
+  	              this.title="";
+  	             var tooltip="<div id='tplink'>"+this.myTitle+"</div>";   //创建DIV元素
+  	              $("body").append(tooltip);     //追加到文档中
+  	              $("#tplink").css({"top": (e.pageY+y) + "px","left": (e.pageX+x) + "px"}).show();    //设置X  Y坐标， 并且显示
+  	          }).mouseout(function(){
+  	             this.title=this.myTitle;
+  	              $("#tplink").remove();    //移除
+  	         }).mousemove(function(e){
+  	             $("#tplink").css({"top": (e.pageY+y) + "px","left": (e.pageX+x) + "px"});
+           })
+		})
+	</script>
+</html>

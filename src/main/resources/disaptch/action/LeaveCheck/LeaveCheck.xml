@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--离场记录表 -->
+<mapper namespace="leaveCheck">
+  
+<!--查询检查内容-->
+  	<resultMap type="java.util.HashMap" id="diMap">
+		<result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="check_standard" column="check_standard"/>
+        <result property="remarks" column="remarks"/>
+    </resultMap>
+    
+  	<select id="loadDi"  resultMap="diMap">
+  		 SELECT id,name,check_standard,remarks FROM MT_LEAVE_CHECK_ITEM_TYPE order by id
+  	</select>
+    <!--查找电厂的基本信息--> 	
+  	<resultMap type="java.util.HashMap" id="ifMap">
+		<result property="pid" column="pid"/>
+        <result property="pname" column="pname"/>
+         <result property="archieve_num" column="archieve_num"/>
+        <!-- <result property="form_flow_num" column="form_flow_num"/> ,c.form_flow_num form_flow_num-->
+    </resultMap>
+  	<select id="loadif"  resultMap="ifMap">
+  		 SELECT p.id pid,p.name pname,e.archieve_num archieve_num,l.form_flow_num form_flow_num FROM MT_PROJECT p left join MT_EVENT e on p.id=e.pro_id left join MT_LEAVE_CHECK l on e.id=l.event_id  where 1=1
+  		  <if test="_parameter != null and _parameter !=''" >
+				and l.PROCESS_ID= #{_parameter}
+			</if>
+  		  order by p.id
+  	</select>
+    <!--通过processid修改离场结果表-->
+    <update id="updatere" parameterType="leaveCheckResult">
+		UPDATE  MT_LEAVE_CHECK_RESULT  T SET T.IS_QUALIFIED=#{is_qualified,jdbcType=INTEGER} ,T.RESULT_SOLUTION=#{result_solution,jdbcType=VARCHAR}  ,T.REMARKS=#{remarks,jdbcType=VARCHAR} WHERE T.CHECKUP_ID=#{checkup_id,jdbcType=INTEGER}  and T.ITEM_TYPE=#{item_type,jdbcType=INTEGER}
+	</update>
+	
+   <!--通过processid修改离场记录表-->
+	<update id="updatebyid" parameterType="leaveCheck">
+		UPDATE  MT_LEAVE_CHECK  T SET T.remarks=#{remarks,jdbcType=VARCHAR} ,T.plan_leave_time=TO_DATE(#{plan_leave_time,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),T.record_date=TO_DATE(#{record_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),T.check_result=#{check_result,jdbcType=VARCHAR},T.recorder_contact=#{recorder_contact,jdbcType=VARCHAR},T.record_user_id=#{record_user_id,jdbcType=INTEGER}     WHERE T.PROCESS_ID=#{processid,jdbcType=INTEGER} 
+	</update>
+	<!--通过processid修改离场记录表调度中心意见-->
+	<update id="updatebylcid" parameterType="leaveCheck">
+		UPDATE  MT_LEAVE_CHECK  T SET T.is_center_agreed=#{is_center_agreed,jdbcType=INTEGER},T.center_opnion=#{center_opnion,jdbcType=VARCHAR} WHERE T.PROCESS_ID=#{processid,jdbcType=INTEGER}
+	</update>
+	<!--通过processid查看离场表id-->
+	<select id="quId" parameterType="leaveCheck" resultType="java.lang.String">
+  		select id from  MT_LEAVE_CHECK where PROCESS_ID=${processid}
+  	</select>
+  	
+  	<!--通过processid查看离场表基本信息-->
+  	<resultMap type="java.util.HashMap" id="mationMap">
+		<result property="pid" column="pid"/>
+        <result property="pname" column="pname"/>
+        <result property="archieve_num" column="archieve_num"/>
+         <result property="form_flow_num" column="form_flow_num"/>
+         <result property="plan_leave_time" column="plan_leave_time"/>
+        <result property="record_date" column="record_date"/>
+         <result property="recorder_contact" column="recorder_contact"/>
+         <result property="check_result" column="check_result"/>
+         <result property="remarks" column="remarks"/>
+         <result property="is_center_agreed" column="is_center_agreed"/> 
+         <result property="center_opnion" column="center_opnion"/>
+         <result property="realname" column="realname"/>
+        <!-- <result property="form_flow_num" column="form_flow_num"/> ,c.form_flow_num form_flow_num-->
+    </resultMap>
+  	<select id="mation"  resultMap="mationMap">
+  		 SELECT
+			P . ID pid,
+			P . NAME pname,
+			E .archieve_num archieve_num,
+			lc.form_flow_num form_flow_num,
+			TO_CHAR (
+				lc.plan_leave_time,
+				'yyyy-MM-dd hh24:mi:ss'
+			) plan_leave_time,
+			lc.center_opnion center_opnion,
+			lc.is_center_agreed is_center_agreed,
+			TO_CHAR (
+				lc.record_date,
+				'yyyy-MM-dd hh24:mi:ss'
+			) record_date,
+			lc.recorder_contact recorder_contact,
+			lc.check_result check_result,
+			lc.remarks remarks,
+		    ur.realname realname
+		FROM
+			MT_PROJECT P
+		LEFT JOIN MT_EVENT E ON P. ID = E .pro_id
+		LEFT JOIN MT_LEAVE_CHECK lc ON E . ID = lc.event_id
+		LEFT JOIN MT_USER ur ON ur. ID = lc.record_user_id
+		WHERE
+			1 = 1
+         <if test="_parameter != null and _parameter !=''" >
+				and lc.PROCESS_ID= #{_parameter}
+		 </if>
+         order by p.id
+  	</select>
+  	
+<!--   	SELECT
+	P . ID pid,
+	P . NAME pname,
+	E .archieve_num archieve_num,
+	lc.form_flow_num form_flow_num,
+	lc.plan_leave_time plan_leave_time,
+	lc.record_date record_date,
+	lc.recorder_contact recorder_contact,
+	lc.check_result check_result,
+	lc.remarks remarks
+FROM
+MT_LEAVE_CHECK lc
+LEFT JOIN MT_EVENT E ON  E . ID = lc.event_id 
+LEFT JOIN MT_PROJECT P  ON P . ID = E .pro_id
+WHERE
+	P . ID = '67'
+ORDER BY
+	P . ID -->
+	<!--通过processid查看离场表附属表基本信息-->
+  	<resultMap type="java.util.HashMap" id="feedbackMap">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+        <result property="check_standard" column="check_standard"/>
+        <result property="remarks" column="remarks"/>
+		<result property="result_solution" column="result_solution"/>
+		<result property="is_qualified" column="is_qualified"/>
+    </resultMap>
+    
+  	<select id="feedback"  resultMap="feedbackMap">
+  		 SELECT lci. ID ID,lci. NAME NAME,lci.check_standard check_standard,lcr.result_solution result_solution,lcr.remarks remarks,lcr.is_qualified is_qualified FROM MT_LEAVE_CHECK_RESULT lcr LEFT JOIN MT_LEAVE_CHECK_ITEM_TYPE lci ON lci. ID = lcr.item_type LEFT JOIN MT_LEAVE_CHECK lc ON lc. ID = lcr.checkup_id WHERE 1=1
+  		 <if test="_parameter != null and _parameter !=''" >
+				and lc.PROCESS_ID= #{_parameter}
+			</if>
+  		  ORDER BY ID
+  	</select>
+  	
+  	
+  	<insert id="exltext"  parameterType="java.util.List">
+  		 insert into AMINFOARCH(id,farmid,aminfoid,datatime,poelet,poeleu,poeleg,poelep,acva,acvb,acvc,acia,acib,acic,acpa,acpb,acpc,p,q,f,hz,fpoelep,fpoeleg,fpoeleu,fpoelet,amgainsd,amgainsm,amgainsy,amgainsa,fitjea,itjea)
+  		 <foreach collection="list" item="item" index="index" separator="union all">
+  		select ${item.id},${item.farmid},${item.aminfoid},${item.datatime},${item.poelet},
+  		 ${item.poeleu},${item.poeleg},${item.poelep},${item.acva},${item.acvb},
+  		 ${item.acvc},${item.acia},${item.acib},${item.acic},${item.acpa},
+  		 ${item.acpb},${item.acpc},${item.p},${item.q},${item.f},
+  		 ${item.hz},${item.fpoelep},${item.fpoeleg},${item.fpoeleu},${item.fpoelet},
+  		 ${item.amgainsd},${item.amgainsm},${item.amgainsy},${item.amgainsa},${item.fitjea},
+  		 ${item.itjea} from dual
+  		 </foreach>
+  	</insert>
+  	
+  	<insert id="itinfoarch"  parameterType="java.util.List">
+  		 insert into ITINFOARCH(id,farmid,itinfoid,datatime,dcinvpv1,dcinipv1,dcinvpv2,dcinipv2,dcinvpv3,dcinipv3,dcinvpv4,dcinipv4,dcinvpv5,dcinipv5,dcinvpv6,dcinipv6,acoutvab,acoutvbc,acoutvca,acoutva,acoutvb,acoutvc,acoutia,acoutib,acoutic,achz,pofactor,itpower,ittemp,itphtemp,maxpford,itp,itq,inp,itzlscp,itzlv,itzli,dgencap,mgencap,ygencap,allgencap,electrre,mppt1p,mppt2p,mppt3p,mpph1p,mpph2p,mpph3p)
+  		 <foreach collection="list" item="item" index="index" separator="union all">
+	  		select ${item.id},${item.farmid},${item.itinfoid},${item.datatime},
+			${item.dcinvpv1},${item.dcinipv1},${item.dcinvpv2},${item.dcinipv2},
+			${item.dcinvpv3},${item.dcinipv3},${item.dcinvpv4},${item.dcinipv4},
+			${item.dcinvpv5},${item.dcinipv5},${item.dcinvpv6},${item.dcinipv6},
+			${item.acoutvab},${item.acoutvbc},${item.acoutvca},${item.acoutva},
+			${item.acoutvb},${item.acoutvc},${item.acoutia},${item.acoutib},
+			${item.acoutic},${item.achz},${item.pofactor},${item.itpower},${item.ittemp},
+			${item.itphtemp},${item.maxpford},${item.itp},${item.itq},${item.inp},${item.itzlscp},
+			${item.itzlv},${item.itzli},${item.dgencap},${item.mgencap},${item.ygencap},
+			${item.allgencap},${item.electrre},${item.mppt1p},${item.mppt2p},${item.mppt3p},
+			${item.mpph1p},${item.mpph2p},${item.mpph3p} from dual
+  		 </foreach>
+  	</insert>
+  	
+</mapper>

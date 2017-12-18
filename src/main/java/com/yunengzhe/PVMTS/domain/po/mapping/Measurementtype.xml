@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.MeasurementtypePO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.MeasurementtypePO">
+            <id property="id" column="ID" jdbcType="INTEGER" />
+            <result property="aliasname" column="ALIASNAME" jdbcType="VARCHAR" />
+            <result property="description" column="DESCRIPTION" jdbcType="VARCHAR" />
+            <result property="name" column="NAME" jdbcType="VARCHAR" />
+            <result property="pathname" column="PATHNAME" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		ID,ALIASNAME,DESCRIPTION,NAME,PATHNAME
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "aliasname != null ">	and ALIASNAME = #{aliasname,jdbcType=VARCHAR }</if>
+            <if test= "description != null ">	and DESCRIPTION = #{description,jdbcType=VARCHAR }</if>
+            <if test= "name != null ">	and NAME = #{name,jdbcType=VARCHAR }</if>
+            <if test= "pathname != null ">	and PATHNAME = #{pathname,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "aliasname != null ">	and ALIASNAME like "%"#{aliasname}"%"</if>
+            <if test= "description != null ">	and DESCRIPTION like "%"#{description}"%"</if>
+            <if test= "name != null ">	and NAME like "%"#{name}"%"</if>
+            <if test= "pathname != null ">	and PATHNAME like "%"#{pathname}"%"</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "aliasname != null ">	or ALIASNAME = #{aliasname,jdbcType=VARCHAR }</if>
+            <if test= "description != null ">	or DESCRIPTION = #{description,jdbcType=VARCHAR }</if>
+            <if test= "name != null ">	or NAME = #{name,jdbcType=VARCHAR }</if>
+            <if test= "pathname != null ">	or PATHNAME = #{pathname,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from measurementtype
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from measurementtype  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from measurementtype  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.MeasurementtypePO" useGeneratedKeys="true" keyProperty="id">
+		insert into measurementtype( ID,ALIASNAME,DESCRIPTION,NAME,PATHNAME ) values (#{id,jdbcType=INTEGER},#{aliasname,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{pathname,jdbcType=VARCHAR} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into measurementtype( ID,ALIASNAME,DESCRIPTION,NAME,PATHNAME ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.aliasname,jdbcType=VARCHAR},#{item.description,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.pathname,jdbcType=VARCHAR} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.MeasurementtypePO">
+		update measurementtype set ALIASNAME=#{aliasname,jdbcType=VARCHAR},DESCRIPTION=#{description,jdbcType=VARCHAR},NAME=#{name,jdbcType=VARCHAR},PATHNAME=#{pathname,jdbcType=VARCHAR} where ID=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.MeasurementtypePO">
+		update measurementtype
+        <set>
+            <if test="aliasname != null "> 
+                ALIASNAME = #{aliasname,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null "> 
+                DESCRIPTION = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null "> 
+                NAME = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="pathname != null "> 
+                PATHNAME = #{pathname,jdbcType=VARCHAR},
+            </if>
+        </set>
+         where ID=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from measurementtype where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.MeasurementtypePO">
+		delete from measurementtype
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

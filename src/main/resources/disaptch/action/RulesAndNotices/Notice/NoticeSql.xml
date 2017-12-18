@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="notice">
+
+	<resultMap type="java.util.Map" id="noticeTypeMap">
+		<result property="id" column="id" />
+    	<result property="name" column="name" />
+	</resultMap>
+	
+	<select id="loadKey" resultType="java.lang.Integer">
+  		select SEQ_MT_NOTICE_ID.nextval as id from dual
+  	</select>
+  	
+	<select id="queryNoticeType" resultMap="noticeTypeMap">
+		select * from mt_notice_type
+	</select>
+	<insert id="addNotice">
+		insert into mt_notice(id, name, company_id, type, publisher, publish_time,
+				brief, body_html_text, check_times, status, remarks) 
+			values(
+			    #{id},
+				#{name},
+				#{company_id},
+				#{type},
+				#{publisher},
+				sysdate,
+				#{brief},
+				#{body_html_text,jdbcType=CLOB},
+				0,
+				#{status},
+				#{remarks}
+			)
+	</insert>
+	
+	<update id="secondSaveRules">
+		update mt_notice
+			set	name = #{name},
+				company_id = #{company_id},
+				type = #{type},
+				publisher = #{publisher},
+				publish_time = sysdate,
+				brief = #{brief},
+				body_html_text = #{body_html_text,jdbcType=CLOB},
+				check_times = 0,
+				status = #{status},
+				remarks = #{remarks}
+			where id = #{id}
+	</update>
+	
+	<select id="queryNoticeList" resultType="notice">
+		select mn.id, mn.name, mnt.name type_name, mn.publish_time, mn.status, mn.remarks 
+		  from mt_notice mn, mt_notice_type mnt
+			where mn.type = mnt.id
+				and mn.company_id = '${company_id}'
+			<if test="name != null and name != ''">
+				and mn.name like '%${name}%'
+			</if>
+			<if test="startDate != null and startDate != ''">
+				and mn.publish_time &gt; to_date('${startDate}', 'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="endDate != null and endDate != ''">
+				and mn.publish_time &lt; to_date('${endDate}', 'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="status != null and status != 0">
+				and mn.status = 1
+			</if>
+			<if test="sort != null and sort != ''">
+				order by mn.${sort} ${order}
+			</if>
+	</select>
+	
+	<select id="queryNoticeOne" resultType="notice">
+		select mn.id, mn.name, mnt.name type_name, mn.publish_time, mn.status, mn.remarks, mn.body_html_text
+		  from mt_notice mn, mt_notice_type mnt
+			where mn.type = mnt.id
+				and mn.id = #{notice_id}
+	</select>
+	
+	<delete id="noticeDel">
+		delete from mt_notice where id in (${notice})
+	</delete>
+	
+	 <resultMap type="java.util.HashMap" id="cheakcodeMap">
+		<result property="id" column="id"/>
+    </resultMap>
+    
+	<select id="checkid"  resultMap="cheakcodeMap">
+  		
+				
+				SELECT
+					md.id id
+				FROM
+					mt_notice md
+				WHERE
+					1 = 1
+				                
+				<if test="_parameter != null and _parameter !=''" >
+					and  md.id = #{_parameter}
+				</if>
+								
+		
+  	</select>
+	
+	<update id="noticePublish">
+		update mt_notice
+			set status = 1,
+		  		publish_time = sysdate
+		  	where id = #{notice_id}
+	</update>
+	
+	<update id="updateNotice">
+		update mt_notice
+			set name = #{name},
+				type = #{type},
+				publisher = #{publisher},
+				body_html_text = #{body_html_text},
+				status = #{status},
+				remarks = #{remarks},
+				publish_time = sysdate
+		  	where id = #{id}
+	</update>
+	
+	<resultMap type="java.util.Map" id="noticeListMap">
+		<result property="id" column="id" />
+    	<result property="name" column="name" />
+    	<result property="publish_time" column="publish_time" />
+	</resultMap>
+	
+	<select id="homePageNoticeList" parameterType="java.util.HashMap" resultMap="noticeListMap">
+		select * from
+		(select id, name, to_char(publish_time,'yyyy-mm-dd') publish_time 
+			from mt_notice
+				where company_id = ${company_id}
+					and status = 1
+				order by publish_time desc)
+		 where rownum &lt;= ${showNum}
+			
+			
+<!--		select id, name, DATE_FORMAT(publish_time, '%Y-%m-%d') publish_time -->
+<!--			from mt_notice -->
+<!--				where company_id = ${company_id}-->
+<!--					and status = 1-->
+<!--				order by publish_time desc-->
+<!--		 LIMIT ${showNum}-->
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="eleFaultFlaw">
+    <resultMap type="java.util.HashMap" id="queryEleNameMap">
+		<result property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+    <insert id="addFault">
+    	
+    </insert>
+   
+	<select id="queryEleName" parameterType="java.util.HashMap" resultMap="queryEleNameMap">
+		select id, name from mt_project
+	</select>
+	
+	<!-- 
+	   	 往参数中设置值
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	SELECT SEQ_PV_CE_ESTIMATE_ID.NEXTVAL AS ID FROM DUAL  
+    	</selectKey>
+    	这可以被设置为 BEFORE 或 AFTER。如果设置为 BEFORE,那么它会首先选择主键,
+    	设置 keyProperty 然后执行插入语句。如果设置为 AFTER,那么先执行插入语句,
+    	然后是 selectKey 元素-这和如 Oracle 数据库相似,可以在插入语句中嵌入序列调用。 
+    -->
+</mapper>

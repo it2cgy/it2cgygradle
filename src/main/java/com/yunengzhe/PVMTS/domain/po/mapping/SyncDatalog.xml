@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.SyncDatalogPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.SyncDatalogPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="name" column="name" jdbcType="VARCHAR" />
+            <result property="startDate" column="start_date" />
+            <result property="endDate" column="end_date" />
+            <result property="status" column="status" jdbcType="NUMERIC" />
+            <result property="userId" column="user_id" jdbcType="NUMERIC" />
+            <result property="createDate" column="create_date" />
+            <result property="updateDate" column="update_date" />
+			<result property="nickname" column="nickname" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="base_field">
+		t1.id,t1.name,t1.start_date,t1.end_date,t1.status,t1.user_id,t1.create_date,t1.update_date,t2.nickname
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "name != null ">	and t1.name = #{name,jdbcType=VARCHAR }</if>
+            <if test= "startDate != null ">	and t1.start_date = #{startDate }</if>
+            <if test= "endDate != null ">	and t1.end_date = #{endDate }</if>
+            <if test= "status != null ">	and t1.status = #{status,jdbcType=NUMERIC }</if>
+            <if test= "userId != null ">	and t1.user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "createDate != null ">	and t1.create_date = #{createDate }</if>
+            <if test= "updateDate != null ">	and t1.update_date = #{updateDate }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "name != null ">	and t1.name like "%"#{name}"%"</if>
+            <if test= "startDate != null ">	and t1.start_date = #{startDate }</if>
+            <if test= "endDate != null ">	and t1.end_date = #{endDate }</if>
+            <if test= "status != null ">	and t1.status = #{status,jdbcType=NUMERIC }</if>
+            <if test= "userId != null ">	and t1.user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "createDate != null ">	and t1.create_date = #{createDate }</if>
+            <if test= "updateDate != null ">	and t1.update_date = #{updateDate }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "name != null ">	or t1.name = #{name,jdbcType=VARCHAR }</if>
+            <if test= "startDate != null ">	or t1.start_date = #{startDate }</if>
+            <if test= "endDate != null ">	or t1.end_date = #{endDate }</if>
+            <if test= "status != null ">	or t1.status = #{status,jdbcType=NUMERIC }</if>
+            <if test= "userId != null ">	or t1.user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "createDate != null ">	or t1.create_date = #{createDate }</if>
+            <if test= "updateDate != null ">	or t1.update_date = #{updateDate }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_syncdata_log t1 left join pvmts_user t2 on t1.user_id=t2.id
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by t1.${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_syncdata_log  
+		<where>
+			<if test="_parameter != null">
+				t1.id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from from pvmts_syncdata_log t1 left join pvmts_user t2 on t1.user_id=t2.id  where t1.id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.SyncDatalogPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_syncdata_log( id,name,start_date,end_date,status,user_id,create_date,update_date ) values (#{id,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{startDate},#{endDate},#{status,jdbcType=NUMERIC},#{userId,jdbcType=NUMERIC},#{createDate},#{updateDate} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_syncdata_log( id,name,start_date,end_date,status,user_id,create_date,update_date ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.name,jdbcType=VARCHAR},#{item.startDate},#{item.endDate},#{item.status,jdbcType=NUMERIC},#{item.userId,jdbcType=NUMERIC},#{item.createDate},#{item.updateDate} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.SyncDatalogPO">
+		update pvmts_syncdata_log set name=#{name,jdbcType=VARCHAR},start_date=#{startDate},end_date=#{endDate},status=#{status,jdbcType=NUMERIC},user_id=#{userId,jdbcType=NUMERIC},create_date=#{createDate},update_date=#{updateDate} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.SyncDatalogPO">
+		update pvmts_syncdata_log
+        <set>
+            <if test="name != null "> 
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="startDate != null "> 
+                start_date = #{startDate},
+            </if>
+            <if test="endDate != null "> 
+                end_date = #{endDate},
+            </if>
+            <if test="status != null "> 
+                status = #{status,jdbcType=NUMERIC},
+            </if>
+            <if test="userId != null "> 
+                user_id = #{userId,jdbcType=NUMERIC},
+            </if>
+            <if test="createDate != null "> 
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null "> 
+                update_date = #{updateDate},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_syncdata_log where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.SyncDatalogPO">
+		delete from pvmts_syncdata_log
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

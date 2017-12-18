@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="maintenance">
+	<resultMap type="java.util.HashMap" id="painMap">
+		<result property="PRONAME" column="PRONAME"/>
+		<result property="PLAN_SETOFF_DATE" column="PLAN_SETOFF_DATE"/>
+		<result property="ARCHIEVE_NUM" column="ARCHIEVE_NUM"/>
+		<result property="PLAN_FINISH_DATE" column="PLAN_FINISH_DATE"/>
+		<result property="THIRD_CONTACT_RESULT" column="THIRD_CONTACT_RESULT"/>
+		<result property="WORK_CONTENT" column="WORK_CONTENT"/>
+		<result property="REMARKS" column="REMARKS"/>
+		<result property="PLANID" column="PLANID"/>
+		<result property="FORM_FLOW_NUM" column="FORM_FLOW_NUM"/>
+		<result property="IS_NEED_THIRD" column="IS_NEED_THIRD"/>
+		<result property="RECORD_DATE" column="RECORD_DATE"/>
+		<result property="eventId" column="eventId"/>
+		<result property="proId" column="proId"/>
+	</resultMap>
+	<select id="loadPain" parameterType="java.lang.String" resultMap="painMap">
+	    SELECT 
+	     to_char(MT.PLAN_SETOFF_DATE,'yyyy-MM-dd hh24:mi:ss')  AS PLAN_SETOFF_DATE,
+         to_char(MT.PLAN_FINISH_DATE,'yyyy-MM-dd hh24:mi:ss')  AS PLAN_FINISH_DATE,
+         MT.THIRD_CONTACT_RESULT,
+         MT.WORK_CONTENT,
+         MT.REMARKS,
+         MT.ID AS PLANID,
+         A.NAME AS PRONAME,
+         MT.FORM_FLOW_NUM,
+         T.ARCHIEVE_NUM,
+         M.IS_NEED_THIRD,
+         to_char(MT.RECORD_DATE,'yyyy-MM-dd hh24:mi:ss')  AS RECORD_DATE,
+         T.ID as eventId,
+         A.ID AS proId
+	    FROM MT_PLAN MT
+	    LEFT JOIN MT_WORKSHEET M
+	      ON MT.MT_WORKSHEET_ID = M.ID
+	    LEFT JOIN MT_EVENT T
+	      ON M.EVENT_ID = T.ID
+	    LEFT JOIN MT_PROJECT A
+	      ON T.PRO_ID = A.ID
+          WHERE 1=1
+	     <if test="_parameter != null and _parameter !=''" >
+			and M.PROCESS_ID= #{_parameter}
+		 </if>
+	</select>
+	
+	<select id="loadWorkSheet" resultType="Integer">
+  		SELECT ID from mt_worksheet WHERE EVENT_ID= #{_parameter}
+  	</select>
+  	
+  	<select id="loadKey" resultType="Integer">
+  		select SEQ_MT_PLAN_ID.nextval as id from dual  
+  	</select>
+	
+	
+	<!-- 保存检修计划表基本信息 -->
+	<sql id="colList" >
+	   	id, mt_worksheet_id,archive_id,third_contact_result,work_content,remarks,record_username,record_usertype,record_date
+  	</sql>
+	<insert id="saveData" parameterType="plan">
+		insert into MT_PLAN(<include refid="colList"/>) values (
+			#{id,jdbcType=INTEGER},
+			#{mt_worksheet_id,jdbcType=INTEGER},
+			#{archive_id,jdbcType=INTEGER},
+			#{third_contact_result,jdbcType=VARCHAR},
+			#{work_content,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR},
+			#{record_username,jdbcType=VARCHAR},
+			#{record_usertype,jdbcType=INTEGER},
+			to_date(#{record_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss')
+		)
+	</insert>
+	
+	<!-- 更新检修计划表 -->
+	<update id ="updateData" parameterType="plan">
+			UPDATE MT_PLAN SET 
+			PLAN_SETOFF_DATE = to_date(#{plan_setoff_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			PLAN_FINISH_DATE = to_date(#{plan_finish_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			THIRD_CONTACT_RESULT = #{third_contact_result,jdbcType=VARCHAR},
+			WORK_CONTENT = #{work_content,jdbcType=VARCHAR},
+			REMARKS = #{remarks,jdbcType=VARCHAR},
+			RECORD_USERNAME = #{record_username,jdbcType=VARCHAR},
+			RECORD_USERTYPE = #{record_usertype,jdbcType=INTEGER},
+			RECORD_DATE = to_date(#{record_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss')
+			WHERE ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 保存检修计划表工具图纸信息 -->
+	<sql id="coList" >
+	   	id, mt_plan_id,tool_name,tool_model,amount,unit,user_name,remarks,use_time
+  	</sql>
+	<insert id="savePlan" parameterType="planTool">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select SEQ_MT_TOOL_USE_PLAN_ID.nextval as id from dual  
+    	</selectKey>
+		insert into MT_TOOL_USE_PLAN(<include refid="coList"/>) values (
+			#{id,jdbcType=INTEGER},
+			#{mt_plan_id,jdbcType=INTEGER},
+			#{tool_name,jdbcType=VARCHAR},
+			#{tool_model,jdbcType=VARCHAR},
+			#{amount,jdbcType=INTEGER},
+			#{unit,jdbcType=VARCHAR},
+			#{username,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR},
+			to_date(#{usetime,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss')
+		)
+	</insert>
+	<update id="updatePlan" parameterType="planTool">
+		UPDATE MT_TOOL_USE_PLAN SET
+			tool_name = #{tool_name,jdbcType=VARCHAR},
+			tool_model = #{tool_model,jdbcType=VARCHAR},
+			amount = #{amount,jdbcType=INTEGER},
+			unit = #{unit,jdbcType=VARCHAR},
+			user_name = #{username,jdbcType=VARCHAR},
+			remarks = #{remarks,jdbcType=VARCHAR},
+			use_time = to_date(#{usetime,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss')
+			WHERE ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	
+	
+	<!-- 查看页面数据加载 -->
+	<resultMap type="java.util.HashMap" id="previewMap">
+		<result property="PRONAME" column="PRONAME"/>
+		<result property="FORMFLOWNUM" column="FORMFLOWNUM"/>
+		<result property="RECORDNAME" column="RECORDNAME"/>
+		<result property="RECOREDDATE" column="RECOREDDATE"/>
+		<result property="STARTDATE" column="STARTDATE"/>
+		<result property="ENDDATE" column="ENDDATE"/>
+		<result property="THIRDRESULT" column="THIRDRESULT"/>
+		<result property="WORKCONTENT" column="WORKCONTENT"/>
+		<result property="REMARKS" column="REMARKS"/>
+		<result property="RECORD_USERNAME" column="RECORD_USERNAME"/>
+		<result property="RECORD_DATE" column="RECORD_DATE"/>
+		
+		<result property="FORM_FLOW_NUM" column="FORM_FLOW_NUM"/>
+		<result property="ARCHIEVE_NUM" column="ARCHIEVE_NUM"/>
+		<result property="PLANID" column="PLANID"/>
+	</resultMap>
+	<select id="loadPreview" parameterType="java.lang.String" resultMap="previewMap">
+		SELECT C.NAME                 AS PRONAME,
+		       A.FORM_FLOW_NUM        AS FORMFLOWNUM,
+		       A.RECORD_USERNAME      AS RECORDNAME,
+		       to_char(A.RECORD_DATE,'yyyy-MM-dd hh24:mi:ss')  AS RECOREDDATE,
+	      	   to_char(A.PLAN_SETOFF_DATE,'yyyy-MM-dd hh24:mi:ss')  AS STARTDATE,
+               to_char(A.PLAN_FINISH_DATE ,'yyyy-MM-dd hh24:mi:ss')  AS ENDDATE,
+		       A.THIRD_CONTACT_RESULT AS THIRDRESULT,
+		       A.WORK_CONTENT         AS WORKCONTENT,
+		       A.REMARKS              AS REMARKS,
+          	   A.RECORD_USERNAME,
+               A.RECORD_DATE,
+               A.FORM_FLOW_NUM,
+               B.ARCHIEVE_NUM,
+               A.ID AS PLANID
+		  FROM MT_PLAN A
+		  LEFT JOIN MT_EVENT B
+		    ON A.ARCHIVE_ID = B.ID
+		  LEFT JOIN MT_PROJECT C
+		    ON B.PRO_ID = C.ID
+		    WHERE 1=1
+	     <if test="_parameter != null and _parameter !=''" >
+			  AND A.PROCESS_ID= #{_parameter}
+		 </if>
+	</select>
+		<!-- 查看页面工具图书数据 -->
+	<resultMap type="java.util.HashMap" id="toolMap">
+		<result property="TOOLID" column="TOOLID"/>
+		<result property="TOOLNAME" column="TOOLNAME"/>
+		<result property="TOOLMODEL" column="TOOLMODEL"/>
+		<result property="AMOUNT" column="AMOUNT"/>
+		<result property="UNIT" column="UNIT"/>
+		<result property="USERNAME" column="USERNAME"/>
+		<result property="USETIME" column="USETIME"/>
+		<result property="PLANREMARKS" column="PLANREMARKS"/>
+	</resultMap>
+	<select id="loadPlan" parameterType="java.lang.String" resultMap="toolMap">
+		 SELECT T.TOOL_NAME  AS TOOLNAME,T.ID AS TOOLID,
+	       T.TOOL_MODEL AS TOOLMODEL,
+	       T.AMOUNT,
+	       T.UNIT,
+	       T.USER_NAME  AS USERNAME,
+	       TO_CHAR(T.USE_TIME,'yyyy-MM-dd hh24:mm:ss') AS USETIME,
+	       T.REMARKS    AS PLANREMARKS
+	     FROM MT_TOOL_USE_PLAN T LEFT JOIN MT_PLAN MT ON T.MT_PLAN_ID = MT.ID
+		 WHERE 1=1
+	     <if test="_parameter != null and _parameter !=''" >
+<!--			AND MT.PROCESS_ID= #{_parameter}-->
+				AND T.MT_PLAN_ID= #{_parameter}
+		 </if>
+	</select>
+</mapper>

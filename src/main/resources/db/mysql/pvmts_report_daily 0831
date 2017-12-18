@@ -1,0 +1,17 @@
+
+
+drop table if exists pvmts_report_daily;
+
+/*==============================================================*/
+/* Table: pvmts_daily_report            2017-08-31  14:02                          */
+/*==============================================================*/
+create table pvmts_report_daily
+(
+   id                   int auto_increment not null,
+   reportname           varchar(64),
+   url                  varchar(256),
+   reporttime           datetime,
+   createtime           datetime,
+   updatetime           datetime,
+   primary key (id)
+);

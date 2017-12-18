@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="monitorUD">
+	<resultMap type="java.util.HashMap" id="monitorMap">
+		<result property="CURVEID" 		column="CURVEID"/>
+		<result property="CURVENAME" 	column="CURVENAME"/>
+		<result property="TIME_SPAN"	column="TIME_SPAN"/>
+		<result property="CURVE_TYPE" 	column="CURVE_TYPE"/>
+		<result property="FIRST_ASIX" 	column="FIRST_ASIX"/>
+		<result property="SECOND_ASIX"  column="SECOND_ASIX"/>
+	</resultMap>
+	<!-- 查看自定义曲线基础信息 -->
+	<select id="loadCurve" parameterType="java.util.HashMap" resultMap="monitorMap">
+		SELECT T.ID AS CURVEID,
+           T.CURVENAME,
+           T.TIME_SPAN,
+           T.CURVE_TYPE,
+           T.FIRST_ASIX,
+           T.SECOND_ASIX
+	      FROM MC_CUSTOMIZED_CURVE T 
+          WHERE 1=1
+		  <if test="proId != null and proId !=''" >
+				AND T.FARMID = ${proId}
+		  </if>
+		  <if test="curName != null and curName !=''" >
+				AND T.CURVENAME LIKE '%${curName}%'
+		  </if>
+		  ORDER BY T.ID
+	</select>
+	<!-- 加载气象信息 -->
+	<resultMap type="java.util.HashMap" id="meteorMap">
+		<result property="TRANRAD_ID"  column="TRANRAD_ID"/>
+		<result property="ENVTEM_ID"  column="ENVTEM_ID"/>
+		<result property="ENVHUM_ID"  column="ENVHUM_ID"/>
+		<result property="PACKTEMP_ID"  column="PACKTEMP_ID"/>
+		<result property="WINDSP_ID"  column="WINDSP_ID"/>
+		<result property="WINDDIR_ID"  column="WINDDIR_ID"/>
+	</resultMap>
+	<!-- 查看自定义曲线基础信息 -->
+	<select id="loadMeteor" parameterType="java.util.HashMap" resultMap="meteorMap">
+		SELECT M1.SNDVALUE AS TRANRAD_ID,
+          	   M2.SNDVALUE AS ENVTEM_ID,
+		       M3.SNDVALUE AS ENVHUM_ID,
+		       M4.SNDVALUE AS PACKTEMP_ID,
+		       M5.SNDVALUE AS WINDSP_ID,
+		       M6.SNDVALUE AS WINDDIR_ID
+		      FROM MC_METEORINFO M
+		      LEFT JOIN MC_POINT M1
+		        ON M.TRANRAD_ID = M1.PID
+		      LEFT JOIN MC_POINT M2
+		        ON M.ENVTEM_ID = M2.PID
+		      LEFT JOIN MC_POINT M3
+		        ON M.ENVHUM_ID = M3.PID
+		      LEFT JOIN MC_POINT M4
+		        ON M.PACKTEMP_ID = M4.PID
+		      LEFT JOIN MC_POINT M5
+		        ON M.WINDSP_ID = M5.PID
+		      LEFT JOIN MC_POINT M6
+		        ON M.WINDDIR_ID = M6.PID
+		        WHERE 1=1
+		  <if test="_parameter != null and _parameter !=''" >
+				AND M.FARMID= #{_parameter}
+		  </if>
+	</select>
+	
+	<!-- 加载页面初始化数据 -->
+	<resultMap type="java.util.HashMap" id="pMap">
+		<result property="POINTNAME" column="POINTNAME"/>
+		<result property="COLOR_ID" column="COLOR_ID"/>
+		<result property="COLOR_CODE" column="COLOR_CODE"/>
+		<result property="COLOR_DESCR" column="COLOR_DESCR"/>
+		<result property="CURVE_TYPE" column="CURVE_TYPE"/>
+		<result property="AFFCOOR" column="AFFCOOR"/>
+		<result property="TYPENAME" column="TYPENAME"/>
+		<result property="AFFNAME" column="AFFNAME"/>
+		<result property="PID" column="PID"/>
+		<result property="POINTID" column="POINTID"/>
+		
+		<result property="LID" column="LID"/>
+		<result property="LNAME" column="LNAME"/>
+		<result property="LPID" column="LPID"/>
+		<result property="LINAME" column="LINAME"/>
+	</resultMap>
+	<!-- 查询测点列表 -->
+	<select id="loadPoint" parameterType="java.lang.String"  resultMap="pMap">
+		  SELECT T.ID AS PID,
+		  		-- MC.Description AS POINTNAME,
+						T.POINTNAME,
+		         M.COLOR_ID,
+		         M.COLOR_CODE,
+		         M.COLOR_DESCR,
+		         T.CURVE_TYPE,
+		         T.AFFCOOR,
+	            (CASE WHEN T.CURVE_TYPE=0 THEN '虚线' ELSE '实线' END) AS TYPENAME,
+	            (CASE WHEN T.AFFCOOR= 0 THEN '第一纵坐标' ELSE '第二纵坐标' END) AS AFFNAME,
+	             T.POINTID,
+	             MC.ID AS LID,
+	             MC.NAME AS LNAME,
+	           --  MC.PARENTID AS LPID,
+	             CONCAT(MC.NAME,'_',MC.ID) AS LINAME
+		  FROM  MC_DEFINEDCURVE_POINT T
+		  LEFT  JOIN MC_DEFINEDCURVE_COLOR M
+		    ON  T.CURVECOLORID = M.COLOR_ID
+		  LEFT  JOIN analoginput MC
+		    ON  T.POINTID = MC.ID
+		    WHERE 1=1
+		  <if test="_parameter != null and _parameter !=''" >
+			AND T.CURVEID= #{_parameter}
+		  </if>
+		  ORDER BY T.ID
+	</select>
+	<delete id="delCurve" parameterType="java.lang.String">
+		DELETE FROM  MC_CUSTOMIZED_CURVE  WHERE ID=#{_parameter}
+	</delete>
+	<delete id="delPoint" parameterType="java.lang.String">
+		DELETE FROM  MC_DEFINEDCURVE_POINT  WHERE CURVEID=#{_parameter}
+	</delete>
+	
+	<!-- 加载测点列表 -->
+	<resultMap type="java.util.HashMap" id="pointMap">
+		<result property="POINTID" column="id"/>
+		<result property="POINTNAME" column="name"/>
+	</resultMap>
+	<!-- 加载页面初始化数据 -->
+	<select id="loadPointList" parameterType="java.util.HashMap" resultMap="pointMap">
+
+		 select point.id,point.name from (
+			SELECT
+			 a1.id,
+			CONCAT(t1.`NAME`,m1.DESCRIPTION,m1.`NAME`) as name
+			FROM
+				analoginput a1
+			LEFT JOIN mc_inverter t1 ON a1.EQUIPMENTCONTAINER_TABLEID = t1.EQUIPMENTTYPEID and a1.EQUIPMENTCONTAINER_ID=t1.id
+			LEFT JOIN measurementtype m1 ON a1.TYPE = m1.ID
+			WHERE
+				a1.EQUIPMENTCONTAINER_TABLEID = 3  
+			<if test="proId != null and proId !=''" >
+				and t1.FARMID=${proId}
+			</if>
+			group by a1.id
+			union all 
+			SELECT
+			a2.id,
+			CONCAT(t2.`NAME`, m2.DESCRIPTION) as name
+			FROM
+				analoginput a2
+			LEFT JOIN mc_electric_meter t2 ON a2.EQUIPMENTCONTAINER_TABLEID = t2.EQUIPMENTTYPEID and a2.EQUIPMENTCONTAINER_ID=t2.id
+			LEFT JOIN measurementtype  m2 ON a2.TYPE = m2.ID
+			WHERE
+				a2.EQUIPMENTCONTAINER_TABLEID = 5
+			<if test="proId != null and proId !=''" >
+				and t2.FARMID=${proId}
+			</if>
+			group by a2.id
+			union all 
+			SELECT
+			a3.id as id,
+			CONCAT(t3.`NAME`, m3.DESCRIPTION) as name
+			FROM
+				analoginput a3
+			LEFT JOIN mc_meteor_monitor t3 ON a3.EQUIPMENTCONTAINER_TABLEID = t3.EQUIPMENTTYPEID and a3.EQUIPMENTCONTAINER_ID=t3.id
+			LEFT JOIN measurementtype m3 ON a3.TYPE = m3.ID
+			WHERE
+				a3.EQUIPMENTCONTAINER_TABLEID = 8 
+			<if test="proId != null and proId !=''" >
+				and t3.FARMID=${proId}
+			</if>
+			group by a3.id
+			) as point  where 1=1
+			<if test="pName != null and pName !=''" >
+				AND point.name LIKE '%${pName}%'
+			</if>
+
+	</select>
+	
+	<!-- 保存自定义曲线数据 基础数据 -->
+  	<insert id="saveCurve" parameterType="java.util.HashMap">
+		insert into MC_CUSTOMIZED_CURVE (FARMID,CURVENAME,TIME_SPAN,CURVE_TYPE,FIRST_ASIX,SECOND_ASIX) values (
+			 ${farmId},
+			 '${pointName}',
+			 ${time_span},
+			 ${curve_type},
+			 '${first_asix}',
+			 '${second_asix}'
+		)
+	</insert>
+	<select id="getCurveKey" resultType="java.lang.String">
+  		 <!-- select nextval('SEQ_MC_CUSTOMIZED_CURVE_ID') as id -->
+  		 SELECT auto_increment FROM information_schema.`TABLES` WHERE TABLE_SCHEMA ='pvmts_db_develop' and TABLE_NAME ='mc_customized_curve'
+  	</select>
+  	<select id="getPointKey" resultType="java.lang.String">
+  		 select nextval('SEQ_MC_DEFINEDCURVE_POINT_ID') as id
+  	</select>
+	<!-- 保存测点列表数据 -->
+  	<insert id="savePonint" parameterType="java.util.HashMap">
+  		<!-- <selectKey resultType="java.lang.Integer"  order ="BEFORE" keyProperty="id">  
+      		 select nextval('SEQ_MC_DEFINEDCURVE_POINT_ID') as id
+    	</selectKey> -->
+		insert into MC_DEFINEDCURVE_POINT (CURVEID,POINTID,CURVECOLORID,CURVE_TYPE,AFFCOOR,POINTNAME) values (
+			 ${curveid},
+			 ${pointId},
+			 ${curveColor},
+			 ${curveType},
+			 ${affcoor},
+			 '${pName}'
+		)
+	</insert>
+ 	<!-- 更新测点数据 -->
+	<update id="updatePonint" parameterType="java.util.HashMap">
+		UPDATE MC_DEFINEDCURVE_POINT 
+  		 SET CURVECOLORID=${curveColor},
+  		     CURVE_TYPE=${curveType},
+  		     AFFCOOR=${affcoor}
+ 		WHERE ID =${pId}
+	</update>
+	
+	<delete id="delPointById" parameterType="java.util.HashMap">
+		DELETE FROM MC_DEFINEDCURVE_POINT WHERE POINTID IN (${pointIds}) AND CURVEID =${curve_Id}
+	</delete>
+	
+		
+	<resultMap type="java.util.Map" id="EnvironmentAttrMap">
+    	<result property="name" column="name" />
+    </resultMap> 
+     
+	<select id="getMeteorIdFromFarmid" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+			 SELECT id FROM mc_meteor_monitor where farmid=${farmid}
+	</select>
+	
+	<select id="getEnvironmentAttr" parameterType="java.util.HashMap" resultType="java.lang.String">
+			select
+				a. name
+			from
+				measurementtype a
+			where
+				a.id in (
+					select
+						t.type
+					from
+						analoginput t
+					where
+						t.equipmentcontainer_tableid = 8
+					and t.equipmentcontainer_id in (
+						select
+							mc.id
+						from
+							mc_meteor_monitor mc
+						where
+							mc.farmid =${proId}
+					)
+				)
+			order by
+				a.id
+	</select>
+</mapper>

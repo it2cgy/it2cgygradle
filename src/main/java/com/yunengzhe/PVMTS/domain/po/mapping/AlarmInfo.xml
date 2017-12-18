@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.AlarmInfoPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.AlarmInfoPO">
+		<id property="id" column="id" jdbcType="INTEGER" />
+		<result property="alarmMid" column="alarm_mid" jdbcType="NUMERIC" />
+		<result property="alarmNumber" column="alarm_number" jdbcType="VARCHAR" />
+		<result property="measurePointDiscription" column="measurementtype_description" jdbcType="VARCHAR" />
+<!-- 		<result property="reasonCode" column="reason_code" jdbcType="NUMERIC" /> -->
+		<result property="alarmMessage" column="alarm_message" jdbcType="VARCHAR" />
+		<result property="alarmGrade" column="alarm_grade" jdbcType="NUMERIC" />
+		<result property="status" column="status" jdbcType="NUMERIC" />
+		<result property="alarmType" column="alarm_type" jdbcType="NUMERIC" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="pointEnglishName" column="point_english_name" jdbcType="VARCHAR" />
+		<result property="equipmentId" column="equipment_id" jdbcType="NUMERIC" />
+		<result property="equipmentType" column="equipment_type" jdbcType="NUMERIC" />
+		<result property="powerStationId" column="power_station_id" jdbcType="NUMERIC" />
+		<result property="userId" column="user_id" jdbcType="NUMERIC" />
+		<result property="description" column="description" jdbcType="VARCHAR" />
+		<result property="eventTime" column="event_time" />
+		<result property="alarmValue" column="alarm_value" jdbcType="NUMERIC" />
+		<result property="uid" column="uid" jdbcType="NUMERIC" />
+<!-- 		<result property="objectId" column="object_id" jdbcType="NUMERIC" /> -->
+<!-- 		<result property="objecttabId" column="objecttab_id" jdbcType="NUMERIC" /> -->
+		<result property="handling" column="handling" jdbcType="VARCHAR" />
+		<result property="handler" column="handler" jdbcType="VARCHAR" />
+		<result property="handTime" column="hand_time" />
+		<result property="remaker" column="remaker" jdbcType="VARCHAR" />
+		<result property="corporation" column="corporation" jdbcType="VARCHAR" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="opreateMessage" column="opreate_message" jdbcType="VARCHAR" />
+		<result property="descriptionType" column="description_type" jdbcType="VARCHAR" />
+		<result property="equipmentcontainerName" column="equipmentcontainer_name" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="resultAlarmCount"
+		type="com.yunengzhe.PVMTS.domain.vo.AlarmCountByUipmentVO">
+		<result property="alarmGrade" column="alarm_grade" jdbcType="NUMERIC" />
+		<result property="count" column="count" jdbcType="NUMERIC" />
+	</resultMap>
+	<sql id="base_field">
+		id,alarm_mid,alarm_number,reason_code,alarm_message,alarm_grade,status,alarm_type,state,equipment_id,equipment_type,power_station_id,event_time,alarm_value,uid,object_id,objecttab_id,handling,handler,hand_time,remaker,corporation,create_time,update_time,opreate_message
+	</sql>
+
+	<sql id="other-condition">
+		<if test="alarmMid != null "> and alarm_mid = #{alarmMid,jdbcType=NUMERIC }</if>
+		<if test="alarmNumber != null "> and alarm_number = #{alarmNumber,jdbcType=VARCHAR }</if>
+		<if test="alarmMessage != null "> and alarm_message = #{alarmMessage,jdbcType=VARCHAR }</if>
+		<if test="alarmGrade != null "> and alarm_grade = #{alarmGrade,jdbcType=NUMERIC }</if>
+		<if test="status != null "> and status = #{status,jdbcType=NUMERIC }</if>
+		<if test="alarmType != null "> and alarm_type = #{alarmType,jdbcType=NUMERIC }</if>
+		<if test="state != null "> and state = #{state,jdbcType=VARCHAR }</if>
+		<if test="equipmentId != null "> and equipment_id = #{equipmentId,jdbcType=NUMERIC }</if>
+		<if test="equipmentType != null "> and equipment_type = #{equipmentType,jdbcType=NUMERIC }</if>
+		<if test="powerStationId != null "> and power_station_id = #{powerStationId,jdbcType=NUMERIC}</if>
+		<if test="eventTime != null "> and event_time = #{eventTime }</if>
+		<if test="alarmValue != null "> and alarm_value = #{alarmValue,jdbcType=NUMERIC }</if>
+		<if test="uid != null "> and uid = #{uid,jdbcType=NUMERIC }</if>
+		<if test="objectId != null "> and object_id = #{objectId,jdbcType=NUMERIC }</if>
+		<if test="objecttabId != null "> and objecttab_id = #{objecttabId,jdbcType=NUMERIC }</if>
+		<if test="handling != null "> and handling = #{handling,jdbcType=VARCHAR }</if>
+		<if test="handler != null "> and handler = #{handler,jdbcType=VARCHAR }</if>
+		<if test="handTime != null "> and hand_time = #{handTime }</if>
+		<if test="remaker != null "> and remaker = #{remaker,jdbcType=VARCHAR }</if>
+		<if test="corporation != null "> and corporation = #{corporation,jdbcType=VARCHAR }</if>
+		<if test="createTime != null "> and create_time = #{createTime }</if>
+		<if test="updateTime != null "> and update_time = #{updateTime }</if>
+		<if test="opreateMessage != null "> and opreate_message = #{opreateMessage,jdbcType=VARCHAR }</if>
+	</sql>
+
+	<sql id="like-condition">
+		<if test="alarmMid != null "> and alarm_mid = #{alarmMid,jdbcType=NUMERIC }</if>
+		<if test="alarmNumber != null "> and alarm_number like "%"#{alarmNumber}"%"</if>
+		<if test="alarmMessage != null "> and alarm_message like "%"#{alarmMessage}"%"</if>
+		<if test="alarmGrade != null "> and alarm_grade = #{alarmGrade,jdbcType=NUMERIC }</if>
+		<if test="status != null "> and status = #{status,jdbcType=NUMERIC }</if>
+		<if test="alarmType != null "> and alarm_type = #{alarmType,jdbcType=NUMERIC }</if>
+		<if test="state != null "> and state like "%"#{state}"%"</if>
+		<if test="equipmentId != null "> and equipment_id = #{equipmentId,jdbcType=NUMERIC }</if>
+		<if test="equipmentType != null "> and equipment_type = #{equipmentType,jdbcType=NUMERIC }</if>
+		<if test="powerStationId != null "> and power_station_id = #{powerStationId,jdbcType=NUMERIC}</if>
+		<if test="eventTime != null "> and event_time = #{eventTime }</if>
+		<if test="alarmValue != null "> and alarm_value = #{alarmValue,jdbcType=NUMERIC }</if>
+		<if test="uid != null "> and uid = #{uid,jdbcType=NUMERIC }</if>
+		<if test="objectId != null "> and object_id = #{objectId,jdbcType=NUMERIC }</if>
+		<if test="objecttabId != null "> and objecttab_id = #{objecttabId,jdbcType=NUMERIC }</if>
+		<if test="handling != null "> and handling like "%"#{handling}"%"</if>
+		<if test="handler != null "> and handler like "%"#{handler}"%"</if>
+		<if test="handTime != null "> and hand_time = #{handTime }</if>
+		<if test="remaker != null "> and remaker like "%"#{remaker}"%"</if>
+		<if test="corporation != null "> and corporation like "%"#{corporation}"%"</if>
+		<if test="createTime != null "> and create_time = #{createTime }</if>
+		<if test="updateTime != null "> and update_time = #{updateTime }</if>
+		<if test="opreateMessage != null "> and opreate_message like "%"#{opreateMessage}"%"</if>
+	</sql>
+
+	<sql id="one-equal-condition">
+		<if test="alarmMid != null "> or alarm_mid = #{alarmMid,jdbcType=NUMERIC }</if>
+		<if test="alarmNumber != null "> or alarm_number = #{alarmNumber,jdbcType=VARCHAR }</if>
+		<if test="reasonCode != null "> or reason_code = #{reasonCode,jdbcType=NUMERIC }</if>
+		<if test="alarmMessage != null "> or alarm_message = #{alarmMessage,jdbcType=VARCHAR }</if>
+		<if test="alarmGrade != null "> or alarm_grade = #{alarmGrade,jdbcType=NUMERIC }</if>
+		<if test="status != null "> or status = #{status,jdbcType=NUMERIC }</if>
+		<if test="alarmType != null "> or alarm_type = #{alarmType,jdbcType=NUMERIC }</if>
+		<if test="state != null "> or state = #{state,jdbcType=VARCHAR }</if>
+		<if test="equipmentId != null "> or equipment_id = #{equipmentId,jdbcType=NUMERIC }</if>
+		<if test="equipmentType != null "> or equipment_type = #{equipmentType,jdbcType=NUMERIC }</if>
+		<if test="powerStationId != null "> or power_station_id = #{powerStationId,jdbcType=NUMERIC }</if>
+		<if test="eventTime != null "> or event_time = #{eventTime }</if>
+		<if test="alarmValue != null "> or alarm_value = #{alarmValue,jdbcType=NUMERIC }</if>
+		<if test="uid != null "> or uid = #{uid,jdbcType=NUMERIC }</if>
+		<if test="objectId != null "> or object_id = #{objectId,jdbcType=NUMERIC }</if>
+		<if test="objecttabId != null "> or objecttab_id = #{objecttabId,jdbcType=NUMERIC }</if>
+		<if test="handling != null "> or handling = #{handling,jdbcType=VARCHAR }</if>
+		<if test="handler != null "> or handler = #{handler,jdbcType=VARCHAR }</if>
+		<if test="handTime != null "> or hand_time = #{handTime }</if>
+		<if test="remaker != null "> or remaker = #{remaker,jdbcType=VARCHAR }</if>
+		<if test="corporation != null "> or corporation = #{corporation,jdbcType=VARCHAR }</if>
+		<if test="createTime != null "> or create_time = #{createTime }</if>
+		<if test="updateTime != null "> or update_time = #{updateTime }</if>
+		<if test="opreateMessage != null "> or opreate_message = #{opreateMessage,jdbcType=VARCHAR }</if>
+	</sql>
+
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_alarm_info
+		<choose>
+			<when test="findBy != null">
+				<where>
+					<include refid="other-condition" />
+				</where>
+			</when>
+			<when test="findByLike != null">
+				<where>
+					<include refid="like-condition" />
+				</where>
+			</when>
+
+			<when test="oneEqual != null">
+				<where>
+					<include refid="one-equal-condition" />
+				</where>
+			</when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+
+	<select id="selectByMap" resultMap="result">
+		<include refid="selectByMapSQL" />
+	</select>
+
+	<select id="selectCount" resultType="int">
+		select count(*) from (
+		<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+
+	<select id="selectPage" resultMap="result">
+		<include refid="selectByMapSQL" />
+		limit #{startRow},#{pageSize}
+	</select>
+
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_alarm_info
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	<select id="getAlarmDispose" resultMap="result">
+		SELECT
+			id,
+			alarm_mid,
+			alarm_number,
+			reason_code,
+			alarm_message,
+			alarm_grade,
+			STATUS,
+			alarm_type,
+			state,
+			equipment_id,
+			equipment_type,
+			t1.power_station_id,
+			event_time,
+			alarm_value,
+			uid,
+			object_id,
+			objecttab_id,
+			handling,
+			HANDLER,
+			hand_time,
+			remaker,
+			corporation,
+			t1.create_time,
+			t1.update_time,
+			opreate_message,
+			t2.description_type,
+			t2.equipmentcontainer_name,
+			t2.measurementtype_description
+		FROM
+			pvmts_alarm_info t1
+		LEFT JOIN pvmts_point_info t2 ON t1.equipment_id = t2.equipmentcontainer_id
+		AND t1.equipment_type = t2.equipmentcontainer_tableid
+		AND t1.object_id = t2.analoginput_id
+		WHERE
+			t1.id = #{id}
+	</select>
+
+	<select id="selectByIds" resultMap="result">
+		select
+		<include refid="base_field" />
+		from pvmts_alarm_info where id in (${_parameter})
+	</select>
+	<select id="findList" resultMap="result">
+		select DISTINCT
+		t1.id,t1.alarm_number,t1.alarm_message,t1.alarm_grade,t1.status,t1.alarm_type,t1.state,equipment_id,t1.equipment_type,t1.power_station_id,t1.event_time,t1.alarm_value,t1.uid,t1.create_time,t1.update_time,t2.user_id
+		from pvmts_alarm_info t1 LEFT JOIN `pvmts_alarm_user` t2 on t1.id =
+		t2.alarm_id
+		where 1=1
+		<if test="alarmGrade != null">
+			and alarm_grade = #{alarmGrade}
+		</if>
+		<if test="alarmMessage != null">
+			and alarm_message like BINARY "%"#{alarmMessage}"%"
+		</if>
+		<if test="powerStationId != null">
+			and power_station_id = #{powerStationId,jdbcType=NUMERIC }
+		</if>
+		<if test="beforeTime != null">
+			<if test="lateTime!= null">
+				and #{beforeTime} &lt; t1.event_time &lt; #{lateTime}
+			</if>
+		</if>
+		<if test="status != null">
+			<if test="status == 0">
+				and status=0
+			</if>
+			<if test="status != 0">
+				and status &lt;&gt; 0
+			</if>
+		</if>
+		order by t1.event_time desc
+		limit #{startRow},#{pageSize}
+	</select>
+	<!-- web根据搜索条件查询 -->
+	<select id="getAlarmListBySearch" resultMap="result">
+		SELECT t1.id,tt.measurementtype_description,tp.equipmentcontainer_name AS
+		alarm_number,tp.point_english_name,t1.alarm_message,t1.alarm_grade,t1.status,t1.alarm_type,t1.state,t1.equipment_id,t1.equipment_type,t1.power_station_id,t1.event_time,t1.hand_time,t1.alarm_value,
+		t1.uid,t1.create_time,t1.update_time,t2.user_id,t1.name NAME,t1.englishname
+		,tu.nickname as username,t1.opreate_message
+		FROM (SELECT t1.*,t2.name,t2.englishname
+		FROM pvmts_alarm_info t1 
+		LEFT JOIN mt_project t2 ON t1.power_station_id=t2.id
+		WHERE 1=1
+		<if test="powerStationId != null">
+			and t1.power_station_id = #{powerStationId}
+		</if>
+		<if test="search != null">
+			AND ( t1.alarm_message like BINARY "%"#{search}"%" or t1.alarm_value
+			like BINARY "%"#{search}"%" or t1.event_time like BINARY
+			"%"#{search}"%" or t1.id like BINARY "%"#{search}"%" )
+		</if>
+		<if test="status != null">
+			and t1.status = #{status}
+		</if>
+		) t1
+		LEFT JOIN ( SELECT
+		equipmentcontainer_id,equipmentcontainer_tableid,equipmentcontainer_name,point_english_name 
+		FROM pvmts_point_info
+		GROUP BY equipmentcontainer_id,equipmentcontainer_tableid) tp
+		ON t1.equipment_id=tp.equipmentcontainer_id AND
+		t1.equipment_type=tp.equipmentcontainer_tableid LEFT JOIN
+		`pvmts_alarm_user` t2 ON t1.id = t2.alarm_id left join pvmts_user tu
+		on t1.uid = tu.id
+		LEFT JOIN pvmts_point_info tt ON t1.object_id = tt.analoginput_id
+		<if test= "third != null ">	
+		  LEFT JOIN pvmts_third_equipments t ON t1.equipment_id = t.equipment_id AND t1.equipment_type=t.equipment_type
+        </if>
+		where 1=1 
+		<if test= "third != null ">	
+		  AND t.number is not null
+        </if>
+        <if test= "equipmentName != null ">	
+		  AND tp.equipmentcontainer_name like "%"#{equipmentName}"%"
+        </if>
+        <if test= "pointName != null ">	
+		  AND tt.measurementtype_description like "%"#{pointName}"%"
+        </if>
+        <if test= "alarmGrade != null ">	
+		  AND t1.alarm_grade = #{alarmGrade} 
+        </if>
+		order by t1.event_time desc
+		limit #{startRow},#{pageSize}
+
+
+	</select>
+	<!-- web根据搜索条件查询条数 -->
+	<select id="getCountBySearch" resultType="java.lang.Integer">
+		SELECT count(count.id)
+		FROM (SELECT t1.id,tt.measurementtype_description,tp.equipmentcontainer_name AS
+		alarm_number,t1.alarm_message,t1.alarm_grade,t1.status,t1.alarm_type,t1.state,t1.equipment_id,t1.equipment_type,t1.power_station_id,t1.event_time,t1.alarm_value,
+		t1.uid,t1.create_time,t1.update_time,t2.user_id,t1.name NAME
+		,tu.nickname as username,t1.opreate_message
+		FROM (SELECT t1.*,t2.name
+		FROM pvmts_alarm_info t1 
+		LEFT JOIN mt_project t2 ON t1.power_station_id=t2.id
+		WHERE 1=1
+		<if test="powerStationId != null">
+			and t1.power_station_id = #{powerStationId}
+		</if>
+		<if test="search != null">
+			AND ( t1.alarm_message like BINARY "%"#{search}"%" or t1.alarm_value
+			like BINARY "%"#{search}"%" or t1.event_time like BINARY
+			"%"#{search}"%" or t1.id like BINARY "%"#{search}"%" )
+		</if>
+		<if test="status != null">
+			and t1.status = #{status}
+		</if>
+		) t1
+		LEFT JOIN ( SELECT
+		equipmentcontainer_id,equipmentcontainer_tableid,equipmentcontainer_name
+		FROM pvmts_point_info
+		GROUP BY equipmentcontainer_id,equipmentcontainer_tableid) tp
+		ON t1.equipment_id=tp.equipmentcontainer_id AND
+		t1.equipment_type=tp.equipmentcontainer_tableid LEFT JOIN
+		`pvmts_alarm_user` t2 ON t1.id = t2.alarm_id left join pvmts_user tu
+		on t1.uid = tu.id
+		LEFT JOIN pvmts_point_info tt ON t1.object_id = tt.analoginput_id
+		<if test= "third != null ">	
+		  LEFT JOIN pvmts_third_equipments t ON t1.equipment_id = t.equipment_id AND t1.equipment_type=t.equipment_type
+        </if>
+		where 1=1 
+		<if test= "third != null ">	
+		  AND t.number is not null
+        </if>
+        <if test= "equipmentName != null ">	
+		  AND tp.equipmentcontainer_name like "%"#{equipmentName}"%"
+        </if>
+        <if test= "pointName != null ">	
+		  AND tt.measurementtype_description like "%"#{pointName}"%"
+        </if>
+         <if test= "alarmGrade != null ">	
+		  AND t1.alarm_grade = #{alarmGrade} 
+        </if>) count
+        
+
+	</select>
+
+	<!-- 查询未确认报警数量 -->
+	<select id="getcount" resultType="java.lang.Integer">
+		select DISTINCT count(t1.id) from pvmts_alarm_info t1 LEFT JOIN
+		`pvmts_alarm_user` t2 on t1.id = t2.alarm_id
+		where 1=1
+		<if test="alarmGrade != null">
+			and alarm_grade = #{alarmGrade}
+		</if>
+		<if test="alarmMessage != null">
+			and alarm_message like "%"#{alarmMessage}"%"
+		</if>
+		<if test="powerStationId != null">
+			and power_station_id = #{powerStationId,jdbcType=NUMERIC }
+		</if>
+		<if test="beforeTime != null">
+			<if test="lateTime!= null">
+				and #{beforeTime} &lt; t1.event_time &lt; #{lateTime}
+			</if>
+		</if>
+		<if test="status != null">
+			<if test="status == 0">
+				and status = 0
+			</if>
+			<if test="status != 0">
+				and status &lt;&gt; 0
+			</if>
+		</if>
+	</select>
+	<!-- 查询报警总数 -->
+	<select id="getAlarmSum" resultType="java.lang.Integer">
+		select
+		count(id)
+		from
+		pvmts_alarm_info
+		where power_station_id = #{powerStationId}
+	</select>
+	<!-- 查询近三个月的历史记录 -->
+	<select id="getAlarmHostoryList" resultMap="result"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_alarm_info where event_time >=
+		DATE_SUB(CURRENT_DATE(),INTERVAL 3 MONTH) and power_station_id =
+		#{powerStationId} order by event_time desc
+	</select>
+	<!-- 查询电站未确认报警数量 -->
+	<select id="getAlarmCount" resultType="java.lang.Integer"
+		parameterType="java.lang.Integer">
+		select
+		count(id)
+		from pvmts_alarm_info
+		where status = 0 and power_station_id = #{powerStationId}
+	</select>
+	<!-- 查询设备根据报警等级未确认报警数量 -->
+	<select id="getAlarmCountByUipment" resultMap="resultAlarmCount">
+		SELECT t1.alarm_grade,count(id) as count FROM pvmts_alarm_info t1
+		where 1=1
+		<if test="equipmentId != null "> and equipment_id = #{equipmentId,jdbcType=NUMERIC }</if>
+		<if test="equipmentType != null "> and equipment_type = #{equipmentType,jdbcType=NUMERIC}</if>
+		GROUP BY t1.alarm_grade order by t1.event_time desc
+	</select>
+	<!-- 报警未读数量 -->
+	<select id="getNoReadCount" resultType="java.lang.Integer">
+		select DISTINCT count(t1.id) from pvmts_alarm_info t1 LEFT JOIN
+		`pvmts_alarm_user` t2 on t1.id = t2.alarm_id where 1=1 and (t2.user_id
+		&lt;&gt; #{userId} or t2.user_id is null )order by t1.event_time desc
+	</select>
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.AlarmInfoPO"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_alarm_info(
+		id,alarm_mid,alarm_number,alarm_message,alarm_grade,status,alarm_type,state,equipment_id,equipment_type,power_station_id,event_time,alarm_value,uid,handling,handler,hand_time,remaker,corporation,create_time,update_time,opreate_message
+		) values
+		(#{id,jdbcType=INTEGER},#{alarmMid,jdbcType=NUMERIC},#{alarmNumber,jdbcType=VARCHAR},#{alarmMessage,jdbcType=VARCHAR},#{alarmGrade,jdbcType=NUMERIC},#{status,jdbcType=NUMERIC},#{alarmType,jdbcType=NUMERIC},#{state,jdbcType=VARCHAR},#{equipmentId,jdbcType=NUMERIC},#{equipmentType,jdbcType=NUMERIC},#{powerStationId,jdbcType=NUMERIC},#{eventTime},#{alarmValue,jdbcType=NUMERIC},#{uid,jdbcType=NUMERIC},#{handling,jdbcType=VARCHAR},#{handler,jdbcType=VARCHAR},#{handTime},#{remaker,jdbcType=VARCHAR},#{corporation,jdbcType=VARCHAR},NOW(),NOW(),#{opreateMessage,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List">
+		<selectKey resultType="java.lang.Integer" keyProperty="id"
+			order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+
+		insert into pvmts_alarm_info(
+		id,alarm_mid,alarm_number,reason_code,alarm_message,alarm_grade,status,alarm_type,state,equipment_id,equipment_type,power_station_id,event_time,alarm_value,uid,object_id,objecttab_id,handling,handler,hand_time,remaker,corporation,create_time,update_time,opreate_message
+		) values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id,jdbcType=INTEGER},#{item.alarmMid,jdbcType=NUMERIC},#{item.alarmNumber,jdbcType=VARCHAR},#{item.reasonCode,jdbcType=NUMERIC},#{item.alarmMessage,jdbcType=VARCHAR},#{item.alarmGrade,jdbcType=NUMERIC},#{item.status,jdbcType=NUMERIC},#{item.alarmType,jdbcType=NUMERIC},#{item.state,jdbcType=VARCHAR},#{item.equipmentId,jdbcType=NUMERIC},#{item.equipmentType,jdbcType=NUMERIC},#{item.powerStationId,jdbcType=NUMERIC},#{item.eventTime},#{item.alarmValue,jdbcType=NUMERIC},#{item.uid,jdbcType=NUMERIC},#{item.objectId,jdbcType=NUMERIC},#{item.objecttabId,jdbcType=NUMERIC},#{item.handling,jdbcType=VARCHAR},#{item.handler,jdbcType=VARCHAR},#{item.handTime},#{item.remaker,jdbcType=VARCHAR},#{item.corporation,jdbcType=VARCHAR},NOW(),NOW(),#{item.opreateMessage,jdbcType=VARCHAR}
+			)
+		</foreach>
+	</insert>
+
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.AlarmInfoPO">
+		update pvmts_alarm_info set
+		alarm_mid=#{alarmMid,jdbcType=NUMERIC},alarm_number=#{alarmNumber,jdbcType=VARCHAR},alarm_message=#{alarmMessage,jdbcType=VARCHAR},alarm_grade=#{alarmGrade,jdbcType=NUMERIC},status=#{status,jdbcType=NUMERIC},alarm_type=#{alarmType,jdbcType=NUMERIC},state=#{state,jdbcType=VARCHAR},equipment_id=#{equipmentId,jdbcType=NUMERIC},equipment_type=#{equipmentType,jdbcType=NUMERIC},power_station_id=#{powerStationId,jdbcType=NUMERIC},event_time=#{eventTime},alarm_value=#{alarmValue,jdbcType=NUMERIC},uid=#{uid,jdbcType=NUMERIC},handling=#{handling,jdbcType=VARCHAR},handler=#{handler,jdbcType=VARCHAR},hand_time=#{handTime},remaker=#{remaker,jdbcType=VARCHAR},corporation=#{corporation,jdbcType=VARCHAR},update_time=NOW(),opreate_message=#{opreateMessage,jdbcType=VARCHAR}
+		where id=#{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.AlarmInfoPO">
+		update pvmts_alarm_info
+		<set>
+			<if test="alarmMid != null ">
+				alarm_mid = #{alarmMid,jdbcType=NUMERIC},
+			</if>
+			<if test="alarmNumber != null ">
+				alarm_number = #{alarmNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="alarmMessage != null ">
+				alarm_message = #{alarmMessage,jdbcType=VARCHAR},
+			</if>
+			<if test="alarmGrade != null ">
+				alarm_grade = #{alarmGrade,jdbcType=NUMERIC},
+			</if>
+			<if test="status != null ">
+				status = #{status,jdbcType=NUMERIC},
+			</if>
+			<if test="alarmType != null ">
+				alarm_type = #{alarmType,jdbcType=NUMERIC},
+			</if>
+			<if test="state != null ">
+				state = #{state,jdbcType=VARCHAR},
+			</if>
+			<if test="equipmentId != null ">
+				equipment_id = #{equipmentId,jdbcType=NUMERIC},
+			</if>
+			<if test="equipmentType != null ">
+				equipment_type = #{equipmentType,jdbcType=NUMERIC},
+			</if>
+			<if test="powerStationId != null ">
+				power_station_id = #{powerStationId,jdbcType=NUMERIC},
+			</if>
+			<if test="eventTime != null ">
+				event_time = #{eventTime},
+			</if>
+			<if test="alarmValue != null ">
+				alarm_value = #{alarmValue,jdbcType=NUMERIC},
+			</if>
+			<if test="uid != null ">
+				uid = #{uid,jdbcType=NUMERIC},
+			</if>
+			<if test="handling != null ">
+				handling = #{handling,jdbcType=VARCHAR},
+			</if>
+			<if test="handler != null ">
+				handler = #{handler,jdbcType=VARCHAR},
+			</if>
+			<if test="handTime != null ">
+				hand_time = #{handTime},
+			</if>
+			<if test="remaker != null ">
+				remaker = #{remaker,jdbcType=VARCHAR},
+			</if>
+			<if test="corporation != null ">
+				corporation = #{corporation,jdbcType=VARCHAR},
+			</if>
+			update_time = NOW(),
+			<if test="opreateMessage != null ">
+				opreate_message = #{opreateMessage,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id=#{id,jdbcType=INTEGER}
+	</update>
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_alarm_info where id =
+		#{id,jdbcType=INTEGER}
+	</delete>
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.AlarmInfoPO">
+		delete from pvmts_alarm_info
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>
+
+</mapper>
+

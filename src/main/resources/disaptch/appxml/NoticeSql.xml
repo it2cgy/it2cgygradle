@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="noticeapp">
+         <resultMap type="java.util.HashMap" id="noticeMap">
+		  <result property="id" column="id"/>
+		  <result property="name" column="name"/>
+		  <result property="type" column="type"/>
+		  <result property="time" column="time"/>
+		  <result property="status" column="status"/>
+		  <result property="brief" column="brief"/>
+		  <result property="isRead" column="isRead"/>
+		 </resultMap>
+		 <!-- 20170421 cgy 更新 增加是否已读状态 isRead-->
+        <select id="queryNoticeList" parameterType="java.util.HashMap" resultMap="noticeMap" >
+			 SELECT MN.ID ID,
+			       MN.NAME NAME,
+			       MNT.NAME TYPE,
+			       MN.PUBLISH_TIME TIME,
+			       MN.STATUS STATUS,
+			       MN.BRIEF BRIEF,
+			       (CASE
+			         WHEN (SELECT COUNT(*)
+			                 FROM NOTICE_STATE ST
+			                WHERE ST.NOTEID = MN.ID
+			                  AND ST.USERID = '${userId}') > 0 THEN
+			          '1'
+			         ELSE
+			          '0'
+			       END) AS isRead
+			  FROM MT_NOTICE MN
+			  LEFT JOIN MT_NOTICE_TYPE MNT
+			    ON MN.TYPE = MNT.ID
+			  LEFT JOIN NOTICE_STATE ST
+			    ON MN.ID = ST.NOTEID
+			 where mn.company_id = '${company_id}'
+			<if test="name != null and name != ''">
+				and mn.name like '%${name}%'
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and mn.publish_time &gt; to_date('${startTime}', 'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="endTime != null and endtime != ''">
+				and mn.publish_time &lt; to_date('${endTime}', 'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="status != null and status != 0">
+				and mn.status = '${status}'
+			</if>
+	</select>
+	   <resultMap type="java.util.HashMap" id="noticeOneMap">
+		  <result property="id" column="id"/>
+		  <result property="name" column="name"/>
+		  <result property="type" column="type"/>
+		  <result property="time" column="time"/>
+		  <result property="status" column="status"/>
+		  <result property="content" column="content"/>
+		 </resultMap>
+	
+	 <select id="queryOneNoticeList" parameterType="java.util.HashMap" resultMap="noticeOneMap" >
+		select mn.id id, mn.name name, mnt.name  type, mn.publish_time time, mn.status status, mn.BODY_HTML_TEXT content
+		  from mt_notice mn, mt_notice_type mnt
+			where mn.type = mnt.id
+				and mn.id = '${noteid}'
+	</select>
+	
+	
+	 <select id="noticeState" parameterType="java.util.HashMap" resultType="java.lang.String">
+		SELECT count(*) as num FROM notice_state t where t.noteid='${noteid}'  AND t.userid='${userId}'
+	</select>
+	
+	
+	<delete id="delOneNoticeList" parameterType="java.util.HashMap">
+		     delete
+			 FROM
+			    mt_notice mn
+			 WHERE mn.id = '${id}'
+	 
+	</delete>
+	
+	<insert id="addNoticeState">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select SEQ_NOTICE_STATE_ID.nextval as id from dual  
+    	</selectKey>
+		insert into NOTICE_STATE(id, NOTEID, userid) 
+			values(
+			    #{id},
+				#{noteid},
+				#{userId}
+			)
+	</insert>
+</mapper>
+

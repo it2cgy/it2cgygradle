@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="common">
+	<resultMap type="java.util.HashMap" id="attachMap">
+		<result property="descrip" column="descrip"/>
+        <result property="filename" column="filename"/>
+        <result property="uploadname" column="uploadname"/>
+        <result property="time" column="time"/>
+        <result property="location" column="location"/>
+        <result property="remarks" column="remarks"/>
+    </resultMap>
+    
+    <resultMap type="java.util.HashMap" id="archieveMap">
+		<result property="feedback_usertype" column="feedback_usertype"/>
+        <result property="fault_level" column="fault_level"/>
+        <result property="archieve_num" column="archieve_num"/>
+        <result property="num" column="num"/>
+    </resultMap>
+    <resultMap type="java.util.HashMap" id="flowNumMap">
+    	<result property="feedback_usertype" column="feedback_usertype"/>
+        <result property="fault_level" column="fault_level"/>
+        <result property="archieve_num" column="archieve_num"/>
+        <result property="num" column="num"/>
+    </resultMap>
+    
+    <select id="getAttachInfo" resultMap="attachMap">
+    	select ${descrip}, FILE_NAME filename, PROVIDER_NAME uploadname, to_char(SOURCE_TIME,'yyyy-mm-dd hh24:mi:ss') time, 
+    			SOURCE_LOCATION location, REMARKS remarks
+			from ${table}
+			where id = ${id}
+    </select>
+    
+    <select id="creatArchieve" resultMap="archieveMap">
+    	select * from 
+			(select f.feedback_usertype, me.archieve_num
+				from mt_fault f, mt_event me
+					where f.event_id = me.id
+						and f.process_id = #{processId}
+			),
+			(select max(fd.fault_level) fault_level
+				from mt_fault f, mt_fault_dev fd
+					where f.id = fd.fault_id
+							and f.process_id = #{processId}
+			),
+			(select count(pro_id) num 
+				from mt_event where pro_id in 
+					(select me.pro_id
+						from mt_fault f, mt_event me
+							where me.id = f.event_id
+									and f.process_id = #{processId})
+			)
+    </select>
+    <select id="creatFlowNum" resultMap="flowNumMap">
+    	
+    </select>
+    
+    <select id="getMaxFlowNum" resultType="java.lang.Integer">
+    	select max(form_flow_num) flow_num 
+			from mt_fault
+				 where event_id = #{event_id}
+    </select>
+    
+    <select id="getComplaintCount" resultType="java.lang.Integer">
+    	select count(mc.pro_id) count  
+			from mt_complaint mc
+				where mc.pro_id = #{pro_id}  
+    </select>
+    
+    <select id="getSpecialComplaintCount" resultType="java.lang.Integer">
+    	select count(event_id) count 
+			from mt_checkup 
+				where event_id = #{event_id}
+					and check_type = 0
+    </select>
+    <delete id="delAttachInfo">
+		delete ${table} where id = ${id}
+	</delete>
+</mapper>

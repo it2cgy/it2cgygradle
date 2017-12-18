@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="summaryItem">
+
+	<select id="showWorkList" resultType="summItem">
+		select msi.id, msi.work_content, msi.remarks,
+				to_char(msi.begin_time,'yyyy-mm-dd hh24:mi:ss') begin_time,
+				to_char(msi.end_time,'yyyy-mm-dd hh24:mi:ss') end_time
+			from mt_summary_item msi, mt_summary ms
+				where msi.summary_id = ms.id
+					and ms.process_id = #{processId}
+				order by msi.id
+	</select>
+	
+	<insert id="addItem">
+		insert into mt_summary_item
+			(id, summary_id, work_content, begin_time, end_time, remarks)
+		<foreach item="item" collection="list" separator="union all">
+			select -1, ${item.summary_id}, '${item.work_content}', 
+				to_date('${item.begin_time}', 'yyyy-mm-dd hh24:mi:ss'), 
+				to_date('${item.end_time}', 'yyyy-mm-dd hh24:mi:ss'),'${item.remarks}' from dual 
+		</foreach>
+	</insert>
+	
+	<delete id="deleteItem">
+		delete mt_summary_item
+			where id = #{id}
+	</delete>
+	
+	<update id="updateItem">
+		update mt_summary_item
+			set work_content = #{work_content},
+				begin_time = to_date('${begin_time}', 'yyyy-mm-dd hh24:mi:ss'),
+				end_time = to_date('${end_time}', 'yyyy-mm-dd hh24:mi:ss'),
+				remarks = #{remarks}
+			where id = #{id}
+	</update>
+</mapper>

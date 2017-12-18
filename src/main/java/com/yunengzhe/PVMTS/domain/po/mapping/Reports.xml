@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.ReportsPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.ReportsPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="reportname" column="reportname" jdbcType="VARCHAR" />
+            <result property="starttime" column="starttime" />
+            <result property="endtime" column="endtime" />
+            <result property="url" column="url" />
+            <result property="createtime" column="createtime" />
+            <result property="updatetime" column="updatetime" />
+            <result property="powerstationid" column="powerstationid" jdbcType="NUMERIC" />
+            <result property="createuser" column="createuser" jdbcType="NUMERIC" />
+            <collection property="pointList" resultMap="reportsPointsPO" />
+	</resultMap>
+	<resultMap id="reportsPointsPO" type="com.yunengzhe.PVMTS.domain.po.ReportsPointsPO">
+            <id property="id" column="pointId" jdbcType="INTEGER" />
+            <result property="analoginputId" column="analoginputId" jdbcType="NUMERIC" />
+            <result property="pointEnglishName" column="point_english_name" jdbcType="VARCHAR" />
+            <result property="analoginputColor" column="analoginputColor" jdbcType="VARCHAR" />
+            <result property="analoginputName" column="analoginputName" jdbcType="VARCHAR" />
+            <result property="reportid" column="reportid" jdbcType="NUMERIC" />
+	</resultMap>
+
+	<sql id="base_field">
+		t1.id,t1.reportname,t1.starttime,t1.endtime,t1.url,t1.createtime,t1.updatetime,t1.powerstationid,t1.createuser,t2.id as pointId,t2.analoginputId,t2.analoginputColor,t2.analoginputName,t2.reportid,t3.point_english_name
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "reportname != null ">	and t1.reportname = #{reportname,jdbcType=VARCHAR }</if>
+            <if test= "starttime != null ">	and t1.starttime = #{starttime }</if>
+            <if test= "endtime != null ">	and t1.endtime = #{endtime }</if>
+            <if test= "createtime != null ">	and t1.createtime = #{createtime }</if>
+            <if test= "updatetime != null ">	and t1.updatetime = #{updatetime }</if>
+            <if test= "powerstationid != null ">	and t1.powerstationid = #{powerstationid,jdbcType=NUMERIC }</if>
+            <if test= "createuser != null ">	and t1.createuser = #{createuser,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "reportname != null ">	and t1.reportname like "%"#{reportname}"%"</if>
+            <if test= "starttime != null ">	and t1.starttime = #{starttime }</if>
+            <if test= "endtime != null ">	and t1.endtime = #{endtime }</if>
+            <if test= "createtime != null ">	and t1.createtime = #{createtime }</if>
+            <if test= "updatetime != null ">	and t1.updatetime = #{updatetime }</if>
+            <if test= "powerstationid != null ">	and t1.powerstationid = #{powerstationid,jdbcType=NUMERIC }</if>
+            <if test= "createuser != null ">	and t1.createuser = #{createuser,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "reportname != null ">	or t1.reportname = #{reportname,jdbcType=VARCHAR }</if>
+            <if test= "starttime != null ">	or t1.starttime = #{starttime }</if>
+            <if test= "endtime != null ">	or t1.endtime = #{endtime }</if>
+            <if test= "createtime != null ">	or t1.createtime = #{createtime }</if>
+            <if test= "updatetime != null ">	or t1.updatetime = #{updatetime }</if>
+            <if test= "powerstationid != null ">	or t1.powerstationid = #{powerstationid,jdbcType=NUMERIC }</if>
+            <if test= "createuser != null ">	or t1.createuser = #{createuser,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_resports t1 LEFT JOIN pvmts_report_points t2 ON t1.id = t2.reportid
+		LEFT JOIN pvmts_point_info t3 ON t2.analoginputId = t3.analoginput_id
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by t1.${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+<!-- 		select count(*) from ( -->
+<!-- 			<include refid="selectByMapSQL" /> -->
+<!-- 		) AABBCC_ -->
+
+        select   count(*)
+        from pvmts_resports t1 
+        <choose>
+            <when test="findBy != null">
+                <where>
+                    <include refid="other-condition" />
+                </where>
+            </when>
+            <when test="findByLike != null">
+                <where>
+                    <include refid="like-condition" />
+                </where>
+            </when>
+            
+             <when test="oneEqual != null">
+                <where>
+                    <include refid="one-equal-condition" />
+                </where>
+            </when>
+        </choose>
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		select
+        <include refid="base_field" />
+        from (SELECT * FROM pvmts_resports  t1
+        
+         <choose>
+            <when test="findBy != null">
+                <where>
+                    <include refid="other-condition" />
+                </where>
+            </when>
+            <when test="findByLike != null">
+                <where>
+                    <include refid="like-condition" />
+                </where>
+            </when>
+            
+             <when test="oneEqual != null">
+                <where>
+                    <include refid="one-equal-condition" />
+                </where>
+            </when>
+        </choose> 
+        <if test="sortName != null">
+            order by t1.${sortName} ${sortBy}
+        </if>
+        limit #{startRow},#{pageSize}) t1 
+       
+        LEFT JOIN pvmts_report_points t2 ON t1.id = t2.reportid
+        LEFT JOIN pvmts_point_info t3 ON t2.analoginputId = t3.analoginput_id
+        
+        <if test="sortName != null">
+            order by t1.${sortName} ${sortBy}
+        </if>
+		 
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from 	pvmts_resports t1 LEFT JOIN pvmts_report_points t2 ON t1.id = t2.reportid
+		LEFT JOIN pvmts_point_info t3 ON t2.analoginputId = t3.analoginput_id
+		<where>
+			<if test="_parameter != null">
+				t1.id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from  pvmts_resports t1 
+		LEFT JOIN pvmts_report_points t2 ON t1.id = t2.reportid
+		LEFT JOIN pvmts_point_info t3 ON t2.analoginputId = t3.analoginput_id
+		  where t1.id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.ReportsPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_resports( id,reportname,starttime,endtime,url,createtime,updatetime,powerstationid,createuser ) values (#{id,jdbcType=INTEGER},#{reportname,jdbcType=VARCHAR},#{starttime},#{endtime},#{url},#{createtime},#{updatetime},#{powerstationid,jdbcType=NUMERIC},#{createuser,jdbcType=NUMERIC} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_resports( id,reportname,starttime,endtime,url,createtime,updatetime,powerstationid,createuser ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.reportname,jdbcType=VARCHAR},#{item.starttime},#{item.endtime},#{item.url},#{item.createtime},#{item.updatetime},#{item.powerstationid,jdbcType=NUMERIC},#{item.createuser,jdbcType=NUMERIC} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.ReportsPO">
+		update pvmts_resports set reportname=#{reportname,jdbcType=VARCHAR},starttime=#{starttime},endtime=#{endtime},url=#{url},createtime=#{createtime},updatetime=#{updatetime},powerstationid=#{powerstationid,jdbcType=NUMERIC},createuser=#{createuser,jdbcType=NUMERIC} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.ReportsPO">
+		update pvmts_resports
+        <set>
+            <if test="reportname != null "> 
+                reportname = #{reportname,jdbcType=VARCHAR},
+            </if>
+            <if test="starttime != null "> 
+                starttime = #{starttime},
+            </if>
+            <if test="endtime != null "> 
+                endtime = #{endtime},
+            </if>
+            <if test="url != null "> 
+                endtime = #{url},
+            </if>
+            <if test="createtime != null "> 
+                createtime = #{createtime},
+            </if>
+            <if test="updatetime != null "> 
+                updatetime = #{updatetime},
+            </if>
+            <if test="powerstationid != null "> 
+                powerstationid = #{powerstationid,jdbcType=NUMERIC},
+            </if>
+            <if test="createuser != null "> 
+                createuser = #{createuser,jdbcType=NUMERIC},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_resports where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.ReportsPO">
+		delete from pvmts_resports
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

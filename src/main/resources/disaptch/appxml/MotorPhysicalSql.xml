@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="motorPhysicalapp">
+                   <!-- 获取列表信息 -->
+                   	<resultMap type="java.util.HashMap" id="cheakMap">
+						<result property="processId" column="processId"/>
+						<result property="pname" column="pname"/>
+						<result property="code" column="code"/>
+				        <result property="checkTime" column="checkTime"/>
+				        <result property="formFlowNumInBook" column="formFlowNumInBook"/>
+				        <result property="checkManager" column="checkManager"/>
+				    </resultMap>
+    
+       		 	<select id="loadcheak"  resultMap="cheakMap"> 	
+						SELECT 
+						 c.process_id processId,
+						 P.name pname,
+						 P.code code,
+						 c.check_time checkTime,
+						 c.form_flow_num_in_book formFlowNumInBook,
+						 c.check_manager checkManager
+						FROM
+							R_MT_PRO_USER_ROLE ru
+						LEFT JOIN MT_PROJECT P ON ru.pro_id = P . ID
+						LEFT JOIN MT_EVENT E ON E .PRO_ID = P . ID
+						LEFT JOIN MT_CHECKUP c ON c.event_id = E . ID
+						WHERE
+							1 = 1
+						AND c. ID IS NOT NULL
+						AND E .state = '1' and ru.user_id = '${userId}'
+						
+					    <if test="pname != null and pname != ''">
+										and P.name = '${pname}'
+						</if>
+						<if test="code != null and code != ''">
+										and code like '%${code}%'
+						</if>
+						<if test="checkManager != null and checkManager != ''">
+										and c.check_manager like '%${checkManager}%'
+						</if>    
+						<if test="startDate != null and startDate != ''">
+							and check_time &gt; to_date('${startDate}', 'yyyy-mm-dd hh24:mi:ss')
+						</if>
+						<if test="endDate != null and endDate != ''">
+							and check_time &lt; to_date('${endDate}', 'yyyy-mm-dd hh24:mi:ss')+1
+						</if>
+		
+  	</select>
+  	
+  	
+  	
+</mapper>
+

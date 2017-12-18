@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.FaultInfoPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.FaultInfoPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="faultNumber" column="fault_number" jdbcType="VARCHAR" />
+            <result property="equipmentId" column="equipment_id" jdbcType="NUMERIC" />
+            <result property="equipmentType" column="equipment_type" jdbcType="NUMERIC" />
+            <result property="equipmentNumber" column="equipment_number" jdbcType="VARCHAR" />
+            <result property="faultGrade" column="fault_grade" jdbcType="NUMERIC" />
+            <result property="faultMessage" column="fault_message" jdbcType="VARCHAR" />
+            <result property="faultStatus" column="fault_status" jdbcType="NUMERIC" />
+            <result property="faultSource" column="fault_source" jdbcType="NUMERIC" />
+            <result property="powerStationId" column="power_station_id" jdbcType="NUMERIC" />
+            <result property="alarmId" column="alarm_id" jdbcType="NUMERIC" />
+            <result property="userId" column="user_id" jdbcType="NUMERIC" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="state" column="state" jdbcType="VARCHAR" />
+            <result property="maintenanceUser" column="maintenance_user" jdbcType="VARCHAR" />
+            <result property="description" column="description" jdbcType="VARCHAR" />
+			<!-- 工单处理使用 -->
+			<result property="solveId" column="solveId" jdbcType="NUMERIC" />
+            <result property="solveUser" column="solve_user" jdbcType="NUMERIC" />
+            <result property="solveTime" column="solve_time" />
+            <result property="solveResult" column="solve_result" jdbcType="NUMERIC" />
+            <result property="solveInfo" column="solve_info" jdbcType="VARCHAR" />
+            <result property="workorderNum" column="workorderNum" jdbcType="VARCHAR" />
+            <result property="dispatcherId" column="dispatcherId" jdbcType="NUMERIC" />
+            <result property="dispatcherState" column="dispatcherState" jdbcType="VARCHAR" />
+            <result property="dispatcherTime" column="dispatcherTime" />
+            
+             <result property="createuser" column="createuser" />
+             <result property="dispatcherName" column="dispatcherName" />
+             <result property="solveName" column="solveName" />
+	</resultMap>
+	
+
+
+	<sql id="base_field">
+			t1.id,
+			t1.fault_number,
+			t1.equipment_id,
+			t1.equipment_type,
+			t1.equipment_number,
+			t1.fault_grade,
+			t1.fault_message,
+			t1.fault_status,
+			t1.fault_source,
+			t1.power_station_id,
+			t1.alarm_id,
+			t1.user_id,
+			t1.create_time,
+			t1.update_time,
+			t1.state,
+			t2.id as solveId,
+			t2.dispatcherId,
+			t2.dispatcherState,
+			t2.dispatcherTime,
+			t2.solve_user,
+			t2.solve_time,
+			t2.solve_result,
+			t2.solve_info,
+			t2.workorderNum,
+			
+		    t3.username as createuser,
+	        t4.username as dispatcherName,
+	        t5.username as solveName
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "faultNumber != null ">	and t1.fault_number = #{faultNumber,jdbcType=VARCHAR }</if>
+            <if test= "equipmentId != null ">	and t1.equipment_id = #{equipmentId,jdbcType=NUMERIC }</if>
+            <if test= "equipmentType != null ">	and t1.equipment_type = #{equipmentType,jdbcType=NUMERIC }</if>
+            <if test= "equipmentNumber != null ">	and t1.equipment_number = #{equipmentNumber,jdbcType=VARCHAR }</if>
+            <if test= "faultGrade != null ">	and t1.fault_grade = #{faultGrade,jdbcType=NUMERIC }</if>
+            <if test= "faultMessage != null ">	and t1.fault_message = #{faultMessage,jdbcType=VARCHAR }</if>
+            <if test= "faultStatus != null ">	and t1.fault_status = #{faultStatus,jdbcType=NUMERIC }</if>
+            <if test= "faultSource != null ">	and t1.fault_source = #{faultSource,jdbcType=NUMERIC }</if>
+            <if test= "powerStationId != null ">	and t1.power_station_id = #{powerStationId,jdbcType=NUMERIC }</if>
+            <if test= "alarmId != null ">	and t1.alarm_id = #{alarmId,jdbcType=NUMERIC }</if>
+            <if test= "userId != null ">	and t1.user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and t1.create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and t1.update_time = #{updateTime }</if>
+            <if test= "state != null ">	and t1.state = #{state,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "faultNumber != null ">	and t1.fault_number like "%"#{faultNumber}"%"</if>
+            <if test= "equipmentId != null ">	and t1.equipment_id = #{equipmentId,jdbcType=NUMERIC }</if>
+            <if test= "equipmentType != null ">	and t1.equipment_type = #{equipmentType,jdbcType=NUMERIC }</if>
+            <if test= "equipmentNumber != null ">	and t1.equipment_number like "%"#{equipmentNumber}"%"</if>
+            <if test= "faultGrade != null ">	and t1.fault_grade = #{faultGrade,jdbcType=NUMERIC }</if>
+            <if test= "faultMessage != null ">	and t1.fault_message like "%"#{faultMessage}"%"</if>
+            <if test= "faultStatus != null ">	and t1.fault_status = #{faultStatus,jdbcType=NUMERIC }</if>
+            <if test= "faultSource != null ">	and t1.fault_source = #{faultSource,jdbcType=NUMERIC }</if>
+            <if test= "powerStationId != null ">	and t1.power_station_id = #{powerStationId,jdbcType=NUMERIC }</if>
+            <if test= "alarmId != null ">	and t1.alarm_id = #{alarmId,jdbcType=NUMERIC }</if>
+            <if test= "userId != null ">	and t1.user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	and t1.create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and t1.update_time = #{updateTime }</if>
+            <if test= "state != null ">	and t1.state like "%"#{state}"%"</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "faultNumber != null ">	or t1.fault_number = #{faultNumber,jdbcType=VARCHAR }</if>
+            <if test= "equipmentId != null ">	or t1.equipment_id = #{equipmentId,jdbcType=NUMERIC }</if>
+            <if test= "equipmentType != null ">	or t1.equipment_type = #{equipmentType,jdbcType=NUMERIC }</if>
+            <if test= "equipmentNumber != null ">	or t1.equipment_number = #{equipmentNumber,jdbcType=VARCHAR }</if>
+            <if test= "faultGrade != null ">	or t1.fault_grade = #{faultGrade,jdbcType=NUMERIC }</if>
+            <if test= "faultMessage != null ">	or t1.fault_message = #{faultMessage,jdbcType=VARCHAR }</if>
+            <if test= "faultStatus != null ">	or t1.fault_status = #{faultStatus,jdbcType=NUMERIC }</if>
+            <if test= "faultSource != null ">	or t1.fault_source = #{faultSource,jdbcType=NUMERIC }</if>
+            <if test= "powerStationId != null ">	or t1.power_station_id = #{powerStationId,jdbcType=NUMERIC }</if>
+            <if test= "alarmId != null ">	or t1.alarm_id = #{alarmId,jdbcType=NUMERIC }</if>
+            <if test= "userId != null ">	or t1.user_id = #{userId,jdbcType=NUMERIC }</if>
+            <if test= "createTime != null ">	or t1.create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or t1.update_time = #{updateTime }</if>
+            <if test= "state != null ">	or t1.state = #{state,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+			FROM
+			pvmts_fault_info t1
+			LEFT JOIN pvmts_workorder_solve t2 ON t1.id = t2.faultId
+			left join pvmts_user t3 on t1.user_id=t3.id 
+			left join pvmts_user t4 on t2.dispatcherId=t4.id 
+			left join pvmts_user t5 on t2.solve_user=t5.id
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		order by t1.create_time desc
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+			FROM
+				pvmts_fault_info t1
+			LEFT JOIN pvmts_workorder_solve t2 ON t1.id = t2.faultId
+			left join pvmts_user t3 on t1.user_id=t3.id 
+			left join pvmts_user t4 on t2.dispatcherId=t4.id 
+			left join pvmts_user t5 on t2.solve_user=t5.id
+		<where>
+			<if test="_parameter != null">
+				t1.id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	<!-- 查询故障历史信息 -->
+	<select id="selectHistoryList" resultMap="result" parameterType="java.lang.Integer">
+		select DISTINCT t1.id,t1.fault_number,t1.equipment_id,t1.equipment_type,t1.equipment_number,t1.fault_grade,t1.fault_message,
+		t1.fault_source,t1.alarm_id,t1.user_id,t3.maintenance_user as maintenance_user,t4.DESCRIPTION as description from pvmts_fault_info t1 
+		left join pvmts_workorder_fault t2 on t1.id = t2.faultId left join pvmts_workorder_info t3 on t2.workorderId = t3.order_number
+		left join mc_inverter t4 on t1.equipment_id = t4.id
+		where fault_status = 2 and power_station_id = #{powerStationId}
+		<if test="search != null">
+			or t3.DESCRIPTION like "%"#{search}"%" or t1.alarm_number like "%"#{search}"%" or t1.create_time like "%"#{search}"%"
+		</if>
+		order by t1.create_time desc
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+				FROM
+				pvmts_fault_info t1
+			LEFT JOIN pvmts_workorder_solve t2 ON t1.id = t2.faultId
+			left join pvmts_user t3 on t1.user_id=t3.id 
+			left join pvmts_user t4 on t2.dispatcherId=t4.id 
+			left join pvmts_user t5 on t2.solve_user=t5.id  where t1.id in (${_parameter})
+	</select>		
+
+	<!-- 查询电站故障总和 -->
+	<select id="getFaultSum" resultType="java.lang.Integer"  parameterType="java.lang.Integer">
+		select
+		count(id)
+		from pvmts_fault_info  
+		where power_station_id = #{powerStationId}
+	</select>
+	<!-- 查询电站故障已解决 -->
+	<select id="getFaultProcess" resultType="java.lang.Integer"  parameterType="java.lang.Integer">
+		select
+		count(id)
+		from pvmts_fault_info  
+		where fault_status = 2 and power_station_id = #{powerStationId}
+	</select>
+	
+	<!-- web根据搜索条件查询 -->
+	<select id="getFaultListBySearch" resultMap="result">
+		select  DISTINCT
+		t1.id,t1.alarm_number,t1.alarm_message,t1.alarm_grade,t1.status,t1.alarm_type,t1.state,equipment_id,t1.equipment_type,t1.power_station_id,t1.create_time,t1.update_time,t2.user_id,t3.DESCRIPTION description
+		from pvmts_alarm_info t1 LEFT JOIN `pvmts_alarm_user` t2 on t1.id = t2.alarm_id  left join mc_inverter t3 on t1.equipment_id = t3.id
+		where 1=1
+		<if test="search != null">
+			or t1.alarm_grade = #{search} or t3.DESCRIPTION like "%"#{search}"%" or t1.alarm_number like "%"#{search}"%"
+		</if>
+		<if test="status != null">
+			and t1.status = #{status}
+		</if>
+		order by t1.create_time desc
+	</select>
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.FaultInfoPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_fault_info( id,fault_number,equipment_id,equipment_type,equipment_number,fault_grade,fault_message,fault_status,fault_source,power_station_id,alarm_id,user_id,create_time,update_time,state ) values (#{id,jdbcType=INTEGER},#{faultNumber,jdbcType=VARCHAR},#{equipmentId,jdbcType=NUMERIC},#{equipmentType,jdbcType=NUMERIC},#{equipmentNumber,jdbcType=VARCHAR},#{faultGrade,jdbcType=NUMERIC},#{faultMessage,jdbcType=VARCHAR},#{faultStatus,jdbcType=NUMERIC},#{faultSource,jdbcType=NUMERIC},#{powerStationId,jdbcType=NUMERIC},#{alarmId,jdbcType=NUMERIC},#{userId,jdbcType=NUMERIC},NOW(),NOW(),#{state,jdbcType=VARCHAR} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_fault_info( id,fault_number,equipment_id,equipment_type,equipment_number,fault_grade,fault_message,fault_status,fault_source,power_station_id,alarm_id,user_id,create_time,update_time,state ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.faultNumber,jdbcType=VARCHAR},#{item.equipmentId,jdbcType=NUMERIC},#{item.equipmentType,jdbcType=NUMERIC},#{item.equipmentNumber,jdbcType=VARCHAR},#{item.faultGrade,jdbcType=NUMERIC},#{item.faultMessage,jdbcType=VARCHAR},#{item.faultStatus,jdbcType=NUMERIC},#{item.faultSource,jdbcType=NUMERIC},#{item.powerStationId,jdbcType=NUMERIC},#{item.alarmId,jdbcType=NUMERIC},#{item.userId,jdbcType=NUMERIC},NOW(),NOW(),#{item.state,jdbcType=VARCHAR} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.FaultInfoPO">
+		update pvmts_fault_info set fault_number=#{faultNumber,jdbcType=VARCHAR},equipment_id=#{equipmentId,jdbcType=NUMERIC},equipment_type=#{equipmentType,jdbcType=NUMERIC},equipment_number=#{equipmentNumber,jdbcType=VARCHAR},fault_grade=#{faultGrade,jdbcType=NUMERIC},fault_message=#{faultMessage,jdbcType=VARCHAR},fault_status=#{faultStatus,jdbcType=NUMERIC},fault_source=#{faultSource,jdbcType=NUMERIC},power_station_id=#{powerStationId,jdbcType=NUMERIC},alarm_id=#{alarmId,jdbcType=NUMERIC},user_id=#{userId,jdbcType=NUMERIC},update_time=NOW(),state=#{state,jdbcType=VARCHAR} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.FaultInfoPO">
+		update pvmts_fault_info
+        <set>
+            <if test="faultNumber != null "> 
+                fault_number = #{faultNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="equipmentId != null "> 
+                equipment_id = #{equipmentId,jdbcType=NUMERIC},
+            </if>
+            <if test="equipmentType != null "> 
+                equipment_type = #{equipmentType,jdbcType=NUMERIC},
+            </if>
+            <if test="equipmentNumber != null "> 
+                equipment_number = #{equipmentNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="faultGrade != null "> 
+                fault_grade = #{faultGrade,jdbcType=NUMERIC},
+            </if>
+            <if test="faultMessage != null "> 
+                fault_message = #{faultMessage,jdbcType=VARCHAR},
+            </if>
+            <if test="faultStatus != null "> 
+                fault_status = #{faultStatus,jdbcType=NUMERIC},
+            </if>
+            <if test="faultSource != null "> 
+                fault_source = #{faultSource,jdbcType=NUMERIC},
+            </if>
+            <if test="powerStationId != null "> 
+                power_station_id = #{powerStationId,jdbcType=NUMERIC},
+            </if>
+            <if test="alarmId != null "> 
+                alarm_id = #{alarmId,jdbcType=NUMERIC},
+            </if>
+            <if test="userId != null "> 
+                user_id = #{userId,jdbcType=NUMERIC},
+            </if>
+                update_time =NOW(),
+            <if test="state != null "> 
+                state = #{state,jdbcType=VARCHAR},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_fault_info where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.FaultInfoPO">
+		delete from pvmts_fault_info
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

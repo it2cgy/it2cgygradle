@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="flowHandle">
+   <resultMap type="java.util.HashMap" id="flowMap">
+		<result property="processId" column="PROCESS_ID"/>
+        <result property="flowName" column="STATENAME"/>
+        <result property="proName" column="PRONAME"/>
+        <result property="proType" column="PROTYPE"/>
+         <result property="proId" column="PROID"/>
+        <result property="createDate" column="createDate"/>
+         <result property="link" column="LINK"/>
+   </resultMap>
+   <!-- 加载流程列表数据 -->
+   <select id="loadFlowData"  parameterType="java.util.HashMap"  resultMap="flowMap">
+		  	   SELECT A.PROCESS_ID,
+		       (CASE
+		          WHEN A.PROTYPE = 1 THEN
+		          '故障反馈流程'
+		          WHEN A.PROTYPE = 2 THEN
+		          '电站体检流程'
+		          WHEN A.PROTYPE = 3 THEN
+		          '投诉记录流程'
+		          WHEN A.PROTYPE = 4 THEN
+		          '离场申请流程'
+		       END) AS STATENAME,
+		       B.NAME AS PRONAME,
+		       B.ID AS PROID,
+		       A.PROTYPE,
+		      <!-- 增加接口返回字段来判断当前流程是哪个环节  cgy  20170106 -->
+			<if  test="proType != null and proType !='' and proType=='1'.toString()" >
+				 (CASE
+			         WHEN A.FORM_NAME = 'startEvent' THEN
+			          1
+			         WHEN A.FORM_NAME = 'faultFeedback' THEN
+			          2
+			         WHEN A.FORM_NAME = 'centerAnalysis' THEN
+			          3
+			         WHEN A.FORM_NAME = 'isSendpeople' THEN
+			          4
+			         WHEN A.FORM_NAME = 'plans' THEN
+			          5
+			         WHEN A.FORM_NAME = 'actualDefect' THEN
+			          6
+			         WHEN A.FORM_NAME = 'faultFeedHandle' THEN
+			          1
+			         ELSE
+			          7
+			       END) AS LINK,
+			</if >
+			<if  test="proType != null and proType !='' and proType=='2'.toString()" >
+				 (CASE
+			         WHEN A.FORM_NAME = 'startEvent' THEN
+			          1
+			         WHEN A.FORM_NAME = 'powercheck' THEN
+			          2
+			         ELSE
+			          3
+			       END) AS LINK,
+			</if >
+			<if  test="proType != null and proType !='' and proType=='3'.toString()" >
+				 (CASE
+			         WHEN A.FORM_NAME = 'complain' THEN
+			          1
+			         WHEN A.FORM_NAME = 'centerAnalysis' THEN
+			          2
+			         ELSE
+			          7
+			       END) AS LINK,
+			</if >
+			<if  test="proType != null and proType !='' and proType=='4'.toString()" >
+				 (CASE
+			         WHEN A.FORM_NAME = 'startevent1' THEN
+			          1
+			         WHEN A.FORM_NAME = 'leaveFlow1' THEN
+			          2
+			         WHEN A.FORM_NAME = 'leaveFlow2' THEN
+			          3
+			         WHEN A.FORM_NAME = 'leaveFlow3' THEN
+			          4
+			         WHEN A.FORM_NAME = 'leaveFlow4' THEN
+			          5
+			         WHEN A.FORM_NAME = 'leaveFlow5' THEN
+			          6
+			         WHEN A.FORM_NAME = 'leaveFlow6' THEN
+			          7
+			         ELSE
+			          8
+			       END) AS LINK,
+			</if >
+		       to_char(A.CREATE_DATE,'yyyy-MM-dd hh24:mi:ss') AS createDate 
+			  FROM MT_WORKFLOW_ITEM A
+			  LEFT JOIN MT_PROJECT B
+	   		  ON A.PRO_ID = B.ID
+	 	 	  WHERE 1=1
+	 	 	<if test="ids != null and ids !=''" ><!-- 事项ID 来区分流程 -->
+				AND A.PROCESS_ID in (${ids})
+			</if>
+			<if  test="startDate != null and startDate !=''" >
+				<![CDATA[AND TO_CHAR(A.CREATE_DATE,'yyyy-MM-dd hh24:mi:ss') > '${startDate}']]>	
+			</if >
+			<if  test="endDate != null and endDate !=''" >
+				<![CDATA[AND TO_CHAR(A.CREATE_DATE,'yyyy-MM-dd hh24:mi:ss') < '${endDate}']]>	
+			</if >
+			<if  test="proType != null and proType !=''" >
+				AND A.PROTYPE=${proType}
+			</if >
+			
+<!-- 			<if test="proId != null and proId !=''" >根据电站ID 来区分流程 -->
+<!-- 				AND A.PRO_ID=${proId} -->
+<!-- 			</if> -->
+<!-- 			<if test="pname != null and pname !=''" >电站名称 -->
+<!-- 				 AND E.NAME LIKE '%${pname}%' -->
+<!-- 			</if> -->
+  	</select>
+   
+    <!-- 增加投诉记录表数据-->
+	<insert id="addComplain" parameterType="java.util.HashMap">
+		INSERT INTO MT_COMPLAINT
+		  (ID,
+		   PRO_ID,
+		   PROCESS_ID,
+		   FORM_FLOW_NUM,
+		   RECORD_USER_ID,
+		   RECORD_DATE,
+		   COMPLAINT_DATE,
+		   COMPLAINT_ROLE,
+		   COMPLAINT_NAME,
+		   STATE)
+		VALUES
+		  (${complainId},
+		   ${proId},
+		   ${processId},
+		   '${flowNum}',
+		   ${userId},
+		   TO_DATE('${complaint_date}', 'yyyy-MM-dd hh24:mi:ss'),
+		   TO_DATE('${complaint_date}', 'yyyy-MM-dd hh24:mi:ss'),
+		   ${complaint_role},
+		   '${complaint_name}',
+		   0)
+	</insert> 
+	    <!-- 增加投诉记录表数据-->
+	<update id="updateComplain" parameterType="java.util.HashMap">
+		UPDATE MT_COMPLAINT
+		  SET 
+		   PRO_ID=${proId},
+		   RECORD_USER_ID=${userId},
+		   RECORD_DATE = TO_DATE('${complaint_date}', 'yyyy-MM-dd hh24:mi:ss'),
+		   COMPLAINT_DATE = TO_DATE('${complaint_date}', 'yyyy-MM-dd hh24:mi:ss'),
+		   COMPLAINT_ROLE = ${complaint_role},
+		   COMPLAINT_NAME = '${complaint_name}'
+		WHERE ID =${complainId}
+	</update> 
+	   
+   	<!-- 保存缺陷故障信息基本信息 -->
+   	<sql id="colList" >
+	   	id,event_id,feedback_usertype,fault_type,feedback_username,summary,remarks,attach_path,feedback_user_phone,record_user_id,record_date,feedback_date,form_flow_num,process_id,status,correct_fault_form_id
+  	</sql>
+  	<insert id="addFault" parameterType="mtFault">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select seq_mt_fault_id.nextval as id from dual  
+    	</selectKey>
+		insert into MT_FAULT (<include refid="colList"/>) values (
+			#{id,jdbcType=INTEGER},
+			#{event_id,jdbcType=INTEGER},
+			#{feedback_usertype,jdbcType=INTEGER},
+			#{fault_type,jdbcType=INTEGER},
+			#{feedback_username,jdbcType=VARCHAR},
+			#{summary,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR},
+			#{attach_path,jdbcType=VARCHAR},
+			#{feedback_userphone,jdbcType=VARCHAR},
+			#{recode_userid,jdbcType=INTEGER},
+			to_date(#{recode_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			to_date(#{feedback_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			#{form_flow_num,jdbcType=VARCHAR},
+			#{process_id,jdbcType=INTEGER},
+			#{status,jdbcType=VARCHAR},
+			#{need_repair_fault_form_id,jdbcType=INTEGER}
+		)
+	</insert>
+	
+	<!-- 更新数据 -->
+	<update id="updateFault" parameterType="mtFault">
+		UPDATE MT_FAULT 
+		SET 
+		feedback_usertype=#{feedback_usertype,jdbcType=INTEGER},
+		fault_type=#{fault_type,jdbcType=INTEGER},
+		correct_fault_form_id=#{need_repair_fault_form_id,jdbcType=INTEGER},
+		feedback_username=#{feedback_username,jdbcType=VARCHAR},
+		summary=#{summary,jdbcType=VARCHAR},
+		record_date=to_date(#{recode_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+		feedback_date=to_date(#{feedback_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss')
+		WHERE process_id=#{process_id,jdbcType=INTEGER}
+	</update>
+	
+	<!--删除事项表数据 -->
+	<delete id="delWorkFlow" parameterType="java.util.HashMap">
+ 		DELETE FROM MT_WORKFLOW_ITEM T WHERE T.Process_Id=${processId} AND  T.PROTYPE=${wfType}
+	</delete>
+	
+	<!--删除 投诉记录数据 -->
+	<delete id="delComplain" parameterType="java.util.HashMap">
+ 		DELETE FROM MT_COMPLAINT T WHERE T.Process_Id=${processId}	
+	</delete>
+	
+	<!-- 获取当前投诉记录是否已经提交的状态码 -->
+	<select id="getState" parameterType="java.util.HashMap" resultType="java.lang.String">
+  		select state from  mt_complaint where process_id= ${processId}
+  	</select>
+  		<!-- 获取当前故障是否已经提交的状态码 -->
+	<select id="getStatus" parameterType="java.util.HashMap" resultType="java.lang.String">
+  		select status from mt_fault  where process_id= ${processId}
+  	</select>
+  	
+  <select id="getCenterId" parameterType="java.lang.String" resultType="java.lang.String">
+  		SELECT T.USER_ID FROM R_MT_PRO_USER_ROLE  T WHERE T.ROLE_ID=2 AND T.PRO_ID=#{_parameter}
+  	</select>
+  		<!--删除故障反馈表数据 -->
+	<delete id="delDeFectFault" parameterType="java.util.HashMap">
+ 		DELETE FROM MT_FAULT T WHERE T.Process_Id=${processId}	
+	</delete>
+	<resultMap type="java.util.HashMap" id="mtFaultDevMap">
+		<result property="dev_model_name" column="dev_model_name"/>
+<!--        <result property="dev_type_name" column="dev_type_name"/>-->
+        <result property="record_name" column="record_name"/>
+        <result property="proType" column="PROTYPE"/>
+        <result property="proId" column="PROID"/>
+        <result property="createDate" column="createDate"/>
+        <result property="faultDevId" column="ID"/>
+        <result property="fault_id" column="fault_id"/>
+        <result property="dev_type" column="dev_type"/>
+        <result property="dev_model" column="dev_model"/>
+        <result property="num" column="num"/>
+        <result property="fault_level" column="fault_level"/>
+        <result property="fault_descrip" column="fault_descrip"/>
+        <result property="analysis" column="analysis"/>
+        <result property="advice" column="advice"/>
+        <result property="remarks" column="remarks"/>
+        <result property="center_analysis" column="center_analysis"/>
+        <result property="real_fault" column="real_fault"/>
+        <result property="is_real_fault" column="is_real_fault"/>
+        <result property="real_fault_remarks" column="real_fault_remarks"/>
+        <result property="solution" column="solution"/>
+        <result property="solve_result" column="solve_result"/>
+        <result property="solve_remark" column="solve_remark"/>
+        <result property="is_real_fault_analysis" column="is_real_fault_analysis"/>
+   </resultMap>
+	<select id="queryActualInfo" parameterType="java.util.HashMap" resultMap="mtFaultDevMap">
+<!--		select mfd.*, mdm.name dev_model_name, mdt.name dev_type_name, mu.realname record_name-->
+<!--			from mt_fault_dev mfd, mt_fault mf,  -->
+<!--					mt_dev_model mdm, mt_dev_type mdt, -->
+<!--					mt_fault_solve_record mfsr LEFT JOIN mt_user mu ON mu.id  =  mfsr.record_user_id-->
+<!--				where mfsr.fault_id = mf.id-->
+<!--					and mf.id = mfd.fault_id-->
+<!--					and mdm.id = mfd.dev_model-->
+<!--					and mdt.id = mfd.dev_type-->
+<!--					and mfsr.process_Id in (${id})-->
+					
+						select mfd.*,  mdt.name dev_type_name, mu.realname record_name
+			from mt_fault_dev mfd, mt_fault mf,  
+					 mt_dev_type mdt, 
+					mt_fault_solve_record mfsr LEFT JOIN mt_user mu ON mu.id  =  mfsr.record_user_id
+				where mfsr.fault_id = mf.id
+					and mf.id = mfd.fault_id
+					
+					and mdt.id = mfd.dev_type
+					and mfsr.process_Id in (${id})
+	</select>
+	<sql id="devList" >
+	   	id, fault_dev_id,fault_descrip,file_name,remarks,provider_name,source_time,source_location,attach_path
+	</sql>
+		<!-- 实际故障调查附件上传 -->
+	 <insert id="addSolveAttach" parameterType="rfAttach">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select SEQ_MT_FAULT_DEV_ATTACH_S_ID.nextval as id from dual  
+    	</selectKey>
+		insert into MT_FAULT_DEV_ATTACH_SOLVE (<include refid="devList"/>) values (
+			#{id,jdbcType=INTEGER},
+			#{fault_dev_id,jdbcType=INTEGER},
+			#{fault_descrip,jdbcType=VARCHAR},
+			#{file_name,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR},
+			#{provider_name,jdbcType=VARCHAR},
+			to_date(#{source_time,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			#{source_location,jdbcType=VARCHAR},
+			#{file_path,jdbcType=VARCHAR}
+		)
+	</insert> 
+</mapper>

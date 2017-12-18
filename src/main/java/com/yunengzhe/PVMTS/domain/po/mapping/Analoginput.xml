@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.AnaloginputPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.AnaloginputPO">
+            <result property="description" column="DESCRIPTION" jdbcType="VARCHAR" />
+            <result property="name" column="NAME" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="base_field">
+		DESCRIPTION,NAME
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "aliasname != null ">	and ALIASNAME = #{aliasname,jdbcType=VARCHAR }</if>
+            <if test= "description != null ">	and DESCRIPTION = #{description,jdbcType=VARCHAR }</if>
+            <if test= "name != null ">	and NAME = #{name,jdbcType=VARCHAR }</if>
+            <if test= "pathname != null ">	and PATHNAME = #{pathname,jdbcType=VARCHAR }</if>
+            <if test= "type != null ">	and TYPE = #{type,jdbcType=NUMERIC }</if>
+            <if test= "rtuid != null ">	and RTUID = #{rtuid,jdbcType=NUMERIC }</if>
+            <if test= "pointnum != null ">	and POINTNUM = #{pointnum,jdbcType=NUMERIC }</if>
+            <if test= "equipmentcontainerId != null ">	and EQUIPMENTCONTAINER_ID = #{equipmentcontainerId,jdbcType=NUMERIC }</if>
+            <if test= "equipmentcontainerTableid != null ">	and EQUIPMENTCONTAINER_TABLEID = #{equipmentcontainerTableid,jdbcType=NUMERIC }</if>
+            <if test= "datasource != null ">	and DATASOURCE = #{datasource,jdbcType=NUMERIC }</if>
+            <if test= "value != null ">	and VALUE = #{value,jdbcType=NUMERIC }</if>
+            <if test= "qualitycode != null ">	and QUALITYCODE = #{qualitycode,jdbcType=NUMERIC }</if>
+            <if test= "timestamp != null ">	and TIMESTAMP = #{timestamp }</if>
+            <if test= "rateofchange != null ">	and RATEOFCHANGE = #{rateofchange,jdbcType=NUMERIC }</if>
+            <if test= "violationflags != null ">	and VIOLATIONFLAGS = #{violationflags,jdbcType=NUMERIC }</if>
+            <if test= "taggingflags != null ">	and TAGGINGFLAGS = #{taggingflags,jdbcType=NUMERIC }</if>
+            <if test= "controlinhibitflag != null ">	and CONTROLINHIBITFLAG = #{controlinhibitflag,jdbcType=NUMERIC }</if>
+            <if test= "alarmprocmode != null ">	and ALARMPROCMODE = #{alarmprocmode,jdbcType=NUMERIC }</if>
+            <if test= "alarmpriority != null ">	and ALARMPRIORITY = #{alarmpriority,jdbcType=NUMERIC }</if>
+            <if test= "tpinvolvedflag != null ">	and TPINVOLVEDFLAG = #{tpinvolvedflag,jdbcType=NUMERIC }</if>
+            <if test= "alarmoptionflags != null ">	and ALARMOPTIONFLAGS = #{alarmoptionflags,jdbcType=NUMERIC }</if>
+            <if test= "authorityarea != null ">	and AUTHORITYAREA = #{authorityarea,jdbcType=NUMERIC }</if>
+            <if test= "limitsetid != null ">	and LIMITSETID = #{limitsetid,jdbcType=NUMERIC }</if>
+            <if test= "reportdeadband != null ">	and REPORTDEADBAND = #{reportdeadband,jdbcType=NUMERIC }</if>
+            <if test= "sensormaximum != null ">	and SENSORMAXIMUM = #{sensormaximum,jdbcType=NUMERIC }</if>
+            <if test= "sensorminimum != null ">	and SENSORMINIMUM = #{sensorminimum,jdbcType=NUMERIC }</if>
+            <if test= "zeroclampping != null ">	and ZEROCLAMPPING = #{zeroclampping,jdbcType=NUMERIC }</if>
+            <if test= "scalefactor != null ">	and SCALEFACTOR = #{scalefactor,jdbcType=NUMERIC }</if>
+            <if test= "scaleoffset != null ">	and SCALEOFFSET = #{scaleoffset,jdbcType=NUMERIC }</if>
+            <if test= "smoothingfactor != null ">	and SMOOTHINGFACTOR = #{smoothingfactor,jdbcType=NUMERIC }</if>
+            <if test= "pointaddress != null ">	and POINTADDRESS = #{pointaddress,jdbcType=NUMERIC }</if>
+            <if test= "groupaddress != null ">	and GROUPADDRESS = #{groupaddress,jdbcType=NUMERIC }</if>
+            <if test= "rtuaddress != null ">	and RTUADDRESS = #{rtuaddress,jdbcType=NUMERIC }</if>
+            <if test= "alarmdelayedtime != null ">	and ALARMDELAYEDTIME = #{alarmdelayedtime,jdbcType=NUMERIC }</if>
+            <if test= "saveperiodicity != null ">	and SAVEPERIODICITY = #{saveperiodicity,jdbcType=NUMERIC }</if>
+            <if test= "measidx != null ">	and MEASIDX = #{measidx,jdbcType=NUMERIC }</if>
+            <if test= "alarmtype != null ">	and ALARMTYPE = #{alarmtype,jdbcType=NUMERIC }</if>
+            <if test= "operationallow != null ">	and OPERATIONALLOW = #{operationallow,jdbcType=NUMERIC }</if>
+            <if test= "operationalhigh != null ">	and OPERATIONALHIGH = #{operationalhigh,jdbcType=NUMERIC }</if>
+            <if test= "warninglow != null ">	and WARNINGLOW = #{warninglow,jdbcType=NUMERIC }</if>
+            <if test= "warninghigh != null ">	and WARNINGHIGH = #{warninghigh,jdbcType=NUMERIC }</if>
+            <if test= "emergencylow != null ">	and EMERGENCYLOW = #{emergencylow,jdbcType=NUMERIC }</if>
+            <if test= "emergencyhigh != null ">	and EMERGENCYHIGH = #{emergencyhigh,jdbcType=NUMERIC }</if>
+            <if test= "rateofchangelimit != null ">	and RATEOFCHANGELIMIT = #{rateofchangelimit,jdbcType=NUMERIC }</if>
+            <if test= "ispercentagelimits != null ">	and ISPERCENTAGELIMITS = #{ispercentagelimits,jdbcType=NUMERIC }</if>
+            <if test= "nominal != null ">	and NOMINAL = #{nominal,jdbcType=NUMERIC }</if>
+            <if test= "deadband != null ">	and DEADBAND = #{deadband,jdbcType=NUMERIC }</if>
+            <if test= "substationId != null ">	and SUBSTATION_ID = #{substationId,jdbcType=NUMERIC }</if>
+            <if test= "rAWVALUE0 != null ">	and RAWVALUE0 = #{rAWVALUE0,jdbcType=NUMERIC }</if>
+            <if test= "rAWQUALITYCODE0 != null ">	and RAWQUALITYCODE0 = #{rAWQUALITYCODE0,jdbcType=NUMERIC }</if>
+            <if test= "rAWTIMESTAMP0 != null ">	and RAWTIMESTAMP0 = #{rAWTIMESTAMP0 }</if>
+            <if test= "rAWVALUE1 != null ">	and RAWVALUE1 = #{rAWVALUE1,jdbcType=NUMERIC }</if>
+            <if test= "rAWQUALITYCODE1 != null ">	and RAWQUALITYCODE1 = #{rAWQUALITYCODE1,jdbcType=NUMERIC }</if>
+            <if test= "rAWTIMESTAMP1 != null ">	and RAWTIMESTAMP1 = #{rAWTIMESTAMP1 }</if>
+            <if test= "rAWVALUE2 != null ">	and RAWVALUE2 = #{rAWVALUE2,jdbcType=NUMERIC }</if>
+            <if test= "rAWQUALITYCODE2 != null ">	and RAWQUALITYCODE2 = #{rAWQUALITYCODE2,jdbcType=NUMERIC }</if>
+            <if test= "rAWTIMESTAMP2 != null ">	and RAWTIMESTAMP2 = #{rAWTIMESTAMP2 }</if>
+            <if test= "rAWVALUE3 != null ">	and RAWVALUE3 = #{rAWVALUE3,jdbcType=NUMERIC }</if>
+            <if test= "rAWQUALITYCODE3 != null ">	and RAWQUALITYCODE3 = #{rAWQUALITYCODE3,jdbcType=NUMERIC }</if>
+            <if test= "rAWTIMESTAMP3 != null ">	and RAWTIMESTAMP3 = #{rAWTIMESTAMP3 }</if>
+            <if test= "currouteno != null ">	and CURROUTENO = #{currouteno,jdbcType=NUMERIC }</if>
+            <if test= "alarmcount != null ">	and ALARMCOUNT = #{alarmcount,jdbcType=NUMERIC }</if>
+            <if test= "rating != null ">	and RATING = #{rating,jdbcType=NUMERIC }</if>
+            <if test= "cycle != null ">	and CYCLE = #{cycle,jdbcType=NUMERIC }</if>
+            <if test= "funcode != null ">	and FUNCODE = #{funcode,jdbcType=NUMERIC }</if>
+            <if test= "bitcount != null ">	and BITCOUNT = #{bitcount,jdbcType=NUMERIC }</if>
+            <if test= "datatype != null ">	and DATATYPE = #{datatype,jdbcType=NUMERIC }</if>
+            <if test= "alarmstatusitem != null ">	and ALARMSTATUSITEM = #{alarmstatusitem,jdbcType=NUMERIC }</if>
+            <if test= "collectid != null ">	and COLLECTID = #{collectid,jdbcType=NUMERIC }</if>
+            <if test= "devtype != null ">	and DEVTYPE = #{devtype,jdbcType=NUMERIC }</if>
+            <if test= "devid != null ">	and DEVID = #{devid,jdbcType=NUMERIC }</if>
+            <if test= "devpointnum != null ">	and DEVPOINTNUM = #{devpointnum,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "aliasname != null ">	and ALIASNAME like "%"#{aliasname}"%"</if>
+            <if test= "description != null ">	and DESCRIPTION like "%"#{description}"%"</if>
+            <if test= "name != null ">	and NAME like "%"#{name}"%"</if>
+            <if test= "pathname != null ">	and PATHNAME like "%"#{pathname}"%"</if>
+            <if test= "type != null ">	and TYPE = #{type,jdbcType=NUMERIC }</if>
+            <if test= "rtuid != null ">	and RTUID = #{rtuid,jdbcType=NUMERIC }</if>
+            <if test= "pointnum != null ">	and POINTNUM = #{pointnum,jdbcType=NUMERIC }</if>
+            <if test= "equipmentcontainerId != null ">	and EQUIPMENTCONTAINER_ID = #{equipmentcontainerId,jdbcType=NUMERIC }</if>
+            <if test= "equipmentcontainerTableid != null ">	and EQUIPMENTCONTAINER_TABLEID = #{equipmentcontainerTableid,jdbcType=NUMERIC }</if>
+            <if test= "datasource != null ">	and DATASOURCE = #{datasource,jdbcType=NUMERIC }</if>
+            <if test= "value != null ">	and VALUE = #{value,jdbcType=NUMERIC }</if>
+            <if test= "qualitycode != null ">	and QUALITYCODE = #{qualitycode,jdbcType=NUMERIC }</if>
+            <if test= "timestamp != null ">	and TIMESTAMP = #{timestamp }</if>
+            <if test= "rateofchange != null ">	and RATEOFCHANGE = #{rateofchange,jdbcType=NUMERIC }</if>
+            <if test= "violationflags != null ">	and VIOLATIONFLAGS = #{violationflags,jdbcType=NUMERIC }</if>
+            <if test= "taggingflags != null ">	and TAGGINGFLAGS = #{taggingflags,jdbcType=NUMERIC }</if>
+            <if test= "controlinhibitflag != null ">	and CONTROLINHIBITFLAG = #{controlinhibitflag,jdbcType=NUMERIC }</if>
+            <if test= "alarmprocmode != null ">	and ALARMPROCMODE = #{alarmprocmode,jdbcType=NUMERIC }</if>
+            <if test= "alarmpriority != null ">	and ALARMPRIORITY = #{alarmpriority,jdbcType=NUMERIC }</if>
+            <if test= "tpinvolvedflag != null ">	and TPINVOLVEDFLAG = #{tpinvolvedflag,jdbcType=NUMERIC }</if>
+            <if test= "alarmoptionflags != null ">	and ALARMOPTIONFLAGS = #{alarmoptionflags,jdbcType=NUMERIC }</if>
+            <if test= "authorityarea != null ">	and AUTHORITYAREA = #{authorityarea,jdbcType=NUMERIC }</if>
+            <if test= "limitsetid != null ">	and LIMITSETID = #{limitsetid,jdbcType=NUMERIC }</if>
+            <if test= "reportdeadband != null ">	and REPORTDEADBAND = #{reportdeadband,jdbcType=NUMERIC }</if>
+            <if test= "sensormaximum != null ">	and SENSORMAXIMUM = #{sensormaximum,jdbcType=NUMERIC }</if>
+            <if test= "sensorminimum != null ">	and SENSORMINIMUM = #{sensorminimum,jdbcType=NUMERIC }</if>
+            <if test= "zeroclampping != null ">	and ZEROCLAMPPING = #{zeroclampping,jdbcType=NUMERIC }</if>
+            <if test= "scalefactor != null ">	and SCALEFACTOR = #{scalefactor,jdbcType=NUMERIC }</if>
+            <if test= "scaleoffset != null ">	and SCALEOFFSET = #{scaleoffset,jdbcType=NUMERIC }</if>
+            <if test= "smoothingfactor != null ">	and SMOOTHINGFACTOR = #{smoothingfactor,jdbcType=NUMERIC }</if>
+            <if test= "pointaddress != null ">	and POINTADDRESS = #{pointaddress,jdbcType=NUMERIC }</if>
+            <if test= "groupaddress != null ">	and GROUPADDRESS = #{groupaddress,jdbcType=NUMERIC }</if>
+            <if test= "rtuaddress != null ">	and RTUADDRESS = #{rtuaddress,jdbcType=NUMERIC }</if>
+            <if test= "alarmdelayedtime != null ">	and ALARMDELAYEDTIME = #{alarmdelayedtime,jdbcType=NUMERIC }</if>
+            <if test= "saveperiodicity != null ">	and SAVEPERIODICITY = #{saveperiodicity,jdbcType=NUMERIC }</if>
+            <if test= "measidx != null ">	and MEASIDX = #{measidx,jdbcType=NUMERIC }</if>
+            <if test= "alarmtype != null ">	and ALARMTYPE = #{alarmtype,jdbcType=NUMERIC }</if>
+            <if test= "operationallow != null ">	and OPERATIONALLOW = #{operationallow,jdbcType=NUMERIC }</if>
+            <if test= "operationalhigh != null ">	and OPERATIONALHIGH = #{operationalhigh,jdbcType=NUMERIC }</if>
+            <if test= "warninglow != null ">	and WARNINGLOW = #{warninglow,jdbcType=NUMERIC }</if>
+            <if test= "warninghigh != null ">	and WARNINGHIGH = #{warninghigh,jdbcType=NUMERIC }</if>
+            <if test= "emergencylow != null ">	and EMERGENCYLOW = #{emergencylow,jdbcType=NUMERIC }</if>
+            <if test= "emergencyhigh != null ">	and EMERGENCYHIGH = #{emergencyhigh,jdbcType=NUMERIC }</if>
+            <if test= "rateofchangelimit != null ">	and RATEOFCHANGELIMIT = #{rateofchangelimit,jdbcType=NUMERIC }</if>
+            <if test= "ispercentagelimits != null ">	and ISPERCENTAGELIMITS = #{ispercentagelimits,jdbcType=NUMERIC }</if>
+            <if test= "nominal != null ">	and NOMINAL = #{nominal,jdbcType=NUMERIC }</if>
+            <if test= "deadband != null ">	and DEADBAND = #{deadband,jdbcType=NUMERIC }</if>
+            <if test= "substationId != null ">	and SUBSTATION_ID = #{substationId,jdbcType=NUMERIC }</if>
+            <if test= "rAWVALUE0 != null ">	and RAWVALUE0 = #{rAWVALUE0,jdbcType=NUMERIC }</if>
+            <if test= "rAWQUALITYCODE0 != null ">	and RAWQUALITYCODE0 = #{rAWQUALITYCODE0,jdbcType=NUMERIC }</if>
+            <if test= "rAWTIMESTAMP0 != null ">	and RAWTIMESTAMP0 = #{rAWTIMESTAMP0 }</if>
+            <if test= "rAWVALUE1 != null ">	and RAWVALUE1 = #{rAWVALUE1,jdbcType=NUMERIC }</if>
+            <if test= "rAWQUALITYCODE1 != null ">	and RAWQUALITYCODE1 = #{rAWQUALITYCODE1,jdbcType=NUMERIC }</if>
+            <if test= "rAWTIMESTAMP1 != null ">	and RAWTIMESTAMP1 = #{rAWTIMESTAMP1 }</if>
+            <if test= "rAWVALUE2 != null ">	and RAWVALUE2 = #{rAWVALUE2,jdbcType=NUMERIC }</if>
+            <if test= "rAWQUALITYCODE2 != null ">	and RAWQUALITYCODE2 = #{rAWQUALITYCODE2,jdbcType=NUMERIC }</if>
+            <if test= "rAWTIMESTAMP2 != null ">	and RAWTIMESTAMP2 = #{rAWTIMESTAMP2 }</if>
+            <if test= "rAWVALUE3 != null ">	and RAWVALUE3 = #{rAWVALUE3,jdbcType=NUMERIC }</if>
+            <if test= "rAWQUALITYCODE3 != null ">	and RAWQUALITYCODE3 = #{rAWQUALITYCODE3,jdbcType=NUMERIC }</if>
+            <if test= "rAWTIMESTAMP3 != null ">	and RAWTIMESTAMP3 = #{rAWTIMESTAMP3 }</if>
+            <if test= "currouteno != null ">	and CURROUTENO = #{currouteno,jdbcType=NUMERIC }</if>
+            <if test= "alarmcount != null ">	and ALARMCOUNT = #{alarmcount,jdbcType=NUMERIC }</if>
+            <if test= "rating != null ">	and RATING = #{rating,jdbcType=NUMERIC }</if>
+            <if test= "cycle != null ">	and CYCLE = #{cycle,jdbcType=NUMERIC }</if>
+            <if test= "funcode != null ">	and FUNCODE = #{funcode,jdbcType=NUMERIC }</if>
+            <if test= "bitcount != null ">	and BITCOUNT = #{bitcount,jdbcType=NUMERIC }</if>
+            <if test= "datatype != null ">	and DATATYPE = #{datatype,jdbcType=NUMERIC }</if>
+            <if test= "alarmstatusitem != null ">	and ALARMSTATUSITEM = #{alarmstatusitem,jdbcType=NUMERIC }</if>
+            <if test= "collectid != null ">	and COLLECTID = #{collectid,jdbcType=NUMERIC }</if>
+            <if test= "devtype != null ">	and DEVTYPE = #{devtype,jdbcType=NUMERIC }</if>
+            <if test= "devid != null ">	and DEVID = #{devid,jdbcType=NUMERIC }</if>
+            <if test= "devpointnum != null ">	and DEVPOINTNUM = #{devpointnum,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "aliasname != null ">	or ALIASNAME = #{aliasname,jdbcType=VARCHAR }</if>
+            <if test= "description != null ">	or DESCRIPTION = #{description,jdbcType=VARCHAR }</if>
+            <if test= "name != null ">	or NAME = #{name,jdbcType=VARCHAR }</if>
+            <if test= "pathname != null ">	or PATHNAME = #{pathname,jdbcType=VARCHAR }</if>
+            <if test= "type != null ">	or TYPE = #{type,jdbcType=NUMERIC }</if>
+            <if test= "rtuid != null ">	or RTUID = #{rtuid,jdbcType=NUMERIC }</if>
+            <if test= "pointnum != null ">	or POINTNUM = #{pointnum,jdbcType=NUMERIC }</if>
+            <if test= "equipmentcontainerId != null ">	or EQUIPMENTCONTAINER_ID = #{equipmentcontainerId,jdbcType=NUMERIC }</if>
+            <if test= "equipmentcontainerTableid != null ">	or EQUIPMENTCONTAINER_TABLEID = #{equipmentcontainerTableid,jdbcType=NUMERIC }</if>
+            <if test= "datasource != null ">	or DATASOURCE = #{datasource,jdbcType=NUMERIC }</if>
+            <if test= "value != null ">	or VALUE = #{value,jdbcType=NUMERIC }</if>
+            <if test= "qualitycode != null ">	or QUALITYCODE = #{qualitycode,jdbcType=NUMERIC }</if>
+            <if test= "timestamp != null ">	or TIMESTAMP = #{timestamp }</if>
+            <if test= "rateofchange != null ">	or RATEOFCHANGE = #{rateofchange,jdbcType=NUMERIC }</if>
+            <if test= "violationflags != null ">	or VIOLATIONFLAGS = #{violationflags,jdbcType=NUMERIC }</if>
+            <if test= "taggingflags != null ">	or TAGGINGFLAGS = #{taggingflags,jdbcType=NUMERIC }</if>
+            <if test= "controlinhibitflag != null ">	or CONTROLINHIBITFLAG = #{controlinhibitflag,jdbcType=NUMERIC }</if>
+            <if test= "alarmprocmode != null ">	or ALARMPROCMODE = #{alarmprocmode,jdbcType=NUMERIC }</if>
+            <if test= "alarmpriority != null ">	or ALARMPRIORITY = #{alarmpriority,jdbcType=NUMERIC }</if>
+            <if test= "tpinvolvedflag != null ">	or TPINVOLVEDFLAG = #{tpinvolvedflag,jdbcType=NUMERIC }</if>
+            <if test= "alarmoptionflags != null ">	or ALARMOPTIONFLAGS = #{alarmoptionflags,jdbcType=NUMERIC }</if>
+            <if test= "authorityarea != null ">	or AUTHORITYAREA = #{authorityarea,jdbcType=NUMERIC }</if>
+            <if test= "limitsetid != null ">	or LIMITSETID = #{limitsetid,jdbcType=NUMERIC }</if>
+            <if test= "reportdeadband != null ">	or REPORTDEADBAND = #{reportdeadband,jdbcType=NUMERIC }</if>
+            <if test= "sensormaximum != null ">	or SENSORMAXIMUM = #{sensormaximum,jdbcType=NUMERIC }</if>
+            <if test= "sensorminimum != null ">	or SENSORMINIMUM = #{sensorminimum,jdbcType=NUMERIC }</if>
+            <if test= "zeroclampping != null ">	or ZEROCLAMPPING = #{zeroclampping,jdbcType=NUMERIC }</if>
+            <if test= "scalefactor != null ">	or SCALEFACTOR = #{scalefactor,jdbcType=NUMERIC }</if>
+            <if test= "scaleoffset != null ">	or SCALEOFFSET = #{scaleoffset,jdbcType=NUMERIC }</if>
+            <if test= "smoothingfactor != null ">	or SMOOTHINGFACTOR = #{smoothingfactor,jdbcType=NUMERIC }</if>
+            <if test= "pointaddress != null ">	or POINTADDRESS = #{pointaddress,jdbcType=NUMERIC }</if>
+            <if test= "groupaddress != null ">	or GROUPADDRESS = #{groupaddress,jdbcType=NUMERIC }</if>
+            <if test= "rtuaddress != null ">	or RTUADDRESS = #{rtuaddress,jdbcType=NUMERIC }</if>
+            <if test= "alarmdelayedtime != null ">	or ALARMDELAYEDTIME = #{alarmdelayedtime,jdbcType=NUMERIC }</if>
+            <if test= "saveperiodicity != null ">	or SAVEPERIODICITY = #{saveperiodicity,jdbcType=NUMERIC }</if>
+            <if test= "measidx != null ">	or MEASIDX = #{measidx,jdbcType=NUMERIC }</if>
+            <if test= "alarmtype != null ">	or ALARMTYPE = #{alarmtype,jdbcType=NUMERIC }</if>
+            <if test= "operationallow != null ">	or OPERATIONALLOW = #{operationallow,jdbcType=NUMERIC }</if>
+            <if test= "operationalhigh != null ">	or OPERATIONALHIGH = #{operationalhigh,jdbcType=NUMERIC }</if>
+            <if test= "warninglow != null ">	or WARNINGLOW = #{warninglow,jdbcType=NUMERIC }</if>
+            <if test= "warninghigh != null ">	or WARNINGHIGH = #{warninghigh,jdbcType=NUMERIC }</if>
+            <if test= "emergencylow != null ">	or EMERGENCYLOW = #{emergencylow,jdbcType=NUMERIC }</if>
+            <if test= "emergencyhigh != null ">	or EMERGENCYHIGH = #{emergencyhigh,jdbcType=NUMERIC }</if>
+            <if test= "rateofchangelimit != null ">	or RATEOFCHANGELIMIT = #{rateofchangelimit,jdbcType=NUMERIC }</if>
+            <if test= "ispercentagelimits != null ">	or ISPERCENTAGELIMITS = #{ispercentagelimits,jdbcType=NUMERIC }</if>
+            <if test= "nominal != null ">	or NOMINAL = #{nominal,jdbcType=NUMERIC }</if>
+            <if test= "deadband != null ">	or DEADBAND = #{deadband,jdbcType=NUMERIC }</if>
+            <if test= "substationId != null ">	or SUBSTATION_ID = #{substationId,jdbcType=NUMERIC }</if>
+            <if test= "rAWVALUE0 != null ">	or RAWVALUE0 = #{rAWVALUE0,jdbcType=NUMERIC }</if>
+            <if test= "rAWQUALITYCODE0 != null ">	or RAWQUALITYCODE0 = #{rAWQUALITYCODE0,jdbcType=NUMERIC }</if>
+            <if test= "rAWTIMESTAMP0 != null ">	or RAWTIMESTAMP0 = #{rAWTIMESTAMP0 }</if>
+            <if test= "rAWVALUE1 != null ">	or RAWVALUE1 = #{rAWVALUE1,jdbcType=NUMERIC }</if>
+            <if test= "rAWQUALITYCODE1 != null ">	or RAWQUALITYCODE1 = #{rAWQUALITYCODE1,jdbcType=NUMERIC }</if>
+            <if test= "rAWTIMESTAMP1 != null ">	or RAWTIMESTAMP1 = #{rAWTIMESTAMP1 }</if>
+            <if test= "rAWVALUE2 != null ">	or RAWVALUE2 = #{rAWVALUE2,jdbcType=NUMERIC }</if>
+            <if test= "rAWQUALITYCODE2 != null ">	or RAWQUALITYCODE2 = #{rAWQUALITYCODE2,jdbcType=NUMERIC }</if>
+            <if test= "rAWTIMESTAMP2 != null ">	or RAWTIMESTAMP2 = #{rAWTIMESTAMP2 }</if>
+            <if test= "rAWVALUE3 != null ">	or RAWVALUE3 = #{rAWVALUE3,jdbcType=NUMERIC }</if>
+            <if test= "rAWQUALITYCODE3 != null ">	or RAWQUALITYCODE3 = #{rAWQUALITYCODE3,jdbcType=NUMERIC }</if>
+            <if test= "rAWTIMESTAMP3 != null ">	or RAWTIMESTAMP3 = #{rAWTIMESTAMP3 }</if>
+            <if test= "currouteno != null ">	or CURROUTENO = #{currouteno,jdbcType=NUMERIC }</if>
+            <if test= "alarmcount != null ">	or ALARMCOUNT = #{alarmcount,jdbcType=NUMERIC }</if>
+            <if test= "rating != null ">	or RATING = #{rating,jdbcType=NUMERIC }</if>
+            <if test= "cycle != null ">	or CYCLE = #{cycle,jdbcType=NUMERIC }</if>
+            <if test= "funcode != null ">	or FUNCODE = #{funcode,jdbcType=NUMERIC }</if>
+            <if test= "bitcount != null ">	or BITCOUNT = #{bitcount,jdbcType=NUMERIC }</if>
+            <if test= "datatype != null ">	or DATATYPE = #{datatype,jdbcType=NUMERIC }</if>
+            <if test= "alarmstatusitem != null ">	or ALARMSTATUSITEM = #{alarmstatusitem,jdbcType=NUMERIC }</if>
+            <if test= "collectid != null ">	or COLLECTID = #{collectid,jdbcType=NUMERIC }</if>
+            <if test= "devtype != null ">	or DEVTYPE = #{devtype,jdbcType=NUMERIC }</if>
+            <if test= "devid != null ">	or DEVID = #{devid,jdbcType=NUMERIC }</if>
+            <if test= "devpointnum != null ">	or DEVPOINTNUM = #{devpointnum,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from analoginput
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from analoginput  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from analoginput  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.AnaloginputPO" useGeneratedKeys="true" keyProperty="id">
+		insert into analoginput( ID,ALIASNAME,DESCRIPTION,NAME,PATHNAME,TYPE,RTUID,POINTNUM,EQUIPMENTCONTAINER_ID,EQUIPMENTCONTAINER_TABLEID,DATASOURCE,VALUE,QUALITYCODE,TIMESTAMP,RATEOFCHANGE,VIOLATIONFLAGS,TAGGINGFLAGS,CONTROLINHIBITFLAG,ALARMPROCMODE,ALARMPRIORITY,TPINVOLVEDFLAG,ALARMOPTIONFLAGS,AUTHORITYAREA,LIMITSETID,REPORTDEADBAND,SENSORMAXIMUM,SENSORMINIMUM,ZEROCLAMPPING,SCALEFACTOR,SCALEOFFSET,SMOOTHINGFACTOR,POINTADDRESS,GROUPADDRESS,RTUADDRESS,ALARMDELAYEDTIME,SAVEPERIODICITY,MEASIDX,ALARMTYPE,OPERATIONALLOW,OPERATIONALHIGH,WARNINGLOW,WARNINGHIGH,EMERGENCYLOW,EMERGENCYHIGH,RATEOFCHANGELIMIT,ISPERCENTAGELIMITS,NOMINAL,DEADBAND,SUBSTATION_ID,RAWVALUE0,RAWQUALITYCODE0,RAWTIMESTAMP0,RAWVALUE1,RAWQUALITYCODE1,RAWTIMESTAMP1,RAWVALUE2,RAWQUALITYCODE2,RAWTIMESTAMP2,RAWVALUE3,RAWQUALITYCODE3,RAWTIMESTAMP3,CURROUTENO,ALARMCOUNT,RATING,CYCLE,FUNCODE,BITCOUNT,DATATYPE,ALARMSTATUSITEM,COLLECTID,DEVTYPE,DEVID,DEVPOINTNUM ) values (#{id,jdbcType=INTEGER},#{aliasname,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{pathname,jdbcType=VARCHAR},#{type,jdbcType=NUMERIC},#{rtuid,jdbcType=NUMERIC},#{pointnum,jdbcType=NUMERIC},#{equipmentcontainerId,jdbcType=NUMERIC},#{equipmentcontainerTableid,jdbcType=NUMERIC},#{datasource,jdbcType=NUMERIC},#{value,jdbcType=NUMERIC},#{qualitycode,jdbcType=NUMERIC},#{timestamp},#{rateofchange,jdbcType=NUMERIC},#{violationflags,jdbcType=NUMERIC},#{taggingflags,jdbcType=NUMERIC},#{controlinhibitflag,jdbcType=NUMERIC},#{alarmprocmode,jdbcType=NUMERIC},#{alarmpriority,jdbcType=NUMERIC},#{tpinvolvedflag,jdbcType=NUMERIC},#{alarmoptionflags,jdbcType=NUMERIC},#{authorityarea,jdbcType=NUMERIC},#{limitsetid,jdbcType=NUMERIC},#{reportdeadband,jdbcType=NUMERIC},#{sensormaximum,jdbcType=NUMERIC},#{sensorminimum,jdbcType=NUMERIC},#{zeroclampping,jdbcType=NUMERIC},#{scalefactor,jdbcType=NUMERIC},#{scaleoffset,jdbcType=NUMERIC},#{smoothingfactor,jdbcType=NUMERIC},#{pointaddress,jdbcType=NUMERIC},#{groupaddress,jdbcType=NUMERIC},#{rtuaddress,jdbcType=NUMERIC},#{alarmdelayedtime,jdbcType=NUMERIC},#{saveperiodicity,jdbcType=NUMERIC},#{measidx,jdbcType=NUMERIC},#{alarmtype,jdbcType=NUMERIC},#{operationallow,jdbcType=NUMERIC},#{operationalhigh,jdbcType=NUMERIC},#{warninglow,jdbcType=NUMERIC},#{warninghigh,jdbcType=NUMERIC},#{emergencylow,jdbcType=NUMERIC},#{emergencyhigh,jdbcType=NUMERIC},#{rateofchangelimit,jdbcType=NUMERIC},#{ispercentagelimits,jdbcType=NUMERIC},#{nominal,jdbcType=NUMERIC},#{deadband,jdbcType=NUMERIC},#{substationId,jdbcType=NUMERIC},#{rAWVALUE0,jdbcType=NUMERIC},#{rAWQUALITYCODE0,jdbcType=NUMERIC},#{rAWTIMESTAMP0},#{rAWVALUE1,jdbcType=NUMERIC},#{rAWQUALITYCODE1,jdbcType=NUMERIC},#{rAWTIMESTAMP1},#{rAWVALUE2,jdbcType=NUMERIC},#{rAWQUALITYCODE2,jdbcType=NUMERIC},#{rAWTIMESTAMP2},#{rAWVALUE3,jdbcType=NUMERIC},#{rAWQUALITYCODE3,jdbcType=NUMERIC},#{rAWTIMESTAMP3},#{currouteno,jdbcType=NUMERIC},#{alarmcount,jdbcType=NUMERIC},#{rating,jdbcType=NUMERIC},#{cycle,jdbcType=NUMERIC},#{funcode,jdbcType=NUMERIC},#{bitcount,jdbcType=NUMERIC},#{datatype,jdbcType=NUMERIC},#{alarmstatusitem,jdbcType=NUMERIC},#{collectid,jdbcType=NUMERIC},#{devtype,jdbcType=NUMERIC},#{devid,jdbcType=NUMERIC},#{devpointnum,jdbcType=NUMERIC} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into analoginput( ID,ALIASNAME,DESCRIPTION,NAME,PATHNAME,TYPE,RTUID,POINTNUM,EQUIPMENTCONTAINER_ID,EQUIPMENTCONTAINER_TABLEID,DATASOURCE,VALUE,QUALITYCODE,TIMESTAMP,RATEOFCHANGE,VIOLATIONFLAGS,TAGGINGFLAGS,CONTROLINHIBITFLAG,ALARMPROCMODE,ALARMPRIORITY,TPINVOLVEDFLAG,ALARMOPTIONFLAGS,AUTHORITYAREA,LIMITSETID,REPORTDEADBAND,SENSORMAXIMUM,SENSORMINIMUM,ZEROCLAMPPING,SCALEFACTOR,SCALEOFFSET,SMOOTHINGFACTOR,POINTADDRESS,GROUPADDRESS,RTUADDRESS,ALARMDELAYEDTIME,SAVEPERIODICITY,MEASIDX,ALARMTYPE,OPERATIONALLOW,OPERATIONALHIGH,WARNINGLOW,WARNINGHIGH,EMERGENCYLOW,EMERGENCYHIGH,RATEOFCHANGELIMIT,ISPERCENTAGELIMITS,NOMINAL,DEADBAND,SUBSTATION_ID,RAWVALUE0,RAWQUALITYCODE0,RAWTIMESTAMP0,RAWVALUE1,RAWQUALITYCODE1,RAWTIMESTAMP1,RAWVALUE2,RAWQUALITYCODE2,RAWTIMESTAMP2,RAWVALUE3,RAWQUALITYCODE3,RAWTIMESTAMP3,CURROUTENO,ALARMCOUNT,RATING,CYCLE,FUNCODE,BITCOUNT,DATATYPE,ALARMSTATUSITEM,COLLECTID,DEVTYPE,DEVID,DEVPOINTNUM ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.aliasname,jdbcType=VARCHAR},#{item.description,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},#{item.pathname,jdbcType=VARCHAR},#{item.type,jdbcType=NUMERIC},#{item.rtuid,jdbcType=NUMERIC},#{item.pointnum,jdbcType=NUMERIC},#{item.equipmentcontainerId,jdbcType=NUMERIC},#{item.equipmentcontainerTableid,jdbcType=NUMERIC},#{item.datasource,jdbcType=NUMERIC},#{item.value,jdbcType=NUMERIC},#{item.qualitycode,jdbcType=NUMERIC},#{item.timestamp},#{item.rateofchange,jdbcType=NUMERIC},#{item.violationflags,jdbcType=NUMERIC},#{item.taggingflags,jdbcType=NUMERIC},#{item.controlinhibitflag,jdbcType=NUMERIC},#{item.alarmprocmode,jdbcType=NUMERIC},#{item.alarmpriority,jdbcType=NUMERIC},#{item.tpinvolvedflag,jdbcType=NUMERIC},#{item.alarmoptionflags,jdbcType=NUMERIC},#{item.authorityarea,jdbcType=NUMERIC},#{item.limitsetid,jdbcType=NUMERIC},#{item.reportdeadband,jdbcType=NUMERIC},#{item.sensormaximum,jdbcType=NUMERIC},#{item.sensorminimum,jdbcType=NUMERIC},#{item.zeroclampping,jdbcType=NUMERIC},#{item.scalefactor,jdbcType=NUMERIC},#{item.scaleoffset,jdbcType=NUMERIC},#{item.smoothingfactor,jdbcType=NUMERIC},#{item.pointaddress,jdbcType=NUMERIC},#{item.groupaddress,jdbcType=NUMERIC},#{item.rtuaddress,jdbcType=NUMERIC},#{item.alarmdelayedtime,jdbcType=NUMERIC},#{item.saveperiodicity,jdbcType=NUMERIC},#{item.measidx,jdbcType=NUMERIC},#{item.alarmtype,jdbcType=NUMERIC},#{item.operationallow,jdbcType=NUMERIC},#{item.operationalhigh,jdbcType=NUMERIC},#{item.warninglow,jdbcType=NUMERIC},#{item.warninghigh,jdbcType=NUMERIC},#{item.emergencylow,jdbcType=NUMERIC},#{item.emergencyhigh,jdbcType=NUMERIC},#{item.rateofchangelimit,jdbcType=NUMERIC},#{item.ispercentagelimits,jdbcType=NUMERIC},#{item.nominal,jdbcType=NUMERIC},#{item.deadband,jdbcType=NUMERIC},#{item.substationId,jdbcType=NUMERIC},#{item.rAWVALUE0,jdbcType=NUMERIC},#{item.rAWQUALITYCODE0,jdbcType=NUMERIC},#{item.rAWTIMESTAMP0},#{item.rAWVALUE1,jdbcType=NUMERIC},#{item.rAWQUALITYCODE1,jdbcType=NUMERIC},#{item.rAWTIMESTAMP1},#{item.rAWVALUE2,jdbcType=NUMERIC},#{item.rAWQUALITYCODE2,jdbcType=NUMERIC},#{item.rAWTIMESTAMP2},#{item.rAWVALUE3,jdbcType=NUMERIC},#{item.rAWQUALITYCODE3,jdbcType=NUMERIC},#{item.rAWTIMESTAMP3},#{item.currouteno,jdbcType=NUMERIC},#{item.alarmcount,jdbcType=NUMERIC},#{item.rating,jdbcType=NUMERIC},#{item.cycle,jdbcType=NUMERIC},#{item.funcode,jdbcType=NUMERIC},#{item.bitcount,jdbcType=NUMERIC},#{item.datatype,jdbcType=NUMERIC},#{item.alarmstatusitem,jdbcType=NUMERIC},#{item.collectid,jdbcType=NUMERIC},#{item.devtype,jdbcType=NUMERIC},#{item.devid,jdbcType=NUMERIC},#{item.devpointnum,jdbcType=NUMERIC} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.AnaloginputPO">
+		update analoginput set ALIASNAME=#{aliasname,jdbcType=VARCHAR},DESCRIPTION=#{description,jdbcType=VARCHAR},NAME=#{name,jdbcType=VARCHAR},PATHNAME=#{pathname,jdbcType=VARCHAR},TYPE=#{type,jdbcType=NUMERIC},RTUID=#{rtuid,jdbcType=NUMERIC},POINTNUM=#{pointnum,jdbcType=NUMERIC},EQUIPMENTCONTAINER_ID=#{equipmentcontainerId,jdbcType=NUMERIC},EQUIPMENTCONTAINER_TABLEID=#{equipmentcontainerTableid,jdbcType=NUMERIC},DATASOURCE=#{datasource,jdbcType=NUMERIC},VALUE=#{value,jdbcType=NUMERIC},QUALITYCODE=#{qualitycode,jdbcType=NUMERIC},TIMESTAMP=#{timestamp},RATEOFCHANGE=#{rateofchange,jdbcType=NUMERIC},VIOLATIONFLAGS=#{violationflags,jdbcType=NUMERIC},TAGGINGFLAGS=#{taggingflags,jdbcType=NUMERIC},CONTROLINHIBITFLAG=#{controlinhibitflag,jdbcType=NUMERIC},ALARMPROCMODE=#{alarmprocmode,jdbcType=NUMERIC},ALARMPRIORITY=#{alarmpriority,jdbcType=NUMERIC},TPINVOLVEDFLAG=#{tpinvolvedflag,jdbcType=NUMERIC},ALARMOPTIONFLAGS=#{alarmoptionflags,jdbcType=NUMERIC},AUTHORITYAREA=#{authorityarea,jdbcType=NUMERIC},LIMITSETID=#{limitsetid,jdbcType=NUMERIC},REPORTDEADBAND=#{reportdeadband,jdbcType=NUMERIC},SENSORMAXIMUM=#{sensormaximum,jdbcType=NUMERIC},SENSORMINIMUM=#{sensorminimum,jdbcType=NUMERIC},ZEROCLAMPPING=#{zeroclampping,jdbcType=NUMERIC},SCALEFACTOR=#{scalefactor,jdbcType=NUMERIC},SCALEOFFSET=#{scaleoffset,jdbcType=NUMERIC},SMOOTHINGFACTOR=#{smoothingfactor,jdbcType=NUMERIC},POINTADDRESS=#{pointaddress,jdbcType=NUMERIC},GROUPADDRESS=#{groupaddress,jdbcType=NUMERIC},RTUADDRESS=#{rtuaddress,jdbcType=NUMERIC},ALARMDELAYEDTIME=#{alarmdelayedtime,jdbcType=NUMERIC},SAVEPERIODICITY=#{saveperiodicity,jdbcType=NUMERIC},MEASIDX=#{measidx,jdbcType=NUMERIC},ALARMTYPE=#{alarmtype,jdbcType=NUMERIC},OPERATIONALLOW=#{operationallow,jdbcType=NUMERIC},OPERATIONALHIGH=#{operationalhigh,jdbcType=NUMERIC},WARNINGLOW=#{warninglow,jdbcType=NUMERIC},WARNINGHIGH=#{warninghigh,jdbcType=NUMERIC},EMERGENCYLOW=#{emergencylow,jdbcType=NUMERIC},EMERGENCYHIGH=#{emergencyhigh,jdbcType=NUMERIC},RATEOFCHANGELIMIT=#{rateofchangelimit,jdbcType=NUMERIC},ISPERCENTAGELIMITS=#{ispercentagelimits,jdbcType=NUMERIC},NOMINAL=#{nominal,jdbcType=NUMERIC},DEADBAND=#{deadband,jdbcType=NUMERIC},SUBSTATION_ID=#{substationId,jdbcType=NUMERIC},RAWVALUE0=#{rAWVALUE0,jdbcType=NUMERIC},RAWQUALITYCODE0=#{rAWQUALITYCODE0,jdbcType=NUMERIC},RAWTIMESTAMP0=#{rAWTIMESTAMP0},RAWVALUE1=#{rAWVALUE1,jdbcType=NUMERIC},RAWQUALITYCODE1=#{rAWQUALITYCODE1,jdbcType=NUMERIC},RAWTIMESTAMP1=#{rAWTIMESTAMP1},RAWVALUE2=#{rAWVALUE2,jdbcType=NUMERIC},RAWQUALITYCODE2=#{rAWQUALITYCODE2,jdbcType=NUMERIC},RAWTIMESTAMP2=#{rAWTIMESTAMP2},RAWVALUE3=#{rAWVALUE3,jdbcType=NUMERIC},RAWQUALITYCODE3=#{rAWQUALITYCODE3,jdbcType=NUMERIC},RAWTIMESTAMP3=#{rAWTIMESTAMP3},CURROUTENO=#{currouteno,jdbcType=NUMERIC},ALARMCOUNT=#{alarmcount,jdbcType=NUMERIC},RATING=#{rating,jdbcType=NUMERIC},CYCLE=#{cycle,jdbcType=NUMERIC},FUNCODE=#{funcode,jdbcType=NUMERIC},BITCOUNT=#{bitcount,jdbcType=NUMERIC},DATATYPE=#{datatype,jdbcType=NUMERIC},ALARMSTATUSITEM=#{alarmstatusitem,jdbcType=NUMERIC},COLLECTID=#{collectid,jdbcType=NUMERIC},DEVTYPE=#{devtype,jdbcType=NUMERIC},DEVID=#{devid,jdbcType=NUMERIC},DEVPOINTNUM=#{devpointnum,jdbcType=NUMERIC} where ID=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.AnaloginputPO">
+		update analoginput
+        <set>
+            <if test="aliasname != null "> 
+                ALIASNAME = #{aliasname,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null "> 
+                DESCRIPTION = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null "> 
+                NAME = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="pathname != null "> 
+                PATHNAME = #{pathname,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null "> 
+                TYPE = #{type,jdbcType=NUMERIC},
+            </if>
+            <if test="rtuid != null "> 
+                RTUID = #{rtuid,jdbcType=NUMERIC},
+            </if>
+            <if test="pointnum != null "> 
+                POINTNUM = #{pointnum,jdbcType=NUMERIC},
+            </if>
+            <if test="equipmentcontainerId != null "> 
+                EQUIPMENTCONTAINER_ID = #{equipmentcontainerId,jdbcType=NUMERIC},
+            </if>
+            <if test="equipmentcontainerTableid != null "> 
+                EQUIPMENTCONTAINER_TABLEID = #{equipmentcontainerTableid,jdbcType=NUMERIC},
+            </if>
+            <if test="datasource != null "> 
+                DATASOURCE = #{datasource,jdbcType=NUMERIC},
+            </if>
+            <if test="value != null "> 
+                VALUE = #{value,jdbcType=NUMERIC},
+            </if>
+            <if test="qualitycode != null "> 
+                QUALITYCODE = #{qualitycode,jdbcType=NUMERIC},
+            </if>
+            <if test="timestamp != null "> 
+                TIMESTAMP = #{timestamp},
+            </if>
+            <if test="rateofchange != null "> 
+                RATEOFCHANGE = #{rateofchange,jdbcType=NUMERIC},
+            </if>
+            <if test="violationflags != null "> 
+                VIOLATIONFLAGS = #{violationflags,jdbcType=NUMERIC},
+            </if>
+            <if test="taggingflags != null "> 
+                TAGGINGFLAGS = #{taggingflags,jdbcType=NUMERIC},
+            </if>
+            <if test="controlinhibitflag != null "> 
+                CONTROLINHIBITFLAG = #{controlinhibitflag,jdbcType=NUMERIC},
+            </if>
+            <if test="alarmprocmode != null "> 
+                ALARMPROCMODE = #{alarmprocmode,jdbcType=NUMERIC},
+            </if>
+            <if test="alarmpriority != null "> 
+                ALARMPRIORITY = #{alarmpriority,jdbcType=NUMERIC},
+            </if>
+            <if test="tpinvolvedflag != null "> 
+                TPINVOLVEDFLAG = #{tpinvolvedflag,jdbcType=NUMERIC},
+            </if>
+            <if test="alarmoptionflags != null "> 
+                ALARMOPTIONFLAGS = #{alarmoptionflags,jdbcType=NUMERIC},
+            </if>
+            <if test="authorityarea != null "> 
+                AUTHORITYAREA = #{authorityarea,jdbcType=NUMERIC},
+            </if>
+            <if test="limitsetid != null "> 
+                LIMITSETID = #{limitsetid,jdbcType=NUMERIC},
+            </if>
+            <if test="reportdeadband != null "> 
+                REPORTDEADBAND = #{reportdeadband,jdbcType=NUMERIC},
+            </if>
+            <if test="sensormaximum != null "> 
+                SENSORMAXIMUM = #{sensormaximum,jdbcType=NUMERIC},
+            </if>
+            <if test="sensorminimum != null "> 
+                SENSORMINIMUM = #{sensorminimum,jdbcType=NUMERIC},
+            </if>
+            <if test="zeroclampping != null "> 
+                ZEROCLAMPPING = #{zeroclampping,jdbcType=NUMERIC},
+            </if>
+            <if test="scalefactor != null "> 
+                SCALEFACTOR = #{scalefactor,jdbcType=NUMERIC},
+            </if>
+            <if test="scaleoffset != null "> 
+                SCALEOFFSET = #{scaleoffset,jdbcType=NUMERIC},
+            </if>
+            <if test="smoothingfactor != null "> 
+                SMOOTHINGFACTOR = #{smoothingfactor,jdbcType=NUMERIC},
+            </if>
+            <if test="pointaddress != null "> 
+                POINTADDRESS = #{pointaddress,jdbcType=NUMERIC},
+            </if>
+            <if test="groupaddress != null "> 
+                GROUPADDRESS = #{groupaddress,jdbcType=NUMERIC},
+            </if>
+            <if test="rtuaddress != null "> 
+                RTUADDRESS = #{rtuaddress,jdbcType=NUMERIC},
+            </if>
+            <if test="alarmdelayedtime != null "> 
+                ALARMDELAYEDTIME = #{alarmdelayedtime,jdbcType=NUMERIC},
+            </if>
+            <if test="saveperiodicity != null "> 
+                SAVEPERIODICITY = #{saveperiodicity,jdbcType=NUMERIC},
+            </if>
+            <if test="measidx != null "> 
+                MEASIDX = #{measidx,jdbcType=NUMERIC},
+            </if>
+            <if test="alarmtype != null "> 
+                ALARMTYPE = #{alarmtype,jdbcType=NUMERIC},
+            </if>
+            <if test="operationallow != null "> 
+                OPERATIONALLOW = #{operationallow,jdbcType=NUMERIC},
+            </if>
+            <if test="operationalhigh != null "> 
+                OPERATIONALHIGH = #{operationalhigh,jdbcType=NUMERIC},
+            </if>
+            <if test="warninglow != null "> 
+                WARNINGLOW = #{warninglow,jdbcType=NUMERIC},
+            </if>
+            <if test="warninghigh != null "> 
+                WARNINGHIGH = #{warninghigh,jdbcType=NUMERIC},
+            </if>
+            <if test="emergencylow != null "> 
+                EMERGENCYLOW = #{emergencylow,jdbcType=NUMERIC},
+            </if>
+            <if test="emergencyhigh != null "> 
+                EMERGENCYHIGH = #{emergencyhigh,jdbcType=NUMERIC},
+            </if>
+            <if test="rateofchangelimit != null "> 
+                RATEOFCHANGELIMIT = #{rateofchangelimit,jdbcType=NUMERIC},
+            </if>
+            <if test="ispercentagelimits != null "> 
+                ISPERCENTAGELIMITS = #{ispercentagelimits,jdbcType=NUMERIC},
+            </if>
+            <if test="nominal != null "> 
+                NOMINAL = #{nominal,jdbcType=NUMERIC},
+            </if>
+            <if test="deadband != null "> 
+                DEADBAND = #{deadband,jdbcType=NUMERIC},
+            </if>
+            <if test="substationId != null "> 
+                SUBSTATION_ID = #{substationId,jdbcType=NUMERIC},
+            </if>
+            <if test="rAWVALUE0 != null "> 
+                RAWVALUE0 = #{rAWVALUE0,jdbcType=NUMERIC},
+            </if>
+            <if test="rAWQUALITYCODE0 != null "> 
+                RAWQUALITYCODE0 = #{rAWQUALITYCODE0,jdbcType=NUMERIC},
+            </if>
+            <if test="rAWTIMESTAMP0 != null "> 
+                RAWTIMESTAMP0 = #{rAWTIMESTAMP0},
+            </if>
+            <if test="rAWVALUE1 != null "> 
+                RAWVALUE1 = #{rAWVALUE1,jdbcType=NUMERIC},
+            </if>
+            <if test="rAWQUALITYCODE1 != null "> 
+                RAWQUALITYCODE1 = #{rAWQUALITYCODE1,jdbcType=NUMERIC},
+            </if>
+            <if test="rAWTIMESTAMP1 != null "> 
+                RAWTIMESTAMP1 = #{rAWTIMESTAMP1},
+            </if>
+            <if test="rAWVALUE2 != null "> 
+                RAWVALUE2 = #{rAWVALUE2,jdbcType=NUMERIC},
+            </if>
+            <if test="rAWQUALITYCODE2 != null "> 
+                RAWQUALITYCODE2 = #{rAWQUALITYCODE2,jdbcType=NUMERIC},
+            </if>
+            <if test="rAWTIMESTAMP2 != null "> 
+                RAWTIMESTAMP2 = #{rAWTIMESTAMP2},
+            </if>
+            <if test="rAWVALUE3 != null "> 
+                RAWVALUE3 = #{rAWVALUE3,jdbcType=NUMERIC},
+            </if>
+            <if test="rAWQUALITYCODE3 != null "> 
+                RAWQUALITYCODE3 = #{rAWQUALITYCODE3,jdbcType=NUMERIC},
+            </if>
+            <if test="rAWTIMESTAMP3 != null "> 
+                RAWTIMESTAMP3 = #{rAWTIMESTAMP3},
+            </if>
+            <if test="currouteno != null "> 
+                CURROUTENO = #{currouteno,jdbcType=NUMERIC},
+            </if>
+            <if test="alarmcount != null "> 
+                ALARMCOUNT = #{alarmcount,jdbcType=NUMERIC},
+            </if>
+            <if test="rating != null "> 
+                RATING = #{rating,jdbcType=NUMERIC},
+            </if>
+            <if test="cycle != null "> 
+                CYCLE = #{cycle,jdbcType=NUMERIC},
+            </if>
+            <if test="funcode != null "> 
+                FUNCODE = #{funcode,jdbcType=NUMERIC},
+            </if>
+            <if test="bitcount != null "> 
+                BITCOUNT = #{bitcount,jdbcType=NUMERIC},
+            </if>
+            <if test="datatype != null "> 
+                DATATYPE = #{datatype,jdbcType=NUMERIC},
+            </if>
+            <if test="alarmstatusitem != null "> 
+                ALARMSTATUSITEM = #{alarmstatusitem,jdbcType=NUMERIC},
+            </if>
+            <if test="collectid != null "> 
+                COLLECTID = #{collectid,jdbcType=NUMERIC},
+            </if>
+            <if test="devtype != null "> 
+                DEVTYPE = #{devtype,jdbcType=NUMERIC},
+            </if>
+            <if test="devid != null "> 
+                DEVID = #{devid,jdbcType=NUMERIC},
+            </if>
+            <if test="devpointnum != null "> 
+                DEVPOINTNUM = #{devpointnum,jdbcType=NUMERIC},
+            </if>
+        </set>
+         where ID=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from analoginput where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.AnaloginputPO">
+		delete from analoginput
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

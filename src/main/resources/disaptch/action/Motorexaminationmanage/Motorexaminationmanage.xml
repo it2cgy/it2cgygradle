@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--缺陷故障反馈表处理 -->
+<mapper namespace="motorexaminationmanage">
+
+   	<resultMap type="java.util.HashMap" id="cheakMap">
+		<result property="n" column="n"/>
+		<result property="id" column="id"/>
+		<result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="check_time" column="check_time"/>
+        
+    </resultMap>
+    
+
+  	
+  	<select id="loadcheaktotal"  resultType="java.lang.Integer"> 	
+        SELECT count(*) FROM(
+        SELECT
+		  max(c.check_time) check_time
+		FROM
+		R_MT_PRO_USER_ROLE ru 
+		LEFT JOIN MT_PROJECT p ON ru.pro_id=p.id	
+		LEFT JOIN MT_EVENT e ON e .PRO_ID = p.ID
+		LEFT JOIN MT_CHECKUP c ON c.event_id = e.ID
+		WHERE 1=1 and c.id is not null and e.state='1'
+		<if test="userId != null and userId != ''">
+						and ru.user_id  = '${userId}'
+		</if>
+	    <if test="proname != null and proname != ''">
+						and name like '%${proname}%'
+		</if>
+		<if test="code != null and code != ''">
+						and code like '%${code}%'
+		</if>  
+		<if test="startdate != null and startdate != ''">
+			and check_time &gt; to_date('${startdate}', 'yyyy-mm-dd hh24:mi:ss')
+		</if>
+		<if test="enddate != null and enddate != ''">
+			and check_time &lt; to_date('${enddate}', 'yyyy-mm-dd hh24:mi:ss')+1
+		</if>
+		GROUP BY  name,  code
+		
+       )
+		        
+  		
+		
+  	</select>
+  	
+  	
+  	 	<select id="loadcheak"  resultMap="cheakMap"> 	
+       SELECT
+		    b.n n,
+		    b.id id,
+			b.name name,
+			b.code code,
+			TO_CHAR(b.check_time,'yyyy-mm-dd hh24:mi:ss') check_time
+			
+		FROM
+			(
+				SELECT
+					ROWNUM n,
+					A .*
+				FROM
+					(
+						SELECT
+						 P.ID id,
+						 P.NAME NAME,
+						 P.code code,
+						 MAX (c.check_time) check_time
+						FROM
+							R_MT_PRO_USER_ROLE ru
+						LEFT JOIN MT_PROJECT P ON ru.pro_id = P . ID
+						LEFT JOIN MT_EVENT E ON E .PRO_ID = P . ID
+						LEFT JOIN MT_CHECKUP c ON c.event_id = E . ID
+						WHERE
+							1 = 1
+						AND c. ID IS NOT NULL
+						AND E .state = '1'
+						<if test="userId != null and userId != ''">
+						                and ru.user_id = '${userId}'
+						</if>
+					    <if test="proname != null and proname != ''">
+										and name like '%${proname}%'
+						</if>
+						<if test="code != null and code != ''">
+										and code like '%${code}%'
+						</if>  
+						<if test="startdate != null and startdate != ''">
+							and check_time &gt; to_date('${startdate}', 'yyyy-mm-dd hh24:mi:ss')
+						</if>
+						<if test="enddate != null and enddate != ''">
+							and check_time &lt; to_date('${enddate}', 'yyyy-mm-dd hh24:mi:ss')+1
+						</if>
+						
+						GROUP BY p.id,  name,  code					
+					) a
+			) b
+		<if test="page != null and page != ''">
+				where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows} order by b.id
+			</if>
+  	</select>
+  	
+  	
+  		<resultMap type="java.util.HashMap" id="cheakeidMap">
+  		<result property="n" column="n"/>
+		<result property="process_id" column="process_id"/>
+		<result property="name" column="name"/>
+		<result property="archieve_num" column="archieve_num"/>
+        <result property="form_flow_num_in_book" column="form_flow_num_in_book"/>
+        <result property="check_time" column="check_time"/>
+       	
+    </resultMap>
+<!--     根据pid查询 -->
+
+  	
+  	  <select id="selectbyeid"  resultMap="cheakeidMap">
+  		SELECT
+		    b.n n,
+			b.process_id process_id,
+			b.NAME name,
+			b.ARCHIEVE_NUM archieve_num,
+			b.form_flow_num_in_book form_flow_num_in_book,
+			TO_CHAR(b.check_time,'yyyy-mm-dd hh24:mi:ss') check_time
+		FROM
+			(
+				SELECT
+					ROWNUM n,
+					A .*
+				FROM
+					(
+						SELECT
+						  c.process_id process_id,
+				    	  c.check_manager name,
+			              e.ARCHIEVE_NUM archieve_num,
+			              c.form_flow_num_in_book form_flow_num_in_book,
+						  c.check_time check_time
+						FROM
+						  MT_PROJECT p 
+						  LEFT JOIN MT_EVENT e ON E .PRO_ID = p.ID
+						  LEFT JOIN MT_CHECKUP c ON c.event_id = e.ID
+		             
+						  WHERE 1=1 and c.id is not null and e.state = '1'
+               <if test="formflownuminbook != null and formflownuminbook != ''">
+						and form_flow_num_in_book like '%${formflownuminbook}%'
+				</if>
+				<if test="anum != null and anum != ''">
+						and archieve_num like '%${anum}%'
+				</if>  
+				<if test="startdate != null and startdate != ''">
+					    and check_time &gt; to_date('${startdate}', 'yyyy-mm-dd hh24:mi:ss')
+				</if>
+				<if test="enddate != null and enddate != ''">
+					    and check_time &lt; to_date('${enddate}', 'yyyy-mm-dd hh24:mi:ss')+1
+				</if>
+				<if test="eid != null and eid != ''">
+				         and  p.id = ${eid}
+			    </if>
+					) a
+			) b
+		<if test="page != null and page != ''">
+				where b.n &gt; (${page}-1)*${rows} and b.n &lt;= ${page}*${rows} order by b.process_id
+		</if>
+  	</select>
+  	
+  	
+    <select id="selectbyeidtotal"  resultType="java.lang.Integer"> 	
+				  		SELECT
+				  		  count(*)
+						FROM
+					    MT_PROJECT p 
+						    LEFT JOIN MT_EVENT e ON E .PRO_ID = p.ID
+						    LEFT JOIN MT_CHECKUP c ON c.event_id = e.ID
+	             
+					    WHERE 1=1 and c.id is not null and e.state = '1'
+		<if test="formflownuminbook != null and formflownuminbook != ''">
+						and form_flow_num_in_book like '%${formflownuminbook}%'
+		</if>
+		<if test="anum != null and anum != ''">
+						and archieve_num like '%${anum}%'
+		</if>  
+		<if test="startdate != null and startdate != ''">
+			and check_time &gt; to_date('${startdate}', 'yyyy-mm-dd hh24:mi:ss')
+		</if>
+		<if test="enddate != null and enddate != ''">
+			and check_time &lt; to_date('${enddate}', 'yyyy-mm-dd hh24:mi:ss')+1
+		</if>
+		<if test="eid != null and eid != ''">
+		and  p.id = ${eid}
+	    </if>
+  	</select>
+  	
+</mapper>

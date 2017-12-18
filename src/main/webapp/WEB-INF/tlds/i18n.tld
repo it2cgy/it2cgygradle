@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+		version="2.0">
+	<description>国际化标签</description>
+	<display-name>i18n</display-name>
+	<tlib-version>1.0</tlib-version>
+	<short-name>i18nLibrary</short-name>
+	<uri>http://www.yunengzhe.com/ynz/tag</uri>
+
+	<tag>
+		<description>国际化标签</description>
+		<name>message</name>
+		<tag-class>com.yunengzhe.PVMTS.i18n.I18n</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>国际化标签属性</description>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			
+		</attribute>
+	</tag>
+</taglib>

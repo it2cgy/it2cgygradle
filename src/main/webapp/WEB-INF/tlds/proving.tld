@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+		version="2.0">
+	<description>验证用户权限的自定义标签</description>
+	<display-name>proving</display-name>
+	<tlib-version>1.0</tlib-version>
+	<short-name>provingTagLibrary</short-name>
+	<uri>http://proving.privilege.mytag.com</uri>
+	
+	<tag>
+		<description>标签的名字校验标签</description>
+		<name>proving</name>
+		<tag-class>com.yunengzhe.PVMTS.util.CheckTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>检查权限的属性</description>
+			<name>check</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			
+		</attribute>
+	</tag>
+</taglib>

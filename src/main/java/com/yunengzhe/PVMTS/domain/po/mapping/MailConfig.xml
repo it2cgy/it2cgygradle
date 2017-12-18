@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.MailConfigPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.MailConfigPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="serverPath" column="server_path" jdbcType="VARCHAR" />
+            <result property="mailType" column="mail_type" jdbcType="VARCHAR" />
+            <result property="mailPort" column="mail_port" jdbcType="VARCHAR" />
+            <result property="pushTime" column="push_time" jdbcType="NUMERIC" />
+            <result property="mailUsername" column="mail_username" jdbcType="VARCHAR" />
+            <result property="mailPassword" column="mail_password" jdbcType="VARCHAR" />
+            <result property="mailAddress" column="mail_address" jdbcType="VARCHAR" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="usessl" column="usessl" jdbcType="NUMERIC" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,server_path,mail_type,mail_port,push_time,mail_username,mail_password,mail_address,create_time,update_time,usessl
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "serverPath != null ">	and server_path = #{serverPath,jdbcType=VARCHAR }</if>
+            <if test= "mailType != null ">	and mail_type = #{mailType,jdbcType=VARCHAR }</if>
+            <if test= "mailPort != null ">	and mail_port = #{mailPort,jdbcType=VARCHAR }</if>
+            <if test= "pushTime != null ">	and push_time = #{pushTime,jdbcType=NUMERIC }</if>
+            <if test= "mailUsername != null ">	and mail_username = #{mailUsername,jdbcType=VARCHAR }</if>
+            <if test= "mailPassword != null ">	and mail_password = #{mailPassword,jdbcType=VARCHAR }</if>
+            <if test= "mailAddress != null ">	and mail_address = #{mailAddress,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+            <if test= "usessl != null ">	and usessl = #{usessl,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "serverPath != null ">	and server_path like "%"#{serverPath}"%"</if>
+            <if test= "mailType != null ">	and mail_type like "%"#{mailType}"%"</if>
+            <if test= "mailPort != null ">	and mail_port like "%"#{mailPort}"%"</if>
+            <if test= "pushTime != null ">	and push_time = #{pushTime,jdbcType=NUMERIC }</if>
+            <if test= "mailUsername != null ">	and mail_username like "%"#{mailUsername}"%"</if>
+            <if test= "mailPassword != null ">	and mail_password like "%"#{mailPassword}"%"</if>
+            <if test= "mailAddress != null ">	and mail_address like "%"#{mailAddress}"%"</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+            <if test= "usessl != null ">	and usessl = #{usessl,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "serverPath != null ">	or server_path = #{serverPath,jdbcType=VARCHAR }</if>
+            <if test= "mailType != null ">	or mail_type = #{mailType,jdbcType=VARCHAR }</if>
+            <if test= "mailPort != null ">	or mail_port = #{mailPort,jdbcType=VARCHAR }</if>
+            <if test= "pushTime != null ">	or push_time = #{pushTime,jdbcType=NUMERIC }</if>
+            <if test= "mailUsername != null ">	or mail_username = #{mailUsername,jdbcType=VARCHAR }</if>
+            <if test= "mailPassword != null ">	or mail_password = #{mailPassword,jdbcType=VARCHAR }</if>
+            <if test= "mailAddress != null ">	or mail_address = #{mailAddress,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+            <if test= "usessl != null ">	or usessl = #{usessl,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_mailConfig
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_mailConfig  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_mailConfig  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.MailConfigPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_mailConfig( id,server_path,mail_type,mail_port,push_time,mail_username,mail_password,mail_address,create_time,update_time,usessl ) values (#{id,jdbcType=INTEGER},#{serverPath,jdbcType=VARCHAR},#{mailType,jdbcType=VARCHAR},#{mailPort,jdbcType=VARCHAR},#{pushTime,jdbcType=NUMERIC},#{mailUsername,jdbcType=VARCHAR},#{mailPassword,jdbcType=VARCHAR},#{mailAddress,jdbcType=VARCHAR},#{createTime},#{updateTime},#{usessl,jdbcType=NUMERIC} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_mailConfig( id,server_path,mail_type,mail_port,push_time,mail_username,mail_password,mail_address,create_time,update_time,usessl ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.serverPath,jdbcType=VARCHAR},#{item.mailType,jdbcType=VARCHAR},#{item.mailPort,jdbcType=VARCHAR},#{item.pushTime,jdbcType=NUMERIC},#{item.mailUsername,jdbcType=VARCHAR},#{item.mailPassword,jdbcType=VARCHAR},#{item.mailAddress,jdbcType=VARCHAR},#{item.createTime},#{item.updateTime} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.MailConfigPO">
+		update pvmts_mailConfig set server_path=#{serverPath,jdbcType=VARCHAR},mail_type=#{mailType,jdbcType=VARCHAR},mail_port=#{mailPort,jdbcType=VARCHAR},push_time=#{pushTime,jdbcType=NUMERIC},mail_username=#{mailUsername,jdbcType=VARCHAR},mail_password=#{mailPassword,jdbcType=VARCHAR},mail_address=#{mailAddress,jdbcType=VARCHAR},create_time=#{createTime},update_time=#{updateTime},usessl=#{usessl,jdbcType=NUMERIC} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.MailConfigPO">
+		update pvmts_mailConfig
+        <set>
+            <if test="serverPath != null "> 
+                server_path = #{serverPath,jdbcType=VARCHAR},
+            </if>
+            <if test="mailType != null "> 
+                mail_type = #{mailType,jdbcType=VARCHAR},
+            </if>
+            <if test="mailPort != null "> 
+                mail_port = #{mailPort,jdbcType=VARCHAR},
+            </if>
+            <if test="pushTime != null "> 
+                push_time = #{pushTime,jdbcType=NUMERIC},
+            </if>
+            <if test="mailUsername != null "> 
+                mail_username = #{mailUsername,jdbcType=VARCHAR},
+            </if>
+            <if test="mailPassword != null "> 
+                mail_password = #{mailPassword,jdbcType=VARCHAR},
+            </if>
+            <if test="mailAddress != null "> 
+                mail_address = #{mailAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+           <if test="usessl != null "> 
+                usessl =  #{usessl,jdbcType=NUMERIC},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_mailConfig where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.MailConfigPO">
+		delete from pvmts_mailConfig
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

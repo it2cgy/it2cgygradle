@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.NoticeInfoPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.NoticeInfoPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="companyId" column="company_id" jdbcType="NUMERIC" />
+            <result property="name" column="name" jdbcType="VARCHAR" />
+            <result property="typeId" column="type_id" jdbcType="NUMERIC" />
+            <result property="publisher" column="publisher" jdbcType="NUMERIC" />
+            <result property="publishTime" column="publish_time" />
+            <result property="thumbnallUrl" column="thumbnall_url" jdbcType="VARCHAR" />
+            <result property="content" column="content" jdbcType="VARCHAR" />
+            <result property="contentHtml" column="content_html" jdbcType="VARCHAR" />
+            <result property="counts" column="counts" jdbcType="NUMERIC" />
+            <result property="publishStatus" column="publish_status" jdbcType="NUMERIC" />
+            <result property="noticeStatus" column="notice_status" jdbcType="NUMERIC" />
+            <result property="remarks" column="remarks" jdbcType="VARCHAR" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,company_id,name,type_id,publisher,publish_time,thumbnall_url,content,content_html,counts,publish_status,notice_status,remarks,create_time,update_time
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "companyId != null ">	and company_id = #{companyId,jdbcType=NUMERIC }</if>
+            <if test= "name != null ">	and name = #{name,jdbcType=VARCHAR }</if>
+            <if test= "typeId != null ">	and type_id = #{typeId,jdbcType=NUMERIC }</if>
+            <if test= "publisher != null ">	and publisher = #{publisher,jdbcType=NUMERIC }</if>
+            <if test= "publishTime != null ">	and publish_time = #{publishTime }</if>
+            <if test= "thumbnallUrl != null ">	and thumbnall_url = #{thumbnallUrl,jdbcType=VARCHAR }</if>
+            <if test= "content != null ">	and content = #{content,jdbcType=VARCHAR }</if>
+            <if test= "contentHtml != null ">	and content_html = #{contentHtml,jdbcType=VARCHAR }</if>
+            <if test= "counts != null ">	and counts = #{counts,jdbcType=NUMERIC }</if>
+            <if test= "publishStatus != null ">	and publish_status = #{publishStatus,jdbcType=NUMERIC }</if>
+            <if test= "noticeStatus != null ">	and notice_status = #{noticeStatus,jdbcType=NUMERIC }</if>
+            <if test= "remarks != null ">	and remarks = #{remarks,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "companyId != null ">	and company_id = #{companyId,jdbcType=NUMERIC }</if>
+            <if test= "name != null ">	and name like "%"#{name}"%"</if>
+            <if test= "typeId != null ">	and type_id = #{typeId,jdbcType=NUMERIC }</if>
+            <if test= "publisher != null ">	and publisher = #{publisher,jdbcType=NUMERIC }</if>
+            <if test= "publishTime != null ">	and publish_time = #{publishTime }</if>
+            <if test= "thumbnallUrl != null ">	and thumbnall_url like "%"#{thumbnallUrl}"%"</if>
+            <if test= "content != null ">	and content like "%"#{content}"%"</if>
+            <if test= "contentHtml != null ">	and content_html like "%"#{contentHtml}"%"</if>
+            <if test= "counts != null ">	and counts = #{counts,jdbcType=NUMERIC }</if>
+            <if test= "publishStatus != null ">	and publish_status = #{publishStatus,jdbcType=NUMERIC }</if>
+            <if test= "noticeStatus != null ">	and notice_status = #{noticeStatus,jdbcType=NUMERIC }</if>
+            <if test= "remarks != null ">	and remarks like "%"#{remarks}"%"</if>
+            <if test= "createTime != null ">	and create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	and update_time = #{updateTime }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "companyId != null ">	or company_id = #{companyId,jdbcType=NUMERIC }</if>
+            <if test= "name != null ">	or name = #{name,jdbcType=VARCHAR }</if>
+            <if test= "typeId != null ">	or type_id = #{typeId,jdbcType=NUMERIC }</if>
+            <if test= "publisher != null ">	or publisher = #{publisher,jdbcType=NUMERIC }</if>
+            <if test= "publishTime != null ">	or publish_time = #{publishTime }</if>
+            <if test= "thumbnallUrl != null ">	or thumbnall_url = #{thumbnallUrl,jdbcType=VARCHAR }</if>
+            <if test= "content != null ">	or content = #{content,jdbcType=VARCHAR }</if>
+            <if test= "contentHtml != null ">	or content_html = #{contentHtml,jdbcType=VARCHAR }</if>
+            <if test= "counts != null ">	or counts = #{counts,jdbcType=NUMERIC }</if>
+            <if test= "publishStatus != null ">	or publish_status = #{publishStatus,jdbcType=NUMERIC }</if>
+            <if test= "noticeStatus != null ">	or notice_status = #{noticeStatus,jdbcType=NUMERIC }</if>
+            <if test= "remarks != null ">	or remarks = #{remarks,jdbcType=VARCHAR }</if>
+            <if test= "createTime != null ">	or create_time = #{createTime }</if>
+            <if test= "updateTime != null ">	or update_time = #{updateTime }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_notice
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="startTime !=null and startTime !=''">
+		and publish_time &gt;str_to_date('${startTime}','%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="endTime !=null and endTime!=''">
+		and publish_time &lt;str_to_date('${endTime}','%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_notice  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_notice  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.NoticeInfoPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_notice( id,company_id,name,type_id,publisher,publish_time,thumbnall_url,content,content_html,counts,publish_status,notice_status,remarks,create_time,update_time ) values (#{id,jdbcType=INTEGER},#{companyId,jdbcType=NUMERIC},#{name,jdbcType=VARCHAR},#{typeId,jdbcType=NUMERIC},#{publisher,jdbcType=NUMERIC},#{publishTime},#{thumbnallUrl,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR},#{contentHtml,jdbcType=VARCHAR},#{counts,jdbcType=NUMERIC},#{publishStatus,jdbcType=NUMERIC},#{noticeStatus,jdbcType=NUMERIC},#{remarks,jdbcType=VARCHAR},#{createTime},#{updateTime} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_notice( id,company_id,name,type_id,publisher,publish_time,thumbnall_url,content,content_html,counts,publish_status,notice_status,remarks,create_time,update_time ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.companyId,jdbcType=NUMERIC},#{item.name,jdbcType=VARCHAR},#{item.typeId,jdbcType=NUMERIC},#{item.publisher,jdbcType=NUMERIC},#{item.publishTime},#{item.thumbnallUrl,jdbcType=VARCHAR},#{item.content,jdbcType=VARCHAR},#{item.contentHtml,jdbcType=VARCHAR},#{item.counts,jdbcType=NUMERIC},#{item.publishStatus,jdbcType=NUMERIC},#{item.noticeStatus,jdbcType=NUMERIC},#{item.remarks,jdbcType=VARCHAR},#{item.createTime},#{item.updateTime} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.NoticeInfoPO">
+		update pvmts_notice set company_id=#{companyId,jdbcType=NUMERIC},name=#{name,jdbcType=VARCHAR},type_id=#{typeId,jdbcType=NUMERIC},publisher=#{publisher,jdbcType=NUMERIC},publish_time=#{publishTime},thumbnall_url=#{thumbnallUrl,jdbcType=VARCHAR},content=#{content,jdbcType=VARCHAR},content_html=#{contentHtml,jdbcType=VARCHAR},counts=#{counts,jdbcType=NUMERIC},publish_status=#{publishStatus,jdbcType=NUMERIC},notice_status=#{noticeStatus,jdbcType=NUMERIC},remarks=#{remarks,jdbcType=VARCHAR},create_time=#{createTime},update_time=#{updateTime} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="updateToDelelete">
+		update pvmts_notice set notice_status=1,update_time=now() where id in (${_parameter})
+	</update>
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.NoticeInfoPO">
+		update pvmts_notice
+        <set>
+            <if test="companyId != null "> 
+                company_id = #{companyId,jdbcType=NUMERIC},
+            </if>
+            <if test="name != null "> 
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="typeId != null "> 
+                type_id = #{typeId,jdbcType=NUMERIC},
+            </if>
+            <if test="publisher != null "> 
+                publisher = #{publisher,jdbcType=NUMERIC},
+            </if>
+            <if test="publishTime != null "> 
+                publish_time = #{publishTime},
+            </if>
+            <if test="thumbnallUrl != null "> 
+                thumbnall_url = #{thumbnallUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null "> 
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="contentHtml != null "> 
+                content_html = #{contentHtml,jdbcType=VARCHAR},
+            </if>
+            <if test="counts != null "> 
+                counts = #{counts,jdbcType=NUMERIC},
+            </if>
+            <if test="publishStatus != null "> 
+                publish_status = #{publishStatus,jdbcType=NUMERIC},
+            </if>
+            <if test="noticeStatus != null "> 
+                notice_status = #{noticeStatus,jdbcType=NUMERIC},
+            </if>
+            <if test="remarks != null "> 
+                remarks = #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null "> 
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null "> 
+                update_time = #{updateTime},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_notice where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.NoticeInfoPO">
+		delete from pvmts_notice
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

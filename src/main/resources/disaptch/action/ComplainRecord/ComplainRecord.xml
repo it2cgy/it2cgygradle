@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--投诉记录表处理 -->
+<mapper namespace="complainRecord">
+   	<select id="quKey" resultType="Integer">
+  		select seq_mt_complaint_content_id.nextval as id from dual 
+  	</select>
+
+<!--基本信息处理 -->
+   	<resultMap type="java.util.HashMap" id="cheakMap">
+		<result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="check_standard" column="check_standard"/>
+        <result property="remarks" column="remarks"/>
+    </resultMap>
+    
+  	<select id="loadcheak"  resultMap="cheakMap">
+  		 SELECT ci.id id,ci.name name,ci.check_standard check_standard,ci.remarks remarks FROM MT_CHECKUP c left join MT_CHECKUP_RESULT cr on c.id=cr.checkup_id left join MT_CHECKUP_ITEM_TYPE ci on ci.id=cr.item_type order by id
+  	</select>
+  	
+  	
+  	<resultMap type="java.util.HashMap" id="cheakmationMap">
+		<result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="id" column="id"/>
+        <result property="form_flow_num_in_book" column="form_flow_num_in_book"/>
+        <result property="form_flow_num" column="form_flow_num"/>
+       
+        <!-- <result property="form_flow_num" column="form_flow_num"/> ,c.form_flow_num form_flow_num-->
+    </resultMap>
+    
+    <!--查询电厂基本信息 -->
+  	<select id="loadcheakmation"  resultMap="cheakmationMap">
+		SELECT
+		    p.name name,
+		    p.code code,
+			c.id id,
+			c.FORM_FLOW_NUM_IN_BOOK form_flow_num_in_book,
+			c.FORM_FLOW_NUM form_flow_num
+		FROM
+			MT_COMPLAINT c 
+      LEFT JOIN MT_PROJECT p on c.PRO_ID=p.id
+		WHERE
+			1=1
+			<if test="_parameter != null and _parameter !=''" >
+				and c.PROCESS_ID= #{_parameter}
+		 </if>
+
+  	</select>
+  	<!--通过id修改投诉信息 -->
+  	  <update id="updatebycidcase" parameterType="complaint">
+		UPDATE MT_COMPLAINT T SET T.complaint_name=#{complaint_name,jdbcType=VARCHAR},T.complaint_position=#{complaint_position,jdbcType=VARCHAR},T.complaint_date=TO_DATE(#{complaint_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),T.complaint_mobile=#{complaint_mobile,jdbcType=VARCHAR },T.complaint_firm=#{complaint_firm,jdbcType=VARCHAR}, T.record_date = TO_DATE(#{ record_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),T.remarks=#{remarks,jdbcType=VARCHAR},T.complaint_role=#{complaint_role,jdbcType=INTEGER},T.record_user_id=#{record_user_id,jdbcType=INTEGER} WHERE T.PROCESS_ID=#{processid,jdbcType=INTEGER}
+	</update>
+	
+
+	<update id="updatebyid" parameterType="checkup">
+		UPDATE  MT_CHECKUP  T SET T.remarks=#{remarks,jdbcType=VARCHAR} ,T.check_manager =#{check_manager,jdbcType=VARCHAR},T.check_manager_contact =#{check_manager_contact,jdbcType=VARCHAR},T.check_time =#{check_time,jdbcType=DATE},T.experience =#{experience,jdbcType=VARCHAR}, T.check_result=#{check_result,jdbcType=VARCHAR}  WHERE T.ID=#{id,jdbcType=INTEGER}
+	</update>
+	
+<!-- 	<select id="quId" parameterType="checkupResult" resultType="java.lang.String">
+  		select id from  MT_CHECKUP_RESULT where checkup_id=${checkup_id} and item_type=${item_type}
+  	</select>
+  	 -->
+  	<!--通过processid查询投诉表id -->
+<select id="quId" parameterType="complaint" resultType="java.lang.String">
+  		select id from  MT_COMPLAINT where process_id=${processid}
+  	</select>
+	<!--  <insert id="addDev_at" parameterType="checkupAttach">
+	<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select SEQ_MT_COMPLAINT_CONTENT_ID.nextval as id from dual  
+    </selectKey>
+		insert into MT_COMPLAINT_CONTENT (complaint_id,respondent_user_id,respondent_role,happen_date,content) values (
+			#{complaint_id,jdbcType=INTEGER},
+			#{respondent_user_id,jdbcType=INTEGER},
+			#{respondent_role,jdbcType=INTEGER},
+			to_date(#{happen_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			#{content,jdbcType=VARCHAR}
+		)
+	</insert>  -->
+	
+	
+	<insert id="addcomplaintconitent" parameterType="complaintConitent">
+		insert into MT_COMPLAINT_CONTENT (id,complaint_id,respondent_username,respondent_role,happen_date,content,process_id) values (
+	     	#{id,jdbcType=INTEGER},
+			#{complaint_id,jdbcType=INTEGER},
+			#{respondent_username,jdbcType=VARCHAR},
+			#{respondent_role,jdbcType=INTEGER},
+			to_date(#{happen_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			#{content,jdbcType=VARCHAR},
+			#{process_id,jdbcType=INTEGER}
+		)
+	</insert> 
+	
+	 <!--修改投诉表内容 -->
+	<update id="updatecomplaintconitent" parameterType="complaintConitent">
+	UPDATE MT_COMPLAINT_CONTENT T SET T.complaint_id=#{complaint_id,jdbcType=INTEGER},T.respondent_username=#{respondent_username,jdbcType=VARCHAR},T.respondent_role=#{respondent_role,jdbcType=INTEGER}, T.happen_date =to_date(#{happen_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),T.content=#{content,jdbcType=VARCHAR} WHERE T.id=#{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updatecomplaintconitentbyid" parameterType="complaintConitent">
+	UPDATE MT_COMPLAINT_CONTENT T SET T.center_verify=#{center_verify,jdbcType=VARCHAR},T.center_opnion=#{center_opnion,jdbcType=VARCHAR},T.is_true=#{is_true,jdbcType=VARCHAR}  WHERE T.id=#{id,jdbcType=INTEGER}
+	</update>
+	<!--插入一个附件信息-->
+		 <insert id="addcomplaintattach" parameterType="complaintAttach">
+	<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select SEQ_MT_COMPLAINT_ATTACH_ID.nextval as id from dual  
+    </selectKey>
+		insert into MT_COMPLAINT_ATTACH (id,complaint_content_id,file_name,file_descrip,attach_path,provider_name,source_time,source_location,remarks) values (
+		    #{id,jdbcType=INTEGER},
+	     	#{complaint_content_id,jdbcType=INTEGER},			
+			#{file_name,jdbcType=VARCHAR},
+			#{result_descrip,jdbcType=VARCHAR},
+			#{attach_path,jdbcType=VARCHAR},
+			#{provider_name,jdbcType=VARCHAR},
+			to_date(#{source_time,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			#{source_location,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR}
+		)
+	</insert> 
+	
+	
+	<!--通过processid查询投诉信息-->
+    <resultMap type="java.util.HashMap" id="mationMap">
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="pid" column="pid"/>
+        <result property="form_flow_num" column="form_flow_num"/>
+        <result property="form_flow_num_in_book" column="form_flow_num_in_book"/>
+        <result property="record_user_id" column="record_user_id"/>
+        <result property="complaint_date" column="complaint_date"/>
+        <result property="record_date" column="record_date"/>
+        <result property="complaint_role" column="complaint_role"/>
+        <result property="complaint_name" column="complaint_name"/>
+        <result property="complaint_firm" column="complaint_firm"/>
+        <result property="complaint_position" column="complaint_position"/>
+        <result property="complaint_mobile" column="complaint_mobile"/>
+        <result property="remarks" column="remarks"/>
+        <result property="realname" column="realname"/>
+        <result property="complaintId" column="complaintId"/>
+    </resultMap>
+  	<select id="mation"  resultMap="mationMap">
+	   SELECT
+	   		c.id AS complaintId,
+		    p.name name,
+		    p.code code,
+			c.pro_id pid,
+			c.form_flow_num form_flow_num,
+			c.form_flow_num_in_book form_flow_num_in_book,
+			c.record_user_id record_user_id,
+			TO_CHAR(c.complaint_date,'yyyy-MM-dd hh24:mi:ss')  complaint_date,
+			TO_CHAR(c.record_date,'yyyy-MM-dd hh24:mi:ss')  record_date,
+	  		c.complaint_role complaint_role,
+		    c.complaint_name complaint_name,
+		    c.complaint_firm complaint_firm,
+		    c.complaint_position complaint_position,
+		    c.complaint_mobile complaint_mobile,
+		    c.remarks remarks,
+            ur.realname realname
+		FROM
+			MT_COMPLAINT c
+            LEFT JOIN MT_PROJECT p on c.PRO_ID=p.id
+            LEFT JOIN MT_USER ur  on c.record_user_id=ur.id
+		WHERE
+		    1=1
+		  <if test="_parameter != null and _parameter !=''" >
+				and c.PROCESS_ID= #{_parameter}
+		 </if>
+  	</select>
+  	
+  	<!--查询附件信息 -->
+  	<resultMap type="java.util.HashMap" id="feedbackMap">
+		<result property="id" column="id"/>
+		<result property="complaint_id" column="complaint_id"/>
+        <result property="respondent_username" column="respondent_username"/>
+        <result property="respondent_role" column="respondent_role"/>
+        <result property="happen_date" column="happen_date"/>
+        <result property="content" column="content"/>
+		<result property="center_verify" column="center_verify"/>
+		<result property="center_opnion" column="center_opnion"/>
+		<result property="is_true" column="is_true"/>
+    </resultMap>
+    
+  	<select id="feedback"  resultMap="feedbackMap">
+  		SELECT
+			cc.ID id,
+			cc.COMPLAINT_ID complaint_id,
+			cc.respondent_username respondent_username,
+			cc.RESPONDENT_ROLE respondent_role,
+			TO_CHAR(cc.HAPPEN_DATE,'yyyy-MM-dd hh24:mi:ss') happen_date,
+			cc.content content,
+			cc.center_verify center_verify,
+			cc.CENTER_OPNION center_opnion,
+			cc.is_true is_true,
+			cc.remarks remarks
+		FROM
+			MT_COMPLAINT_CONTENT cc
+	    left join
+     	MT_COMPLAINT c ON
+	    c.id=cc.COMPLAINT_ID
+	    where 1=1 
+	     <if test="_parameter != null and _parameter !=''" >
+				and c.PROCESS_ID= #{_parameter}
+		 </if>
+  	</select>
+  	
+  	
+  	<!--查看附件信息 -->
+  	<resultMap type="java.util.HashMap" id="attachMap">
+		<result property="ID" column="ID"/>
+		<result property="FILENAME" column="FILENAME"/>
+		<result property="FILEPATH" column="FILEPATH"/>
+		
+    </resultMap>
+  	
+	<select id="loadAttach" parameterType="java.lang.String" resultMap="attachMap">
+		    SELECT
+				ca. ID,
+				ca.file_name file_name,
+				ca.attach_path attach_path			
+			FROM
+				MT_COMPLAINT_ATTACH ca
+			WHERE
+				1 = 1
+
+
+	 <if test="_parameter != null and _parameter !=''" >
+		and  ca.COMPLAINT_CONTENT_ID = #{_parameter}
+	 </if>
+	</select>
+
+	<!--查看附件信息 -->
+	<resultMap type="java.util.HashMap" id="fileMap">
+		<result property="id" column="id"/>
+		<result property="file_name" column="file_name"/>
+		<result property="attach_path" column="attach_path"/>
+		<result property="file_descrip" column="file_descrip"/>
+		<result property="provider_name" column="provider_name"/>
+		<result property="source_time" column="source_time"/>
+		<result property="source_location" column="source_location"/>
+		<result property="remarks" column="remarks"/>
+    </resultMap>
+  	
+	<select id="loadFile" parameterType="java.lang.String" resultMap="fileMap">
+		    SELECT
+				ca. id id,
+				ca.file_name file_name,
+				ca.attach_path attach_path,
+				ca.FILE_DESCRIP file_descrip,
+				ca.PROVIDER_NAME provider_name,
+				TO_CHAR(ca.SOURCE_TIME,'yyyy-MM-dd hh24:mi:ss') source_time,
+				ca.SOURCE_LOCATION source_location,
+				ca.REMARKS remarks
+			FROM
+				MT_COMPLAINT_ATTACH ca
+			WHERE
+				1 = 1
+
+
+	 <if test="_parameter != null and _parameter !=''" >
+		and  ca.id = #{_parameter}
+	 </if>
+	</select>
+	
+	<!--删除附件-->
+	<delete id="delData" parameterType="java.lang.String" >
+		     delete
+			 FROM
+			    MT_COMPLAINT_CONTENT
+			 WHERE 1=1
+	 <if test="_parameter != null and _parameter !=''" >
+		and  id = #{_parameter}
+	 </if>
+	</delete>
+  	<!--删除附件-->
+  	<delete id="delatt" parameterType="java.lang.String" >
+		     delete
+			 FROM
+			    MT_COMPLAINT_ATTACH
+			 WHERE 1=1
+	 <if test="_parameter != null and _parameter !=''" >
+		and  id = #{_parameter}
+	 </if>
+	</delete>
+  	
+</mapper>

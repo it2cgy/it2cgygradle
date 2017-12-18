@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.PushMailPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.PushMailPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="roleId" column="roleId" jdbcType="NUMERIC" />
+            <result property="push" column="push" jdbcType="NUMERIC" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,roleId,push
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "roleId != null ">	and roleId = #{roleId,jdbcType=NUMERIC }</if>
+            <if test= "push != null ">	and push = #{push,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "roleId != null ">	and roleId = #{roleId,jdbcType=NUMERIC }</if>
+            <if test= "push != null ">	and push = #{push,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "roleId != null ">	or roleId = #{roleId,jdbcType=NUMERIC }</if>
+            <if test= "push != null ">	or push = #{push,jdbcType=NUMERIC }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_pushmail
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_pushmail  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<resultMap id="resultEmail" type="com.yunengzhe.PVMTS.domain.vo.UserEmailVO">
+            <result property="username" column="username" jdbcType="VARCHAR" />
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+ 			<result property="email" column="email" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="getUserEmail" resultMap="resultEmail" >
+		SELECT
+			t.username,t.nickname,t.email
+		FROM
+			pvmts_user t
+		LEFT JOIN pvmts_user_role t1 ON t.id = t1.user_id
+		WHERE
+			t1.role_id IN (
+				SELECT
+					t.roleId
+				FROM
+					pvmts_pushmail t
+				WHERE
+					t.push = 1
+		)
+	</select>
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_pushmail  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.PushMailPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_pushmail( id,roleId,push ) values (#{id,jdbcType=INTEGER},#{roleId,jdbcType=NUMERIC},#{push,jdbcType=NUMERIC} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_pushmail( id,roleId,push ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.roleId,jdbcType=NUMERIC},#{item.push,jdbcType=NUMERIC} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.PushMailPO">
+		update pvmts_pushmail set roleId=#{roleId,jdbcType=NUMERIC},push=#{push,jdbcType=NUMERIC} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.PushMailPO">
+		update pvmts_pushmail
+        <set>
+            <if test="roleId != null "> 
+                roleId = #{roleId,jdbcType=NUMERIC},
+            </if>
+            <if test="push != null "> 
+                push = #{push,jdbcType=NUMERIC},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_pushmail where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.PushMailPO">
+		delete from pvmts_pushmail
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

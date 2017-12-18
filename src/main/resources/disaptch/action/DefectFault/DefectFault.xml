@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--缺陷故障反馈表处理 -->
+<mapper namespace="defectFault">
+   	<sql id="colList" >
+	   	id,event_id,feedback_usertype,fault_type,feedback_username,summary,remarks,attach_path,feedback_user_phone,record_user_id,record_date,feedback_date
+  	</sql>
+  	
+  	<sql id="faultDevList" >
+	   	id, fault_id,dev_type,num,fault_level,fault_descrip,analysis,advice,remarks,dev_model,is_real_fault_analysis,center_analysis
+  	</sql>
+  	
+  	<sql id="analysisList" >
+	   ID,FAULT_ID,EVENT_ID,ANALYSIS_USER_ID,ANALYSIS_DATE,IS_SEND_PEOPLE,SUMMARY,REMARKS
+  	</sql>
+  	<select id="quKey" resultType="java.lang.String">
+  		select seq_mt_event_id.nextval as id from dual 
+  	</select>
+  	<select id="quFaultId" parameterType="mtFault" resultType="java.lang.String">
+  		select id from  MT_FAULT where process_id= ${process_id}
+  	</select>
+  	<select id="quDevId" resultType="Integer">
+  		select seq_mt_fault_dev_id.nextval as id from dual  
+  	</select>
+  	<insert id="addEvent" parameterType="mtFault">
+		insert into MT_EVENT (id,pro_id,begintime) values (
+			#{event_id,jdbcType=INTEGER},
+			#{pro_id,jdbcType=INTEGER},
+			SYSDATE<!-- 由系统自动生成 -->
+		)
+	</insert> 
+  	<!-- 保存缺陷故障信息基本信息 -->
+  	<insert id="addData" parameterType="mtFault">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select seq_mt_fault_id.nextval as id from dual  
+    	</selectKey>
+		insert into MT_FAULT (<include refid="colList"/>) values (
+			#{id,jdbcType=INTEGER},
+			#{event_id,jdbcType=INTEGER},
+			#{feedback_usertype,jdbcType=INTEGER},
+			#{fault_type,jdbcType=INTEGER},
+			#{feedback_username,jdbcType=VARCHAR},
+			#{summary,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR},
+			#{attach_path,jdbcType=VARCHAR},
+			#{feedback_userphone,jdbcType=VARCHAR},
+			#{recode_userid,jdbcType=INTEGER},
+			to_date(#{recode_date,jdbcType=DATE},'yyyy-MM-dd'),
+			to_date(#{feedback_date,jdbcType=DATE},'yyyy-MM-dd')
+		)
+	</insert>
+	
+	<insert id="addFault_dev" parameterType="mtFaultDev">
+		insert into MT_FAULT_DEV (<include refid="faultDevList"/>) values (
+			#{id,jdbcType=INTEGER},
+			#{fault_id,jdbcType=VARCHAR},
+			#{type,jdbcType=INTEGER},
+			#{num,jdbcType=VARCHAR},
+			#{level,jdbcType=INTEGER},
+			#{fault_descrip,jdbcType=VARCHAR},
+			#{analysis,jdbcType=VARCHAR},
+			#{advice,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR},
+			#{dev_model,jdbcType=INTEGER},
+			#{is_real_fault,jdbcType=INTEGER},
+			#{center_analysis,jdbcType=VARCHAR}
+		)
+	</insert> 
+  	
+  	<resultMap type="java.util.HashMap" id="devMap">
+		<result property="id" column="id"/>
+        <result property="text" column="name"/>
+    </resultMap>
+   <resultMap type="java.util.HashMap" id="Fmap">
+		<result property="id" column="ID"/>
+        <result property="text" column="NAME"/>
+    </resultMap>
+    <select id="loadFaultNum"  parameterType="java.util.HashMap"  resultMap="Fmap">
+ 		SELECT T.ID ,T.FORM_FLOW_NUM  AS NAME
+		   FROM MT_FAULT T
+		   LEFT JOIN MT_EVENT MT
+		   ON T.EVENT_ID = MT.ID
+		WHERE  1=1
+		  <if test="eventId != null and eventId !=''" >
+				and T.STATUS =  ${status}
+		  </if>
+		  <if test="eventId != null and eventId !=''" >
+				AND T.EVENT_ID= ${eventId}
+		  </if>
+		  <if test="processId != null and processId !=''" >
+				<![CDATA[ AND T.ID<(SELECT ID FROM MT_FAULT MF WHERE MF.PROCESS_ID=${processId}) ]]>
+		  </if>
+	 	 ORDER BY T.ID
+  	</select>
+  	<select id="loadFaultCenterNum"  resultMap="Fmap">
+  		SELECT T.ID,T.FORM_FLOW_NUM  AS NAME 
+  		    FROM MT_FAULT_ANALYSIS T
+		 LEFT JOIN MT_FAULT MT
+		     ON T.FAULT_ID = MT.ID
+		 LEFT JOIN MT_EVENT MF
+		     ON T.EVENT_ID = MF.ID
+		 WHERE  T.STATUS = 1
+		  <if test="eventId != null and eventId !=''" >
+			  AND T.EVENT_ID= ${eventId}
+		  </if>
+		  <if test="processId != null and processId !=''" >
+			  AND T.ID &lt; ( SELECT ID FROM MT_FAULT MF WHERE MF.PROCESS_ID = ${processId} )
+		  </if>
+		  ORDER BY T.ID
+  	</select>
+  	<select id="loadDev"  resultMap="devMap">
+  		 SELECT id,name FROM MT_DEV_TYPE order by id
+  	</select>
+	<sql id="devList" >
+	   	id, fault_dev_id,fault_descrip,file_name,remarks,provider_name,source_time,source_location,file_path
+  	</sql>
+  	 <!-- 插入故障缺陷信息反馈表插入附件 -->
+	<insert id="addDev_at" parameterType="devAt">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select SEQ_MT_FAULT_DEV_ATTACH_ID.nextval as id from dual  
+    	</selectKey>
+		insert into MT_FAULT_DEV_ATTACH (<include refid="devList"/>) values (
+			#{id,jdbcType=INTEGER},
+			#{fault_dev_id,jdbcType=INTEGER},
+			#{fault_descrip,jdbcType=VARCHAR},
+			#{file_name,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR},
+			#{provider_name,jdbcType=VARCHAR},
+			to_date(#{source_time,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			#{source_location,jdbcType=VARCHAR},
+			#{file_path,jdbcType=VARCHAR}
+		)
+	</insert> 
+	
+	<!-- 插入调度中心分析上传附件 -->
+	<insert id="addDev_atc" parameterType="devAtc">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select SEQ_MT_FAULT_DEV_ATTACH_C_ID.nextval as id from dual  
+    	</selectKey>
+		insert into mt_fault_dev_attach_c (<include refid="devList"/>) values (
+			#{id,jdbcType=INTEGER},
+			#{fault_dev_id,jdbcType=INTEGER},
+			#{fault_descrip,jdbcType=VARCHAR},
+			#{file_name,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR},
+			#{provider_name,jdbcType=VARCHAR},
+			to_date(#{source_time,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			#{source_location,jdbcType=VARCHAR},
+			#{file_path,jdbcType=VARCHAR}
+		)
+	</insert> 
+	
+	
+	<!-- 预览页面 显示信息 基本信息处理 -->
+	<resultMap type="java.util.HashMap" id="listMap">
+		<result property="PRONAME" column="PRONAME"/>
+		<result property="USERROLE" column="USERROLE"/>
+		<result property="FEEDBACKNAME" column="FEEDBACKNAME"/>
+		<result property="FEEDBACKPHONE" column="FEEDBACKPHONE"/>
+		<result property="FEEDBACK_DATE" column="FEEDBACK_DATE"/>
+		<result property="RECORDNAME" column="RECORDNAME"/>
+		<result property="RECORDPHONE" column="RECORDPHONE"/>
+		<result property="RECORDDATE" column="RECORDDATE"/>
+		<result property="SUMMARY" column="SUMMARY"/>
+		<result property="FAULTREMARKS" column="FAULTREMARKS"/>
+		<result property="FAULT_TYPE" column="FAULT_TYPE"/>
+		<result property="FAULTID" column="FAULTID"/>
+		<result property="REALNAME" column="REALNAME"/>
+		<result property="ARCHIEVE_NUM" column="ARCHIEVE_NUM"/>
+		<result property="CORRECT_FAULT_FORM_ID" column="CORRECT_FAULT_FORM_ID"/>
+		<result property="CORRECT_ANALYSIS_FORM_ID" column="CORRECT_ANALYSIS_FORM_ID"/>
+    </resultMap>
+	<select id="loadPreviewBasic" parameterType="java.util.HashMap" resultMap="listMap">
+		SELECT T.PRO_ID,
+	       B.NAME                AS PRONAME,
+	       C.NAME                AS USERROLE,
+	       A.FEEDBACK_USERNAME   AS FEEDBACKNAME,
+	       A.FEEDBACK_USER_PHONE AS FEEDBACKPHONE,
+	       to_char(A.FEEDBACK_DATE,'yyyy-MM-dd hh:mi:ss') AS FEEDBACK_DATE,
+	       D.NAME                AS RECORDNAME,
+	       D.REALNAME            AS REALNAME,
+	       D.CELLPHONE           AS RECORDPHONE,
+	       to_char(A.RECORD_DATE,'yyyy-MM-dd hh:mi:ss') AS RECORDDATE,
+	       A.SUMMARY,
+	       A.REMARKS             AS FAULTREMARKS,
+	       A.FAULT_TYPE,
+<!--	       A.CORRECT_FAULT_FORM_ID AS CORRECT_FAULT_FORM_ID,-->
+<!--           A.CORRECT_ANALYSIS_FORM_ID AS CORRECT_ANALYSIS_FORM_ID,-->
+  		   A1.FORM_FLOW_NUM AS CORRECT_FAULT_FORM_ID,
+           A2.FORM_FLOW_NUM AS CORRECT_ANALYSIS_FORM_ID,
+           T.ARCHIEVE_NUM AS ARCHIEVE_NUM,
+             A.ID AS FAULTID
+		  FROM MT_EVENT T
+		  LEFT JOIN MT_FAULT A
+		    ON T.ID = A.EVENT_ID
+		  LEFT JOIN MT_FAULT A1
+            ON A.CORRECT_FAULT_FORM_ID = A1.ID
+          LEFT JOIN MT_FAULT_ANALYSIS A2
+            ON A.CORRECT_ANALYSIS_FORM_ID = A2.ID
+		  LEFT JOIN MT_PROJECT B
+		    ON T.PRO_ID = B.ID
+		  LEFT JOIN MT_USERROLE C
+		    ON A.FEEDBACK_USERTYPE = C.ID
+		  LEFT JOIN MT_USER D
+		    ON A.RECORD_USER_ID = D.ID
+		  WHERE 1=1
+		  <if test="processId != null and processId !=''" >
+			AND A.PROCESS_ID= ${processId}
+		  </if>
+<!--		  <if test="eventId != null and eventId !=''" >-->
+<!--			AND T.ID= ${eventId}-->
+<!--		  </if>-->
+	</select>
+	
+	<resultMap type="java.util.HashMap" id="devListMap">
+		<result property="ID" column="ID"/>
+		<result property="FAULTID" column="FAULTID"/>
+		<result property="FAULTNUM" column="FAULTNUM"/>
+		<result property="DEVNAME" column="DEVNAME"/>
+		<result property="FAULTLEVEL" column="FAULTLEVEL"/>
+		<result property="FAULTDESCRIP" column="FAULTDESCRIP"/>
+		<result property="ANALYSIS" column="ANALYSIS"/>
+		<result property="ADVICE" column="ADVICE"/>
+		<result property="DEVREMARKS" column="DEVREMARKS"/>
+		<result property="CENTERANALYSIS" column="CENTERANALYSIS"/>
+		<result property="REALFAULT" column="REALFAULT"/>
+		<result property="FAULTTYPE" column="FAULTTYPE"/>
+    </resultMap>
+	<select id="loadPreviewDev" parameterType="java.util.HashMap"  resultMap="devListMap">
+	   	  SELECT DISTINCT
+	   	   C.Id AS ID,C.FAULT_ID AS FAULTID,
+	   	   C.NUM AS FAULTNUM,
+           D.NAME AS DEVNAME,
+           C.FAULT_LEVEL as FAULTLEVEL,
+           C.FAULT_DESCRIP AS FAULTDESCRIP,
+           C.ANALYSIS,
+           C.ADVICE,
+           C.REMARKS       AS DEVREMARKS,
+           C.CENTER_ANALYSIS AS CENTERANALYSIS,
+           C.IS_REAL_FAULT_ANALYSIS AS REALFAULT,
+           D.ID AS FAULTTYPE
+	      FROM MT_EVENT A
+	      LEFT JOIN MT_FAULT B
+	        ON A.ID = B.EVENT_ID
+	      LEFT JOIN MT_FAULT_DEV C
+	        ON B.ID = C.FAULT_ID
+	      LEFT JOIN MT_DEV_TYPE D
+	        ON C.DEV_TYPE = D.ID
+	      WHERE B.FAULT_TYPE IS NOT NULL  AND C.FAULT_ID IS NOT NULL
+	      <if test="processId != null and processId !=''" >
+			AND B.PROCESS_ID= ${processId}
+		  </if>
+<!--		  <if test="eventId != null and eventId !=''" >-->
+<!--			AND A.ID= ${eventId}-->
+<!--		  </if>-->
+			ORDER BY C.ID
+	</select>
+	
+	<resultMap type="java.util.HashMap" id="attachMap">
+		<result property="ID" column="ID"/>
+		<result property="FILENAME" column="FILENAME"/>
+		<result property="FILEPATH" column="FILEPATH"/>
+    </resultMap>
+	<select id="loadAttach" parameterType="java.lang.String" resultMap="attachMap">
+		SELECT T.ID, T.FILE_NAME AS FILENAME,T.FILE_PATH AS FILEPATH FROM MT_FAULT_DEV_ATTACH T
+		WHERE 1=1
+		 <if test="_parameter != null and _parameter !=''" >
+			and T.FAULT_DEV_ID= #{_parameter}
+		  </if>
+	</select>
+	<select id="loadAttachc" parameterType="java.lang.String" resultMap="attachMap">
+		SELECT T.ID, T.FILE_NAME AS FILENAME,T.FILE_PATH AS FILEPATH FROM MT_FAULT_DEV_ATTACH_C T
+		WHERE 1=1
+		 <if test="_parameter != null and _parameter !=''" >
+			and T.FAULT_DEV_ID= #{_parameter}
+		  </if>
+	</select>
+	
+	<select id="loadAttachcr" parameterType="java.lang.String" resultMap="attachMap">
+		SELECT T.ID, T.FILE_NAME AS FILENAME,T.ATTACH_PATH AS FILEPATH FROM MT_FAULT_DEV_ATTACH_REAL T
+		WHERE 1=1
+		 <if test="_parameter != null and _parameter !=''" >
+			and T.FAULT_DEV_ID= #{_parameter}
+		  </if>
+	</select>
+	<select id="loadRealFile" parameterType="java.lang.String" resultMap="attachMap">
+		SELECT T.ID, T.FILE_NAME AS FILENAME,T.ATTACH_PATH AS FILEPATH FROM MT_FAULT_DEV_ATTACH_REAL T
+		WHERE 1=1
+		 <if test="_parameter != null and _parameter !=''" >
+			and T.FAULT_DEV_ID= #{_parameter}
+		  </if>
+	</select>
+	
+	<!-- 根据ID获取附件信息 -->
+	<resultMap type="java.util.HashMap" id="fileMap">
+		<result property="ID" column="ID"/>
+		<result property="FILENAME" column="FILENAME"/>
+		<result property="FAULTDESCRIP" column="FAULT_DESCRIP"/>
+		<result property="REMARKS" column="REMARKS"/>
+		<result property="PROVIDERNAME" column="PROVIDER_NAME"/>
+		<result property="SOURCETIME" column="SOURCETIME"/>
+		<result property="FILEPATH" column="FILEPATH"/>
+		<result property="SOURCELOCATION" column="SOURCE_LOCATION"/>
+    </resultMap>
+	<select id="loadFile" parameterType="java.lang.String" resultMap="fileMap">
+		SELECT T.ID, T.FILE_NAME AS FILENAME,T.FAULT_DESCRIP ,T.REMARKS,T.PROVIDER_NAME,to_char(T.SOURCE_TIME,'yyyy-MM-dd hh:mi:ss') as SOURCETIME,T.SOURCE_LOCATION,T.FILE_PATH AS FILEPATH FROM MT_FAULT_DEV_ATTACH T
+		WHERE 1=1
+		 <if test="_parameter != null and _parameter !=''" >
+			and T.ID= #{_parameter}
+		  </if>
+	</select>
+	
+	<select id="loadFilec" parameterType="java.lang.String" resultMap="fileMap">
+		SELECT T.ID, T.FILE_NAME AS FILENAME,T.FAULT_DESCRIP ,T.REMARKS,T.PROVIDER_NAME,to_char(T.SOURCE_TIME,'yyyy-MM-dd hh:mi:ss') as SOURCETIME,T.SOURCE_LOCATION,T.FILE_PATH AS FILEPATH FROM MT_FAULT_DEV_ATTACH_C T
+		WHERE 1=1
+		 <if test="_parameter != null and _parameter !=''" >
+			and T.ID= #{_parameter}
+		  </if>
+	</select>
+	
+	<select id="loadFiler" parameterType="java.lang.String" resultMap="fileMap">
+		SELECT T.ID, T.FILE_NAME AS FILENAME,T.FAULT_DESCRIP ,T.REMARKS,T.PROVIDER_NAME,to_char(T.SOURCE_TIME,'yyyy-MM-dd hh:mi:ss') as SOURCETIME,T.SOURCE_LOCATION,T.Attach_Path AS FILEPATH FROM MT_FAULT_DEV_ATTACH_REAL T
+		WHERE 1=1
+		 <if test="_parameter != null and _parameter !=''" >
+			and T.ID= #{_parameter}
+		  </if>
+	</select>
+	
+	
+	<!-- 插入调度中心分析记录基本信息及故障分析 -->
+		<insert id="addAnalysis" parameterType="analysis">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select SEQ_MT_FAULT_ANALYSIS_ID.nextval as id from dual  
+    	</selectKey>
+		insert into MT_FAULT_ANALYSIS (<include refid="analysisList"/>) values (
+			#{id,jdbcType=INTEGER},
+			#{fault_id,jdbcType=INTEGER},
+			#{event_id,jdbcType=VARCHAR},
+			#{analysis_id,jdbcType=VARCHAR},
+			to_date(#{analysis_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			#{is_send_people,jdbcType=VARCHAR},
+			#{summary,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR}
+		)
+	</insert> 
+	
+	<!-- 调度中心分析意见更新故障信息 -->
+	<update id="updateDev" parameterType="devAt">
+		UPDATE  MT_FAULT_DEV  T SET T.IS_REAL_FAULT_ANALYSIS=#{is_real_fault,jdbcType=INTEGER} ,T.CENTER_ANALYSIS=#{center_analysis,jdbcType=VARCHAR}  WHERE T.ID=#{id,jdbcType=INTEGER}
+	</update>
+	<!-- 更新数据 -->
+	<update id="updateData" parameterType="mtFault">
+		UPDATE MT_FAULT 
+		SET 
+		event_id=${event_id},
+		feedback_usertype=${feedback_usertype},
+		fault_type=${fault_type},
+		feedback_username='${feedback_username}',
+		summary='${summary}',
+		remarks='${remarks}',
+<!-- 		attach_path='${attach_path}', -->
+		feedback_user_phone='${feedback_userphone}',
+		record_user_id='${recode_userid}',
+		record_date=to_date(#{recode_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+		<if test="need_repair_fault_form_id != null and need_repair_fault_form_id !=''" >
+			correct_fault_form_id=${need_repair_fault_form_id},
+		</if>
+		<if test="need_repair_fault_form_id == null">
+			correct_fault_form_id='',
+		</if>
+		<if test="need_repair_analysis_form_id == null " >
+			correct_analysis_form_id='',
+		</if>
+		<if test="need_repair_analysis_form_id != null and need_repair_analysis_form_id !=''" >
+			correct_analysis_form_id=${need_repair_analysis_form_id},
+		</if>
+		feedback_date=to_date(#{feedback_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss')
+		WHERE process_id= ${process_id}
+	</update>
+	<!-- 更新故障缺陷信息 -->
+	<update id="upDev" parameterType="mtFault">
+		UPDATE MT_FAULT_DEV 
+			SET
+			dev_type=#{type,jdbcType=INTEGER},
+			num=#{num,jdbcType=VARCHAR},
+			fault_level=#{level,jdbcType=INTEGER},
+			fault_descrip=#{fault_descrip,jdbcType=VARCHAR},
+			analysis=#{analysis,jdbcType=VARCHAR},
+			advice=#{advice,jdbcType=VARCHAR},
+			remarks=#{remarks,jdbcType=VARCHAR},
+			dev_model=#{dev_model,jdbcType=INTEGER}
+			WHERE id= #{id,jdbcType=INTEGER}
+	</update>
+	
+	
+	<delete id="delDevById" parameterType="java.lang.String" >
+		DELETE FROM MT_FAULT_DEV WHERE  ID= #{_parameter}
+	</delete>
+	<delete id="delDevAttch" parameterType="java.lang.String">
+		DELETE FROM MT_FAULT_DEV_ATTACH WHERE FAULT_DEV_ID = #{_parameter}
+	</delete>
+	
+	
+	<!-- 更新调度中心分析记录表 -->
+	<insert id="updateCenter" parameterType="analysis">
+		UPDATE MT_FAULT_ANALYSIS SET 
+			ANALYSIS_USER_ID = #{analysis_id,jdbcType=VARCHAR},
+			ANALYSIS_DATE = to_date(#{analysis_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			IS_SEND_PEOPLE = #{is_send_people,jdbcType=VARCHAR},
+			SUMMARY = #{summary,jdbcType=VARCHAR},
+			REMARKS = #{remarks,jdbcType=VARCHAR}  
+			WHERE ID =#{id,jdbcType=INTEGER}
+	</insert> 
+	
+</mapper>

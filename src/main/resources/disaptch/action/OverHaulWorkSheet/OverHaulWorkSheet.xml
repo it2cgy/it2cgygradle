@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 电站检修工作单处理 -->
+<mapper namespace="overHaulWorkSheet">
+		<!-- 返回检修工作单数据列 -->
+    <resultMap type="java.util.HashMap" id="listMap">
+		<result property="PRONAME" column="PRONAME"/>
+		<result property="FORMNUM" column="FORMNUM"/>
+		<result property="PROVINCENAME" column="PROVINCENAME"/>
+		<result property="CITYNAME" column="CITYNAME"/>
+		<result property="COUNTYNAME" column="COUNTYNAME"/>
+		<result property="LOCATION" column="LOCATION"/>
+		<result property="ANALYSISID" column="ANALYSISID"/>
+		<result property="FAULTMAINTAINER" column="FAULTMAINTAINER"/>
+		<result property="PLANARRIVEDATE" column="PLANARRIVEDATE"/>
+		<result property="JOBDUTIES" column="JOBDUTIES"/>
+		<result property="ISNEEDTHIRD" column="ISNEEDTHIRD"/>
+		<result property="THIRD_TYPE" column="THIRD_TYPE"/>
+		<result property="THIRD_TYPE_NAME" column="THIRD_TYPE_NAME"/>
+		<result property="THIRD_FIRM_NAME" column="THIRD_FIRM_NAME"/>
+		<result property="THIRD_NAME" column="THIRD_NAME"/>
+		<result property="THIRD_POSITION" column="THIRD_POSITION"/>
+		<result property="THIRD_CONTACT" column="THIRD_CONTACT"/>
+		<result property="THIRD_JOB_DUTY" column="THIRD_JOB_DUTY"/>
+		<result property="REMARKS" column="REMARKS"/>
+		<result property="FORM_FLOW_NUM" column="FORM_FLOW_NUM"/>
+    </resultMap>
+    
+    
+    <!-- 返回检修工作单数据列查看数据-->
+    <resultMap type="java.util.HashMap" id="faultMap">
+		<result property="EVENTID" column="EVENTID"/>
+		<result property="PROID" column="PROID"/>
+		<result property="PRONAME" column="PRONAME"/>
+		<result property="FORMNUM" column="FORMNUM"/>
+		<result property="PROVINCENAME" column="PROVINCENAME"/>
+		<result property="CITYNAME" column="CITYNAME"/>
+		<result property="COUNTYNAME" column="COUNTYNAME"/>
+		<result property="LOCATION" column="LOCATION"/>
+		<result property="FEEDBACK_USERNAME" column="FEEDBACK_USERNAME"/>
+		<result property="FEEDBACK_DATE" column="FEEDBACK_DATE"/>
+		<!-- 检修工作单 -->
+		<result property="JOBDUTIES" column="JOBDUTIES"/>
+		<result property="ISNEEDTHIRD" column="ISNEEDTHIRD"/>
+		<result property="THIRDTYPE" column="THIRDTYPE"/>
+		<result property="THIRDFIRMNAME" column="THIRDFIRMNAME"/>
+		<result property="THIRDNAME" column="THIRDNAME"/>
+		<result property="THIRDPOSITION" column="THIRDPOSITION"/>
+		<result property="THIRDCONTACT" column="THIRDCONTACT"/>
+		<result property="THIRDJOBDUTY" column="THIRDJOBDUTY"/>
+		<result property="WORKREMARKS" column="WORKREMARKS"/>
+		<result property="FAULT_MAINTAINER" column="FAULT_MAINTAINER"/>
+		<result property="PLAN_ARRIVE_DATE" column="PLAN_ARRIVE_DATE"/>
+		<result property="FORM_FLOW_NUM" column="FORM_FLOW_NUM"/>
+		<result property="FAULT_MAINTAINER_LEADER" column="FAULT_MAINTAINER_LEADER"/>
+		<result property="REALNAME" column="REALNAME"/>
+		<result property="LOGGER_USERNAME" column="LOGGER_USERNAME"/>
+		<result property="LOG_TIME" column="LOG_TIME"/>
+    </resultMap>
+  	<!-- 查询检修工作单查看数据 -->
+	<select id="loadPreview" parameterType="java.util.HashMap" resultMap="faultMap">
+ 	   SELECT   A.ID AS EVENTID,
+             A.PRO_ID AS PROID,
+             C.NAME AS PRONAME,
+             A.ARCHIEVE_NUM AS FORMNUM,
+             D.PROVINCE_NAME AS PROVINCENAME,
+             E.CITY_NAME AS CITYNAME,
+             F.COUNTY_NAME AS COUNTYNAME,
+             C.LOCATION,
+             N.JOB_DUTIES AS JOBDUTIES,
+             N.IS_NEED_THIRD AS ISNEEDTHIRD,
+             N.THIRD_TYPE AS THIRDTYPE,
+             N.THIRD_FIRM_NAME AS THIRDFIRMNAME,
+             N.THIRD_NAME AS THIRDNAME,
+             N.THIRD_POSITION AS THIRDPOSITION,
+             N.THIRD_CONTACT AS THIRDCONTACT,
+             N.THIRD_JOB_DUTY AS THIRDJOBDUTY,
+             N.REMARKS AS WORKREMARKS,
+             N.FAULT_MAINTAINER AS FAULT_MAINTAINER,
+             to_char(N.PLAN_ARRIVE_DATE,'yyyy-MM-dd hh24:mi:ss') AS PLAN_ARRIVE_DATE,
+             N.FORM_FLOW_NUM AS FORM_FLOW_NUM,
+             N.FAULT_MAINTAINER_LEADER,
+             MU.REALNAME,
+             N.LOGGER_USERNAME,
+             to_char(N.LOG_TIME,'yyyy-MM-dd hh24:mi:ss') AS LOG_TIME
+        FROM MT_EVENT A
+        LEFT JOIN MT_PROJECT C
+          ON A.PRO_ID = C.ID
+        LEFT JOIN PROVINCE D
+          ON C.PROVINCE_ID = D.PROVINCE_ID
+        LEFT JOIN CITY E
+          ON C.CITY_ID = E.CITY_ID
+        LEFT JOIN COUNTY F
+          ON C.COUNTY_ID = F.COUNTY_ID
+        LEFT JOIN MT_WORKSHEET N
+          ON N.Event_Id=A.ID
+        LEFT JOIN MT_USER MU
+          ON N.FAULT_MAINTAINER_LEADER = MU.ID
+          where 1=1
+		 <if test="processId != null and processId !=''" >
+			and N.PROCESS_ID=${processId}
+		 </if>
+	</select>
+    
+    
+    
+     <!-- 查询检修工作单数据 列表-->
+    <sql id="colList" >
+      ID,ANALYSIS_ID,EVENT_ID,PLAN_ARRIVE_DATE,LOGGER_USERNAME,LOG_TIME,JOB_DUTIES,IS_NEED_THIRD,THIRD_TYPE,THIRD_FIRM_NAME,THIRD_NAME,THIRD_POSITION,THIRD_CONTACT,THIRD_JOB_DUTY,REMARKS
+ 	</sql>
+  	<!-- 备品插入列表 -->
+  	 <sql id="spareList" >
+      ID,WORKSHEET_ID,DEV_TYPE_ID,DEV_MODEL_ID,BORROW_USERNAME,BORROW_TYPE,BORROW_COUNT,UNIT,REMARKS
+ 	</sql>
+  	
+  	
+  	<!-- 查询检修工作单 -->
+	<select id="loadData" parameterType="java.util.HashMap" resultMap="listMap"><!--
+		  SELECT A.ID AS EVENTID,A.PRO_ID AS PROID,C.NAME AS PRONAME,A.ARCHIEVE_NUM AS FORMNUM,D.PROVINCE_NAME AS PROVINCENAME,E.CITY_NAME AS CITYNAME,F.COUNTY_NAME AS COUNTYNAME,C.LOCATION,T.ID AS ANALYSISID,B.FEEDBACK_USERNAME,  to_char(B.FEEDBACK_DATE,'yyyy-MM-dd') as FEEDBACK_DATE
+		  FROM MT_EVENT A
+		  LEFT JOIN MT_FAULT B
+		    ON A.ID = B.EVENT_ID
+		  LEFT JOIN MT_PROJECT C
+		    ON A.PRO_ID = C.ID
+		  LEFT JOIN PROVINCE D
+		    ON C.PROVINCE_ID = D.PROVINCE_ID
+		  LEFT JOIN CITY E
+		    ON C.CITY_ID = E.CITY_ID
+		  LEFT JOIN COUNTY F
+		    ON C.COUNTY_ID = F.COUNTY_ID
+		  LEFT JOIN MT_FAULT_ANALYSIS T 
+       		ON A.ID=T.EVENT_ID
+		    WHERE 1=1
+		 -->
+		 SELECT
+		   A.ID AS EVENTID,
+		   C.NAME AS PRONAME,
+		   A.ARCHIEVE_NUM AS FORMNUM,
+		   D.PROVINCE_NAME AS PROVINCENAME,
+		   E.CITY_NAME AS CITYNAME,
+		   F.COUNTY_NAME AS COUNTYNAME,
+		   C.LOCATION,
+		   T.ID AS ANALYSISID,
+		
+		   J.FAULT_MAINTAINER AS FAULTMAINTAINER,
+		   to_char(J.PLAN_ARRIVE_DATE,'yyyy-MM-dd hh24:mi:ss')  AS PLANARRIVEDATE,
+		   J.JOB_DUTIES AS JOBDUTIES,
+		   J.IS_NEED_THIRD AS ISNEEDTHIRD,
+		   J.THIRD_TYPE AS THIRD_TYPE,
+		   J.THIRD_TYPE_NAME,
+		   J.THIRD_FIRM_NAME,
+		   J.THIRD_NAME,
+		   J.THIRD_POSITION,
+		   J.THIRD_CONTACT,
+		   J.THIRD_JOB_DUTY,
+		   J.REMARKS,J.PROCESS_ID,
+		   J.ID AS WORKSHEETID,
+		   J.FORM_FLOW_NUM
+		  FROM MT_WORKSHEET J
+		  LEFT JOIN MT_EVENT A
+		    ON J.EVENT_ID = A.ID
+		  LEFT JOIN MT_PROJECT C
+		    ON A.PRO_ID = C.ID
+		    
+		  LEFT JOIN PROVINCE D
+		    ON C.PROVINCE_ID = D.PROVINCE_ID
+		  LEFT JOIN CITY E
+		    ON C.CITY_ID = E.CITY_ID
+		  LEFT JOIN COUNTY F
+		    ON C.COUNTY_ID = F.COUNTY_ID
+		    
+		  LEFT JOIN MT_FAULT_ANALYSIS T
+		    ON A.ID = T.EVENT_ID
+		   AND T.ID = J.ANALYSIS_ID
+		 WHERE 1=1
+		 <if test="processId != null and processId !=''" >
+			and J.PROCESS_ID=${processId}
+		 </if>
+	</select>
+	<!-- 插入数据-->
+	<insert id="saveData" parameterType="worksheet">
+	<!-- 	<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	 SELECT SEQ_MT_WORKSHEET_ID.NEXTVAL as id FROM SYS.DUAL 
+    	</selectKey> -->
+		insert into MT_WORKSHEET (<include refid="colList"/>) values(
+			#{id,jdbcType=INTEGER},
+			#{analysisid,jdbcType=INTEGER},
+			#{eventid,jdbcType=INTEGER},
+			to_date(#{plan_arrive_date,jdbcType=DATE},'yyyy-MM-dd'),
+			#{logger_username,jdbcType=VARCHAR},
+			to_date(#{log_time,jdbcType=DATE},'yyyy-MM-dd'),
+			#{job_duties,jdbcType=VARCHAR},
+			#{is_need_third,jdbcType=INTEGER},
+			#{third_type,jdbcType=VARCHAR},
+			#{third_firm_name,jdbcType=VARCHAR},
+			#{third_name,jdbcType=VARCHAR},
+			#{third_position,jdbcType=VARCHAR},
+			#{third_contact,jdbcType=VARCHAR},
+			#{third_job_duty,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 更新数据-->
+	<insert id="updateData" parameterType="worksheet">
+		UPDATE MT_WORKSHEET SET
+			PLAN_ARRIVE_DATE = to_date(#{plan_arrive_date,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			JOB_DUTIES = #{job_duties,jdbcType=VARCHAR},
+			IS_NEED_THIRD = #{is_need_third,jdbcType=INTEGER},
+			THIRD_TYPE = #{third_type,jdbcType=VARCHAR},
+			THIRD_FIRM_NAME = #{third_firm_name,jdbcType=VARCHAR},
+			THIRD_NAME= #{third_name,jdbcType=VARCHAR},
+			THIRD_POSITION = #{third_position,jdbcType=VARCHAR},
+			THIRD_CONTACT = #{third_contact,jdbcType=VARCHAR},
+			THIRD_JOB_DUTY = #{third_job_duty,jdbcType=VARCHAR},
+			REMARKS = #{remarks,jdbcType=VARCHAR},
+			FAULT_MAINTAINER = #{fault_maintainer,jdbcType=VARCHAR},
+			FAULT_MAINTAINER_LEADER =#{fault_maintainer_leader,jdbcType=INTEGER},
+			LOGGER_USERNAME =#{logger_username,jdbcType=VARCHAR},
+			LOG_TIME = to_date(#{log_time,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			THIRD_TYPE_NAME = #{third_type_name,jdbcType=VARCHAR}
+			WHERE ID= #{id,jdbcType=INTEGER}
+	
+	</insert>
+	
+	
+	
+	<!-- 插入备品备件列表数据-->
+	<insert id="addFaultSpare" parameterType="mtfs">
+	 	<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	 SELECT SEQ_MT_FAULT_SPARE_ID.NEXTVAL as id FROM SYS.DUAL 
+    	</selectKey> 
+		insert into MT_FAULT_SPARE (<include refid="spareList"/>) values(
+			#{id,jdbcType=INTEGER},
+			#{worksheet,jdbcType=INTEGER},
+			#{dev_type_id,jdbcType=INTEGER},
+			#{dev_model_id,jdbcType=INTEGER},
+			#{borrow_username,jdbcType=VARCHAR},
+			#{borrow_type,jdbcType=INTEGER},
+			#{borrow_count,jdbcType=INTEGER},
+			#{unit,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+		<!-- 插入备品备件列表数据-->
+	<update id="updateFaultSpare" parameterType="mtfs">
+			UPDATE MT_FAULT_SPARE SET
+			DEV_TYPE_ID = #{dev_type_id,jdbcType=INTEGER},
+			DEV_MODEL_ID = #{dev_model_id,jdbcType=INTEGER},
+			BORROW_USERNAME = #{borrow_username,jdbcType=VARCHAR},
+			BORROW_TYPE = #{borrow_type,jdbcType=INTEGER},
+			BORROW_COUNT = #{borrow_count,jdbcType=INTEGER},
+			UNIT = #{unit,jdbcType=VARCHAR},
+			REMARKS = #{remarks,jdbcType=VARCHAR}
+			WHERE ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	
+	
+    <resultMap type="java.util.HashMap" id="modelMap">
+		<result property="id" column="id"/>
+        <result property="text" column="name"/>
+    </resultMap>
+	<!-- 根据备件类型加载备件规格 --> 
+	<select id="loadModel" parameterType="java.lang.String" resultMap="modelMap">
+		 SELECT id,name FROM MT_DEV_MODEL WHERE 1=1
+		  <if test="_parameter != null and _parameter !=''" >
+			and TYPE_ID= #{_parameter}
+		  </if>
+		 order by id
+	</select>
+	
+	
+	<select id="quyId"  resultType="int">
+  		 SELECT SEQ_MT_WORKSHEET_ID.NEXTVAL as id FROM SYS.DUAL 
+  	</select>
+  	
+  	<resultMap type="java.util.HashMap"  id="spareMap">
+  		<result property="SID" column="SID"/>
+	  	<result property="SPAREID" column="SPAREID"/>
+	  	<result property="MODELID" column="MODELID"/>
+	  	<result property="SPARENAME" column="SPARENAME"/>
+  		<result property="BORROW_TYPE" column="BORROW_TYPE"/>
+  		<result property="SPAREMODEL" column="SPAREMODEL"/>
+  		<result property="BORROWTYPE" column="BORROWTYPE"/>
+  		<result property="USERNAME" column="USERNAME"/>
+  		<result property="BORROWCOUNT" column="BORROWCOUNT"/>
+		<result property="UNIT" column="UNIT"/>
+  		<result property="SPAREREMARKS" column="SPAREREMARKS"/>
+  	</resultMap>
+  	<select id="loadSpare" parameterType="java.lang.String" resultMap="spareMap">
+  	  SELECT 
+  	  	   T.ID              AS SID,
+  	       A.ID              AS SPAREID,
+           B.ID              AS MODELID,
+           A.NAME            AS SPARENAME,
+           B.NAME            AS SPAREMODEL,
+           T.BORROW_TYPE  ,
+	       A.NAME            AS SPARENAME,
+	       B.NAME            AS SPAREMODEL,
+	      (CASE WHEN T.BORROW_TYPE='1' THEN '投资方保管' WHEN T.BORROW_TYPE='2' THEN '运维公司保管' ELSE '外购' END) AS  BORROWTYPE,
+	       T.BORROW_USERNAME AS USERNAME,
+	       T.BORROW_COUNT    AS BORROWCOUNT,
+	       T.UNIT            UNIT,
+	       T.REMARKS         AS SPAREREMARKS
+	  FROM MT_FAULT_SPARE T
+	       LEFT JOIN MT_DEV_TYPE A
+	        ON T.DEV_TYPE_ID = A.ID
+	       LEFT JOIN MT_DEV_MODEL B
+	        ON B.ID = T.DEV_MODEL_ID
+	       LEFT JOIN MT_WORKSHEET C 
+ 			ON T.WORKSHEET_ID=C.ID
+ 			WHERE 1=1
+  		<if test="_parameter != null and _parameter !=''" >
+			and C.ID = #{_parameter}
+		</if>
+  	</select>
+  	
+  	
+
+	<!-- 加载检修负责人 --> 
+	<select id="loadFeedUser" parameterType="java.lang.String" resultMap="modelMap">
+		  SELECT T.USER_ID AS id, MT.REALNAME AS name
+		  FROM R_MT_PRO_USER_ROLE T
+		   LEFT JOIN MT_USER MT
+		    ON T.USER_ID = MT.ID
+		  WHERE T.ROLE_ID = 3
+		  <if test="_parameter != null and _parameter !=''" >
+			AND T.PRO_ID = #{_parameter}
+		  </if>
+	</select>
+	
+</mapper>

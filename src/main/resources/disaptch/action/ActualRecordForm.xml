@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="actualRecord">
+<resultMap type="java.util.HashMap" id="listMap">
+	<result property="PRONAME" column="PRONAME"/>
+</resultMap>
+
+<select id="loadData" parameterType="java.lang.String" resultMap="listMap">
+	SELECT C.NAME AS PRONAME
+	  FROM MT_FAULT A
+	  LEFT JOIN MT_EVENT B
+	    ON A.EVENT_ID = B.ID
+	  LEFT JOIN MT_PROJECT C
+	    ON B.PRO_ID = C.ID
+	    WHERE 1=1
+    <if test="_parameter != null and _parameter !=''" >
+		and A.ID = #{_parameter}
+	</if>
+</select>
+
+	<resultMap type="java.util.HashMap" id="faultMap">
+			<result property="ID" column="ID"/>
+			<result property="FAULTID" column="FAULTID"/>
+			<result property="FAULTNUM" column="FAULTNUM"/>
+			<result property="DEVNAME" column="DEVNAME"/>
+			<result property="FAULTLEVEL" column="FAULTLEVEL"/>
+			<result property="FAULTDESCRIP" column="FAULTDESCRIP"/>
+			<result property="ANALYSIS" column="ANALYSIS"/>
+			<result property="ADVICE" column="ADVICE"/>
+			<result property="DEVREMARKS" column="DEVREMARKS"/>
+			<result property="CENTERANALYSIS" column="CENTERANALYSIS"/>
+			<result property="REALFAULT" column="REALFAULT"/>
+			<result property="REAL_FAULTDSC" column="REAL_FAULTDSC"/>
+			<result property="REAL_FAULT_REMARKS" column="REAL_FAULT_REMARKS"/>
+			<result property="ISREALFAULT" column="ISREALFAULT"/>
+	</resultMap>
+	<select id="loadFault" parameterType="java.lang.String" resultMap="faultMap">
+	 		SELECT
+		      DISTINCT C.Id AS ID,C.FAULT_ID AS FAULTID,
+		       C.NUM AS FAULTNUM,
+	           D.NAME AS DEVNAME,
+	           C.FAULT_LEVEL as FAULTLEVEL,
+	           C.FAULT_DESCRIP AS FAULTDESCRIP,
+	           C.ANALYSIS,
+	           C.ADVICE,
+	           C.REMARKS       AS DEVREMARKS,
+	           C.CENTER_ANALYSIS AS CENTERANALYSIS,
+	           C.Is_Real_Fault_Analysis AS REALFAULT,
+	           C.REAL_FAULT AS REAL_FAULTDSC,
+               C.REAL_FAULT_REMARKS,
+               C.IS_REAL_FAULT AS ISREALFAULT
+	        FROM MT_EVENT A
+	        LEFT JOIN MT_FAULT B
+	          ON A.ID = B.EVENT_ID
+	        LEFT JOIN MT_FAULT_DEV C
+	          ON B.ID = C.FAULT_ID
+	        LEFT JOIN MT_DEV_TYPE D
+	          ON C.DEV_TYPE = D.ID
+	        WHERE 1=1
+	    <if test="_parameter != null and _parameter !=''" >
+			 AND B.PROCESS_ID = #{_parameter}
+		</if>
+	</select>
+
+
+	<sql id="colList">
+		ID,FAULT_ID,RECORD_USERTYPE,RECORD_USERNAME,RECORD_DATE,COMPARE_SUMMARY,REMARKS,HAVE_NEW_FAULT
+	</sql>
+	<insert id="saveData" parameterType="realFault">
+			<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+	        	select SEQ_MT_REAL_FAULT_ID.nextval as id from dual  
+	    	</selectKey>
+	  	   insert into mt_real_fault (<include refid="colList"/>) values (
+				#{id,jdbcType=INTEGER},
+				#{fault_id,jdbcType=INTEGER},
+				#{recode_usertype,jdbcType=INTEGER},
+				#{recode_username,jdbcType=VARCHAR},
+				to_date(#{recode_date,jdbcType=DATE},'yyyy-MM-dd HH24:mi:ss'),
+				#{compare_summary,jdbcType=VARCHAR},
+				#{remarks,jdbcType=VARCHAR},
+				#{have_new_fault,jdbcType=INTEGER}
+			)
+	</insert>
+	
+	<!-- 更新实际故障调查表数据 -->
+	<update id="updateData" parameterType="realFault">
+	  	   UPDATE mt_real_fault set
+				RECORD_USERTYPE = #{recode_usertype,jdbcType=INTEGER},
+				RECORD_USERNAME = #{recode_username,jdbcType=VARCHAR},
+				RECORD_DATE = to_date(#{recode_date,jdbcType=DATE},'yyyy-MM-dd HH24:mi:ss'),
+				COMPARE_SUMMARY = #{compare_summary,jdbcType=VARCHAR},
+				REMARKS = #{remarks,jdbcType=VARCHAR},
+				HAVE_NEW_FAULT = #{have_new_fault,jdbcType=INTEGER}
+				where ID=#{id,jdbcType=INTEGER}
+	</update>
+
+	<sql id="devList" >
+	   	id, fault_dev_id,fault_descrip,file_name,remarks,provider_name,source_time,source_location,attach_path
+	</sql>
+	<!-- 实际故障调查附件上传 -->
+	 <insert id="addAttach" parameterType="rfAttach">
+		<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select SEQ_MT_FAULT_DEV_ATTACH_C_ID.nextval as id from dual  
+    	</selectKey>
+		insert into MT_FAULT_DEV_ATTACH_REAL (<include refid="devList"/>) values (
+			#{id,jdbcType=INTEGER},
+			#{fault_dev_id,jdbcType=INTEGER},
+			#{fault_descrip,jdbcType=VARCHAR},
+			#{file_name,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR},
+			#{provider_name,jdbcType=VARCHAR},
+			to_date(#{source_time,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			#{source_location,jdbcType=VARCHAR},
+			#{file_path,jdbcType=VARCHAR}
+		)
+	</insert> 
+	
+	<update id="updateDev" parameterType="devAt">
+		UPDATE MT_FAULT_DEV T
+  		 SET T.IS_REAL_FAULT=#{is_real_fault,jdbcType=INTEGER},
+	       T.REAL_FAULT_REMARKS=#{real_fault_remarks,jdbcType=VARCHAR},
+	       T.REAL_FAULT=#{real_fault,jdbcType=VARCHAR}
+		  WHERE T.ID=#{id,jdbcType=INTEGER}
+	</update>
+	
+	
+	
+	
+	<!-- 加载实际故障缺陷记录表查看数据 -->
+	<resultMap type="java.util.HashMap" id="previewMap">
+			<result property="NAME" column="NAME"/>
+			<result property="RECORDTIME" column="RECORDTIME"/>
+			<result property="RECORDNAME" column="RECORDNAME"/>
+			<result property="REALFAULTID" column="REALFAULTID"/>
+			<result property="FORM_FLOW_NUM" column="FORM_FLOW_NUM"/>
+			<result property="ARCHIEVE_NUM" column="ARCHIEVE_NUM"/>
+			<result property="FAULT_ID" column="FAULT_ID"/>
+	</resultMap>
+	<select id="loadPreview" parameterType="java.lang.String" resultMap="previewMap">
+		     SELECT  
+		       M.ID AS REALFAULTID ,
+		       C.NAME AS PRONAME,
+	      	   to_char(M.RECORD_DATE,'yyyy-MM-dd HH24:mm:ss') AS RECORDTIME,
+		       M.RECORD_USERNAME AS RECORDNAME,
+		       M.COMPARE_SUMMARY AS COMPARESUMMARY,
+		       M.HAVE_NEW_FAULT AS NEWFAULT,
+		       M.REMARKS AS REMARKS,
+		       M.FORM_FLOW_NUM ,
+         	   B.ARCHIEVE_NUM,
+         	   M.FAULT_ID AS FAULT_ID
+		       FROM MT_REAL_FAULT M
+		      LEFT JOIN MT_FAULT A
+		       ON M.FAULT_ID = A.ID
+		      LEFT JOIN MT_EVENT B
+		       ON M.EVENT_ID = B.ID
+		      LEFT JOIN MT_PROJECT C
+		       ON B.PRO_ID = C.ID
+		      WHERE 1=1
+	    <if test="_parameter != null and _parameter !=''" >
+			and M.PROCESS_ID = #{_parameter}
+		</if>
+	</select>
+	
+	<resultMap type="java.util.HashMap" id="realfaultMap">
+			<result property="ID" column="ID"/>
+			<result property="FAULTID" column="FAULTID"/>
+			<result property="FAULTNUM" column="FAULTNUM"/>
+			<result property="DEVNAME" column="DEVNAME"/>
+			<result property="FAULTLEVEL" column="FAULTLEVEL"/>
+			<result property="FAULTDESCRIP" column="FAULTDESCRIP"/>
+			<result property="ANALYSIS" column="ANALYSIS"/>
+			<result property="ADVICE" column="ADVICE"/>
+			<result property="DEVREMARKS" column="DEVREMARKS"/>
+			<result property="CENTERANALYSIS" column="CENTERANALYSIS"/>
+			<result property="REALFAULT" column="REALFAULT"/>
+			<result property="ISREALFAULT" column="ISREALFAULT"/>
+	</resultMap>
+	<select id="loadPreFault" parameterType="java.lang.String" resultMap="realfaultMap">
+      SELECT DISTINCT C.Id AS ID,C.FAULT_ID AS FAULTID,
+             C.NUM AS FAULTNUM,
+             D.NAME AS DEVNAME,
+             C.FAULT_LEVEL as FAULTLEVEL,
+             C.FAULT_DESCRIP AS FAULTDESCRIP,
+             C.ANALYSIS,
+             C.ADVICE,
+             C.REMARKS       AS DEVREMARKS,
+             C.CENTER_ANALYSIS AS CENTERANALYSIS,
+             C.IS_REAL_FAULT_ANALYSIS AS REALFAULT,
+             C.REAL_FAULT AS REALFAULT,
+             C.REAL_FAULT_REMARKS AS REALFAULTREMARKS,
+             C.IS_REAL_FAULT   AS ISREALFAULT        
+          FROM MT_EVENT A
+          LEFT JOIN MT_FAULT B
+            ON A.ID = B.EVENT_ID
+          LEFT JOIN MT_FAULT_DEV C
+            ON B.ID = C.FAULT_ID
+          LEFT JOIN MT_DEV_TYPE D
+            ON C.DEV_TYPE = D.ID
+	        WHERE 1=1
+	    <if test="_parameter != null and _parameter !=''" >
+			and B.PROCESS_ID = #{_parameter}
+		</if>
+	</select>
+	
+	
+</mapper>

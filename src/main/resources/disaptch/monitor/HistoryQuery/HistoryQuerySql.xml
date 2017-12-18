@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="mcHistoryQuery">
+	<resultMap type="java.util.Map" id="queryPointInfoMap">
+    	<id property="pid" column="PID" />
+    	<result property="parmid" column="FARMID" />
+    	<result property="description" column="DESCRIPTION" />
+    	<result property="name" column="NAME" />
+    	<result property="parentid" column="PARENTID" />
+    </resultMap>
+    
+    <resultMap type="java.util.Map" id="queryPointDataMap">
+    	<result property="time" column="TIME" />
+    	<result property="value" column="VALUE" />
+    	<result property="name" column="NAME" />
+    </resultMap>
+    
+    
+    <resultMap type="com.yunengzhe.PVMTS.monitor.entity.HistoryQuery.PointInfo" id="HistoryQueryPointInfo">
+    	<id property="id" column="ID" />
+    	<result property="equipcontainerId" column="EQUIPMENTCONTAINER_ID" />
+    	<result property="equipcontainerTableId" column="EQUIPMENTCONTAINER_TABLEID" />
+    	<result property="measuerName" column="NAME" />  
+    </resultMap>
+    
+    
+    <!-- 获取时间段内的历史表名称 -->
+    <resultMap type="java.util.Map" id="tableNameMap">
+    	<result property="tableName" column="tableName" />
+    </resultMap>
+    <select id="getTableName" resultMap="tableNameMap">
+		SELECT
+			table_name as tableName
+		FROM
+			information_schema.`TABLES`
+		WHERE
+			table_schema = 'davinci'
+		<if test="startName != null and startName !=''" >
+				AND (table_name &gt; '${startName}' or table_name ='${startName}')
+		</if>	
+		<if test="endName != null and endName !=''" >
+				AND (table_name &lt; '${endName}' or table_name='${endName}')
+		</if>	
+		order by CREATE_TIME
+    </select>
+    
+    
+    
+    
+    <select id="queryPointInfo" resultMap="queryPointInfoMap">
+<!--    	SELECT PID, NAME, FARMID, DESCRIPTION, PARENTID PARENTID-->
+<!--    		FROM MC_POINT -->
+<!--    		WHERE FARMID = #{proId}-->
+ 			select point.id as PID,point.name as DESCRIPTION,point.DESCRIPTION as NAME from (
+				SELECT
+				 a1.id,
+				CONCAT(t1.`NAME`,m1.DESCRIPTION,m1.`NAME`) as name,m1.name as DESCRIPTION
+				FROM
+					analoginput a1
+				LEFT JOIN mc_inverter t1 ON a1.EQUIPMENTCONTAINER_TABLEID = t1.EQUIPMENTTYPEID and a1.EQUIPMENTCONTAINER_ID=t1.id
+				LEFT JOIN measurementtype m1 ON a1.TYPE = m1.ID
+				WHERE
+					a1.EQUIPMENTCONTAINER_TABLEID = 3  
+				<if test="proId != null and proId !=''" >
+					and t1.FARMID=${proId}
+				</if>
+				group by a1.id
+				union all 
+				SELECT
+				a2.id,
+				CONCAT(t2.`NAME`, m2.DESCRIPTION) as name,m2.name as DESCRIPTION
+				FROM
+					analoginput a2
+				LEFT JOIN mc_electric_meter t2 ON a2.EQUIPMENTCONTAINER_TABLEID = t2.EQUIPMENTTYPEID and a2.EQUIPMENTCONTAINER_ID=t2.id
+				LEFT JOIN measurementtype  m2 ON a2.TYPE = m2.ID
+				WHERE
+					a2.EQUIPMENTCONTAINER_TABLEID = 5
+				<if test="proId != null and proId !=''" >
+					and t2.FARMID=${proId}
+				</if>
+				group by a2.id
+				union all 
+				SELECT
+				a3.id as id,
+				CONCAT(t3.`NAME`, m3.DESCRIPTION) as name,m3.name as DESCRIPTION
+				FROM
+					analoginput a3
+				LEFT JOIN mc_meteor_monitor t3 ON a3.EQUIPMENTCONTAINER_TABLEID = t3.EQUIPMENTTYPEID and a3.EQUIPMENTCONTAINER_ID=t3.id
+				LEFT JOIN measurementtype m3 ON a3.TYPE = m3.ID
+				WHERE
+					a3.EQUIPMENTCONTAINER_TABLEID = 8 
+				<if test="proId != null and proId !=''" >
+					and t3.FARMID=${proId}
+				</if>
+				group by a3.id
+			) as point  where 1=1
+			<if test="pointName != null and pointName !=''" >
+				AND point.name LIKE '%${pointName}%'
+			</if>
+    </select>
+    
+    <select id="queryPointData11" resultMap="queryPointDataMap">
+    	SELECT TO_CHAR(TO_DATE(19700101, 'yyyymmdd') + (DATATIME+28800)/86400, 'yyyy-mm-dd hh24:mi') TIME, 
+    			${name} VALUE, PARENTID PARENTID
+    	FROM ${tableName}
+    	    WHERE FARMID = ${proId}
+    	    	AND DATATIME &gt; 1472743620
+    	    	AND DATATIME &lt; 1472750176
+    </select>
+    <select id="queryPointData" resultMap="queryPointDataMap">
+    select a.time as TIME,a.VALUE as VALUE,a.NAME as NAME from (<!-- 汇总数据查询 -->
+    	<foreach item="item" collection="list" separator="union all">
+    			 select time as TIME,VALUE as VALUE,NAME as NAME from (
+	    			<foreach item="tableNameItem" collection="item.tableName" separator="union all">
+			    			SELECT
+							DATE_FORMAT(HDTIME, '%Y-%m-%d %H:%i') AS TIME,
+							FORMAT(VALUE, ${item.span}) AS VALUE,'${item.nameId}' as NAME
+							FROM ${tableNameItem.tableName}
+							WHERE id= ${item.Lid}
+							<if test="item.dateSpan != null and item.span !=''" > 
+							AND mod(UNIX_TIMESTAMP(HDTIME),${item.dateSpan}) &gt;= ${item.span}
+							</if>
+							
+							<if test="item.startTime != null and item.startTime !=''" >
+								AND HDTIME &gt; DATE_FORMAT('${item.startTime}', '%Y-%m-%d %H:%i') 
+							</if>
+							<if test="item.endTime != null and item.endTime !=''" >
+								AND HDTIME &lt;  DATE_FORMAT('${item.endTime}', '%Y-%m-%d %H:%i') 
+							</if>
+	    			</foreach>
+    			 ) t
+		</foreach>
+		) a
+		ORDER BY a.TIME
+    </select>
+    
+     <select id="getQueryPointInfo" resultMap="HistoryQueryPointInfo"  parameterType="java.lang.Integer">
+    	SELECT ID,EQUIPMENTCONTAINER_ID,EQUIPMENTCONTAINER_TABLEID,NAME FROM analoginput WHERE id=#{id} 
+    </select>
+</mapper>

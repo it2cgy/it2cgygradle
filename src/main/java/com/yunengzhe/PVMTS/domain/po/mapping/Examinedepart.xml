@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yunengzhe.PVMTS.domain.po.ExaminedepartPO">
+
+	<resultMap id="result" type="com.yunengzhe.PVMTS.domain.po.ExaminedepartPO">
+            <id property="id" column="id" jdbcType="INTEGER" />
+            <result property="checkupType" column="checkup_type" jdbcType="VARCHAR" />
+            <result property="checkupContent" column="checkup_content" jdbcType="VARCHAR" />
+            <result property="checkupName" column="checkup_name" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<sql id="base_field">
+		id,checkup_type,checkup_content,checkup_name
+	</sql>
+	
+	<sql id="other-condition">
+            <if test= "checkupType != null ">	and checkup_type = #{checkupType,jdbcType=VARCHAR }</if>
+            <if test= "checkupContent != null ">	and checkup_content = #{checkupContent,jdbcType=VARCHAR }</if>
+            <if test= "checkupName != null ">	and checkup_name = #{checkupName,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	
+ 	<sql id="like-condition">
+            <if test= "checkupType != null ">	and checkup_type like "%"#{checkupType}"%"</if>
+            <if test= "checkupContent != null ">	and checkup_content like "%"#{checkupContent}"%"</if>
+            <if test= "checkupName != null ">	and checkup_name like "%"#{checkupName}"%"</if>
+
+ 	</sql>
+	
+	 	<sql id="one-equal-condition">
+            <if test= "checkupType != null ">	or checkup_type = #{checkupType,jdbcType=VARCHAR }</if>
+            <if test= "checkupContent != null ">	or checkup_content = #{checkupContent,jdbcType=VARCHAR }</if>
+            <if test= "checkupName != null ">	or checkup_name = #{checkupName,jdbcType=VARCHAR }</if>
+
+ 	</sql>
+ 	 
+	<sql id="selectByMapSQL">
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_examinedepart
+		<choose>
+		    <when test="findBy != null">
+		      	<where>
+					<include refid="other-condition" />
+				</where>
+		    </when>
+		    <when test="findByLike != null">
+		      	<where>
+					<include refid="like-condition" />
+				</where>
+		    </when>
+		    
+		     <when test="oneEqual != null">
+		      	<where>
+					<include refid="one-equal-condition" />
+				</where>
+		    </when>
+		</choose>
+		<if test="sortName != null">
+			order by ${sortName} ${sortBy}
+		</if>
+	</sql>
+	
+	<select id="selectByMap" resultMap="result" >
+		<include refid="selectByMapSQL" />
+	</select>
+	
+	<select id="selectCount" resultType="int" >
+		select count(*) from (
+			<include refid="selectByMapSQL" />
+		) AABBCC_
+	</select>
+	
+	<select id="selectPage" resultMap="result" >
+		<include refid="selectByMapSQL" />
+		 limit #{startRow},#{pageSize}
+	</select>
+	
+	<select id="select" resultMap="result" parameterType="java.lang.Integer">
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_examinedepart  
+		<where>
+			<if test="_parameter != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectByIds" resultMap="result" >
+		select
+		<include refid="base_field" />
+		from pvmts_workorder_examinedepart  where id in (${_parameter})
+	</select>		
+
+	<insert id="insert" parameterType="com.yunengzhe.PVMTS.domain.po.ExaminedepartPO" useGeneratedKeys="true" keyProperty="id">
+		insert into pvmts_workorder_examinedepart( id,checkup_type,checkup_content,checkup_name ) values (#{id,jdbcType=INTEGER},#{checkupType,jdbcType=VARCHAR},#{checkupContent,jdbcType=VARCHAR},#{checkupName,jdbcType=VARCHAR} )
+	</insert>
+
+	<insert id="insertBatch" parameterType="java.util.List" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		
+		insert into pvmts_workorder_examinedepart( id,checkup_type,checkup_content,checkup_name ) values
+		<foreach collection="list" item="item" index="index" separator=",">
+		(#{item.id,jdbcType=INTEGER},#{item.checkupType,jdbcType=VARCHAR},#{item.checkupContent,jdbcType=VARCHAR},#{item.checkupName,jdbcType=VARCHAR} )
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.yunengzhe.PVMTS.domain.po.ExaminedepartPO">
+		update pvmts_workorder_examinedepart set checkup_type=#{checkupType,jdbcType=VARCHAR},checkup_content=#{checkupContent,jdbcType=VARCHAR},checkup_name=#{checkupName,jdbcType=VARCHAR} where id=#{id,jdbcType=INTEGER}
+	</update>	
+	
+	<update id="update4Selective" parameterType="com.yunengzhe.PVMTS.domain.po.ExaminedepartPO">
+		update pvmts_workorder_examinedepart
+        <set>
+            <if test="checkupType != null "> 
+                checkup_type = #{checkupType,jdbcType=VARCHAR},
+            </if>
+            <if test="checkupContent != null "> 
+                checkup_content = #{checkupContent,jdbcType=VARCHAR},
+            </if>
+            <if test="checkupName != null "> 
+                checkup_name = #{checkupName,jdbcType=VARCHAR},
+            </if>
+        </set>
+         where id=#{id,jdbcType=INTEGER}
+	</update>	
+
+	<delete id="deleteByPrimaryKey">
+		delete from pvmts_workorder_examinedepart where id = #{id,jdbcType=INTEGER}
+	</delete>	
+
+	<delete id="delete" parameterType="com.yunengzhe.PVMTS.domain.po.ExaminedepartPO">
+		delete from pvmts_workorder_examinedepart
+		<where>
+			<if test="id != null">
+				id = #{id,jdbcType=INTEGER}
+			</if>
+			<include refid="other-condition" />
+		</where>
+	</delete>	
+		
+</mapper>
+

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--体检记录表 -->
+<mapper namespace="motorPhysical">
+   	<resultMap type="java.util.HashMap" id="cheakMap">
+		<result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="check_standard" column="check_standard"/>
+        <result property="remarks" column="remarks"/>
+    </resultMap>
+    
+  	<select id="loadcheak"  resultMap="cheakMap">
+  		 SELECT ci.id id,ci.name name,ci.check_standard check_standard,ci.remarks remarks FROM MT_CHECKUP c left join MT_CHECKUP_RESULT cr on c.id=cr.checkup_id left join MT_CHECKUP_ITEM_TYPE ci on ci.id=cr.item_type where 1=1 
+  		 <if test="_parameter != null and _parameter !=''" >
+				and C.PROCESS_ID= #{_parameter}
+			</if>
+  	</select>
+  	
+  	<!--通过processid查询体检电厂基本信息-->	
+  	<resultMap type="java.util.HashMap" id="cheakmationMap">
+		<result property="pid" column="pid"/>
+        <result property="pname" column="pname"/>
+        <result property="archieve_num" column="archieve_num"/>
+        <result property="form_flow_num" column="form_flow_num"/>
+        <result property="form_flow_num_in_book" column="form_flow_num_in_book"/>
+        <result property="fault_form_id" column="fault_form_id"/>
+        <!-- <result property="form_flow_num" column="form_flow_num"/> ,c.form_flow_num form_flow_num-->
+    </resultMap>
+  	<select id="loadcheakmation"  resultMap="cheakmationMap">
+  		 	SELECT
+				P . ID pid,
+				P . NAME pname,
+				E .archieve_num archieve_num,
+				c.form_flow_num form_flow_num,
+			  c.FORM_FLOW_NUM_IN_BOOK form_flow_num_in_book,
+			  c.FAULT_FORM_ID fault_form_id
+			FROM
+				MT_CHECKUP c
+			LEFT JOIN MT_EVENT E ON c.EVENT_ID = E . ID
+			LEFT JOIN MT_PROJECT P ON P . ID = E .pro_id
+			WHERE
+				1 = 1
+  		 <if test="_parameter != null and _parameter !=''" >
+				and C.PROCESS_ID= #{_parameter}
+			</if>
+  	</select>
+  	
+  	<!--通过processid查询体检电厂检查结果-->	
+  	  <update id="checkResult" parameterType="checkupResult">
+		UPDATE  MT_CHECKUP_RESULT  T SET T.RESULT_LEVEL=#{fault_level,jdbcType=VARCHAR} ,T.direct_solution=#{direct_solution,jdbcType=VARCHAR}, T.REMARKS=#{remarks,jdbcType=VARCHAR}  WHERE T.CHECKUP_ID=#{checkup_id,jdbcType=INTEGER}  and T.ITEM_TYPE=#{item_type,jdbcType=INTEGER}
+	</update>
+	
+    <!--通过processid查询体检电厂基本信息-->	
+	<update id="updatebyid" parameterType="checkup">
+		UPDATE  MT_CHECKUP  T SET T.remarks=#{remarks,jdbcType=VARCHAR} ,T.check_manager=#{check_manager,jdbcType=VARCHAR},T.check_manager_contact=#{check_manager_contact,jdbcType=VARCHAR},T.check_time=TO_DATE(#{check_time,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),T.experience=#{experience,jdbcType=VARCHAR},T.check_result=#{check_result,jdbcType=VARCHAR},T.check_type=#{check_type,jdbcType=INTEGER}  WHERE T.process_id=#{processid,jdbcType=INTEGER}
+	</update>
+	<!--通过processid查询体检表id-->	
+	<select id="quId" parameterType="checkupResult" resultType="java.lang.String">
+  		select id from  MT_CHECKUP_RESULT where checkup_id=${checkup_id} and item_type=${item_type}
+  	</select>
+  	
+  	
+    <!--插入附件-->	
+	 <insert id="addDev_at" parameterType="checkupAttach">
+	<selectKey resultType="java.lang.Integer" order="BEFORE" keyProperty="id">  
+        	select SEQ_MT_CHECKUP_ATTACH_ID.nextval as id from dual  
+    </selectKey>
+		insert into MT_CHECKUP_ATTACH (id, checkup_result_id,result_descrip,file_name,remarks,provider_name,source_time,source_location,attach_path) values (
+			#{id,jdbcType=INTEGER},
+			#{checkup_result_id,jdbcType=INTEGER},
+			#{result_descrip,jdbcType=VARCHAR},
+			#{file_name,jdbcType=VARCHAR},
+			#{remarks,jdbcType=VARCHAR},
+			#{provider_name,jdbcType=VARCHAR},
+			to_date(#{source_time,jdbcType=DATE},'yyyy-MM-dd hh24:mi:ss'),
+			#{source_location,jdbcType=VARCHAR},
+			#{attach_path,jdbcType=VARCHAR}
+			
+		)
+	</insert> 
+	
+	<!--通过processid查询体检基本信息-->	
+    <resultMap type="java.util.HashMap" id="mationMap">
+        <result property="pname" column="pname"/>
+        <result property="archieve_num" column="archieve_num"/>
+        <result property="form_flow_num" column="form_flow_num"/>
+        <result property="check_manager" column="check_manager"/>
+        <result property="check_manager_contact" column="check_manager_contact"/>
+        <result property="check_time" column="check_time"/>
+        <result property="check_type" column="check_type"/>
+        <result property="check_result" column="check_result"/>
+        <result property="remarks" column="remarks"/>
+        <result property="form_flow_num_in_book" column="form_flow_num_in_book"/>
+        <result property="fault_form_id" column="fault_form_id"/>
+        <result property="experience" column="experience"/>
+         <result property="center_opnion" column="center_opnion"/>
+        <result property="is_center_agreed" column="is_center_agreed"/>
+        <!-- <result property="form_flow_num" column="form_flow_num"/> ,c.form_flow_num form_flow_num-->
+    </resultMap>
+  	<select id="mation"  parameterType="java.lang.String"  resultMap="mationMap">
+	  		  SELECT P.NAME PNAME,
+		       E.ARCHIEVE_NUM ARCHIEVE_NUM,
+		       C.FORM_FLOW_NUM FORM_FLOW_NUM,
+		       C.CHECK_MANAGER CHECK_MANAGER,
+		       C.CHECK_MANAGER_CONTACT CHECK_MANAGER_CONTACT,
+		       TO_CHAR(C.CHECK_TIME, 'yyyy-MM-dd hh24:mi:ss') CHECK_TIME,
+		       C.CHECK_TYPE CHECK_TYPE,
+		       C.CHECK_RESULT CHECK_RESULT,
+		       C.REMARKS REMARKS,
+		       C.FORM_FLOW_NUM_IN_BOOK form_flow_num_in_book,
+		       C.FAULT_FORM_ID fault_form_id,
+		       C.experience experience,
+		       C.center_opnion center_opnion,
+		       C.is_center_agreed is_center_agreed
+			  FROM MT_CHECKUP C
+			  LEFT JOIN MT_EVENT E
+			    ON E.ID = C.EVENT_ID
+			  LEFT JOIN MT_PROJECT P
+			    ON P.ID = E.PRO_ID
+			 WHERE 1=1
+			<if test="_parameter != null and _parameter !=''" >
+				and C.PROCESS_ID= #{_parameter}
+			</if>
+			 ORDER BY C.ID
+  	</select>
+  	
+  	
+  	
+  	<!--通过processid查询体检附件信息-->	
+  	<resultMap type="java.util.HashMap" id="feedbackMap">
+		<result property="cid" column="cid"/>
+		<result property="id" column="id"/>
+		<result property="file_name" column="file_name"/>
+        <result property="attach_path" column="attach_path"/>
+        <result property="name" column="name"/>
+        <result property="check_standard" column="check_standard"/>
+        <result property="result_level" column="result_level"/>
+		<result property="remarks" column="remarks"/>
+		<result property="is_qualified" column="is_qualified"/>
+		<result property="experience" column="experience"/>
+    </resultMap>
+    
+  	<select id="feedback"  resultMap="feedbackMap">
+  		 SELECT
+  		    cr.id cid,
+		    ci.id id,
+			ci.name name,
+			ci.check_standard check_standard,
+			cr.result_level result_level,
+			cr.remarks remarks,
+			cr.direct_solution direct_solution,
+			c.experience experience
+		 FROM
+	     	MT_CHECKUP c
+		 LEFT JOIN
+			MT_CHECKUP_RESULT cr
+		 ON c. ID = cr.checkup_id
+		 LEFT JOIN MT_CHECKUP_ITEM_TYPE ci 
+		 ON ci.id = cr.item_type 		
+		 WHERE
+			1=1
+			<if test="_parameter != null and _parameter !=''" >
+				and C.PROCESS_ID= #{_parameter}
+			</if>
+		 ORDER BY
+			ID
+  	</select>
+  	
+  	
+  	<!--通过processid查询体检附件基本信息-->	
+  	<resultMap type="java.util.HashMap" id="attachMap">
+		<result property="ID" column="ID"/>
+		<result property="FILENAME" column="FILENAME"/>
+		<result property="FILEPATH" column="FILEPATH"/>
+    </resultMap>
+  	
+	<select id="loadAttach" parameterType="java.lang.String" resultMap="attachMap">
+		 SELECT
+		    ca.id id,
+		    ca.file_name file_name,
+		    ca.attach_path attach_path
+		 FROM
+		    	MT_CHECKUP c
+		 LEFT JOIN
+			MT_CHECKUP_RESULT cr
+		 ON c. ID = cr.checkup_id
+		 LEFT JOIN MT_CHECKUP_ITEM_TYPE ci 
+		 ON ci.id = cr.item_type 
+		 LEFT JOIN MT_CHECKUP_ATTACH ca 
+		 ON ca.CHECKUP_RESULT_ID = cr.id 
+			 WHERE 1=1
+	 <if test="_parameter != null and _parameter !=''" >
+		and ca.CHECKUP_RESULT_ID = #{_parameter}
+	 </if>
+	</select>
+	
+	<!--通过processid删除附件-->	
+	<delete id="delatt" parameterType="java.lang.String" >
+		     delete
+			 FROM
+			    MT_CHECKUP_ATTACH
+			 WHERE 1=1
+	 <if test="_parameter != null and _parameter !=''" >
+		and  id = #{_parameter}
+	 </if>
+	</delete>
+	<!--通过processid查询体检id-->	
+  	<select id="qucId" parameterType="checkup" resultType="java.lang.String">
+  		select id from  MT_CHECKUP where process_id=${processid}
+  	</select>
+  	<!--通过processid查询体检电厂基本信息-->	
+  	<update id="updatebylcid" parameterType="leaveCheck">
+		UPDATE  MT_CHECKUP  T SET T.is_center_agreed=#{is_center_agreed,jdbcType=INTEGER},T.center_opnion=#{center_opnion,jdbcType=VARCHAR}    WHERE T.process_id=#{processid,jdbcType=INTEGER}
+	</update>
+	
+  	
+  	
+</mapper>

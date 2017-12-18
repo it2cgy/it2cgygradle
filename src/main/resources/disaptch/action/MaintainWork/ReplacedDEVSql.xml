@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="replacedDEV">
+    <resultMap type="java.util.HashMap" id="queryDevID_Name">
+    	<id property="id" column="id" />
+    	<result property="name" column="name" />
+    </resultMap>
+    
+	<select id="onLoadDevType" resultMap="queryDevID_Name">
+		select id, name from mt_dev_type
+	</select>
+	<select id="devTypeChange" parameterType="java.lang.Integer" resultMap="queryDevID_Name">
+		select id, name from mt_dev_model
+			where type_id = #{typr_id}
+	</select>
+	
+	<select id="showDevList" parameterType="java.lang.Integer" resultType="replacedDev">
+		select rd.id, rd.old_dev_code, rd.new_dev_code, rd.old_dev_treatment, 
+				rd.remarks, rd.dev_type_id, dt.name type_name, rd.dev_model_id, dm.name model_name
+			from mt_replaced_dev rd, mt_dev_type dt, mt_dev_model dm, mt_summary ms  
+				where rd.dev_type_id = dt.id
+					and rd.dev_model_id = dm.id
+					and rd.summary_id = ms.id
+					and ms.process_id = #{processId}
+					order by rd.id
+	</select>
+	
+	<insert id="addDev">
+		insert into mt_replaced_dev
+			(id, summary_id, dev_type_id, dev_model_id, old_dev_code, 
+				new_dev_code, old_dev_treatment, remarks)
+		<foreach item="item" collection="list" separator="union all">
+			select -1, ${item.summary_id}, '${item.dev_type_id}', 
+				'${item.dev_model_id}', '${item.old_dev_code}', '${item.new_dev_code}', 
+				'${item.old_dev_treatment}', '${item.remarks}' from dual 
+		</foreach>
+	</insert>
+	
+	<delete id="deleteDev">
+		delete mt_replaced_dev
+			where id = #{id}
+	</delete>
+	<update id="updateDev">
+		update mt_replaced_dev
+			set dev_type_id = #{dev_type_id},
+				dev_model_id = #{dev_model_id},	
+				old_dev_code = #{old_dev_code},
+				new_dev_code = #{new_dev_code},
+				old_dev_treatment = #{old_dev_treatment},
+				remarks = #{remarks}
+			where id = #{id}
+	</update>
+</mapper>

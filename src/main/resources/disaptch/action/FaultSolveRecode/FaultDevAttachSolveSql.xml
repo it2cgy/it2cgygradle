@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace定义命名空间   -->
+<mapper namespace="faultDevAttachSolve">
+    <resultMap type="java.util.HashMap" id="faultDevAttach">
+    	<id property="id" column="id" />
+    	<result property="fault_dev_id" column="fault_dev_id" />
+    	<result property="file_name" column="file_name" />
+    	<result property="file_path" column="file_path" />
+    </resultMap>
+    
+	<insert id="addFDevAttSolve" parameterType="faultDevAttSolve">
+		insert into mt_fault_dev_attach_solve
+			(id, fault_dev_id, fault_descrip, file_name, attach_path, 
+				provider_name, source_time, source_location, remarks)
+		<foreach item="item" collection="list" separator="union all">
+			select -1, ${item.fault_dev_id}, '${item.fault_descrip}', 
+				'${item.file_name}', '${item.attach_path}', '${item.provider_name}', 
+				to_date('${item.source_time}', 'yyyy-mm-dd hh24:mi:ss'), '${item.source_location}', '${item.remarks}' from dual 
+		</foreach>
+	</insert>
+	
+	<select id="dev_attach" resultMap="faultDevAttach">
+		select fda.id, fda.fault_dev_id, fda.file_name, fda.file_path 
+			from mt_fault_solve_record fsr, mt_fault f, mt_fault_dev fd, mt_fault_dev_attach fda
+				where fsr.fault_id = f.id
+					and f.id = fd.fault_id
+					and fd.id = fda.fault_dev_id 
+					and fsr.process_id in (${id})
+	</select>
+	
+	<select id="dev_attach_c" resultMap="faultDevAttach">
+		select fdac.id, fdac.fault_dev_id, fdac.file_name, fdac.file_path 
+			from mt_fault_solve_record fsr, mt_fault f, mt_fault_dev fd, mt_fault_dev_attach_c fdac
+				where fsr.fault_id = f.id
+					and f.id = fd.fault_id
+					and fd.id = fdac.fault_dev_id 
+					and fsr.process_id in (${id})
+	</select>
+	
+	<select id="dev_attach_real" resultMap="faultDevAttach">
+		select fdar.id, fdar.fault_dev_id, fdar.file_name, fdar.attach_path file_path
+			from mt_fault_solve_record fsr, mt_fault f, mt_fault_dev fd, mt_fault_dev_attach_real fdar
+				where fsr.fault_id = f.id
+					and f.id = fd.fault_id
+					and fd.id = fdar.fault_dev_id 
+					and fsr.process_id in (${id})
+	</select>
+	
+	<select id="dev_attach_solve" resultMap="faultDevAttach">
+		select fdas.id, fdas.fault_dev_id, fdas.file_name, fdas.attach_path file_path
+			from mt_fault_solve_record fsr, mt_fault f, mt_fault_dev fd, mt_fault_dev_attach_solve fdas
+				where fsr.fault_id = f.id
+					and f.id = fd.fault_id
+					and fd.id = fdas.fault_dev_id 
+					and fsr.process_id in (${id})
+	</select>
+	
+</mapper>

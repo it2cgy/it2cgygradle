@@ -1,0 +1,334 @@
+html,body{
+	font:14px/1 "微软雅黑","宋体";
+	color:#000;
+}
+
+/* 电表处的滚动条 */
+.ammeterBottom::-webkit-scrollbar{
+    width: 8px;
+    height: 8px;
+}
+/*定义滚动条的轨道，内阴影及圆角*/
+.ammeterBottom::-webkit-scrollbar-track{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    border-radius: 10px;
+}
+/*定义滑块，内阴影及圆角*/
+.ammeterBottom::-webkit-scrollbar-thumb{
+    width: 8px;
+    height: 8px;
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #05A1A9;
+}
+.inverterList{
+	margin: 5px 15px 30px 15px;
+}
+.inverterList h3{
+	width: 196px;
+	height:38px;
+	line-height:38px;
+	text-align: left;
+	padding-left: 6px;
+	color: #fff;
+    font-size: 12px;
+    background: #36C6D3;
+}
+.inverterBox{
+	width: 100%;
+	height: 254px;
+	border:2px solid #f0f0f2;
+	padding:0 28px;
+}
+.leftBox{
+	width: 33%;
+	height: 100%;
+	float: left;
+	border-right: 1px dotted #f0f0f2;
+}
+.leftBox dl{
+	float: left;
+	margin-right:5%;
+	
+}
+.subTitle{
+	width:100%;	
+	height: 36px;
+	line-height: 36px;
+	white-space: pre;
+	text-align: left;
+}
+.measBox .subTitle{
+	width: 22%;
+	background: none;
+	text-align: center;	
+}
+.subTitle em{
+	color:#fb6e07;
+	font-size: 15px;
+}
+.leftBox .imgBgTu{
+	width:176px;
+	height:200px;
+	float:left;
+	background:url(common/backgroundImg/inverter.png) no-repeat center;
+	border:2px solid #f0f0f2;
+}
+.leftBox ul{
+	margin:0px 6px 0 50px;
+	float: left;
+}
+.leftBox ul li{
+	line-height: 32px;
+}
+.leftBox ul span{
+	display: inline-block;
+	width:170px;
+}
+.leftBox ul em{
+	width:53px;
+	color:#1c6bae;
+	font-size: 14px;
+	font-weight: 900;
+}
+/*右边区域*/
+.rightBox{
+	width: 64%;
+	height:100%;
+	float: left;	
+    margin-left: 2%;
+}
+.ammeters{
+	width: 22%;
+	height: 200px;
+	float: left;
+	border:2px solid #f0f0f2;
+}
+.ammeterTop{
+	text-align: center;
+	border-bottom: 1px dotted #f0f0f2;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+.ammeters dt{
+	font-size: 12px;
+	color:#6e86a8;
+}
+.ammeters dd:last-child{
+	color: #335d8e;
+	font-size: 12px;
+}
+.directImg{
+	width:35px;
+	height:33px;
+	margin:7px auto;
+	background: url(common/backgroundImg/direct.png) no-repeat center;
+	background-size: 100% 100%;
+}
+.exchangeImg{
+	width:33px;
+	height:32px;
+	margin:7px auto 9px;
+	background: url(common/backgroundImg/exchangeImg.png) no-repeat center;
+	background-size: 100% 100%;
+}
+.ammeterBottom{
+	text-align:center;
+	width:100%;
+	height:113px;
+	overflow-y:auto;
+	padding-top:5px;
+} 
+.ammeterBottom dl{	
+	float:left;
+	width:50%;	
+	text-align:center;
+}
+.ammeterBottom .oneAmmeter{
+	width:100%;
+	text-align:center;
+} 
+.directTable{
+	float: left;
+	width:74%;
+    margin-left:3.5%;
+    table-layout: fixed;
+}
+.directTable table{
+	width: 100%;
+}
+.directTable th,
+.directTable td{
+	text-align: center;
+}
+.directTable thead tr{
+	width: 100%;
+	font-size: 12px;
+	font-weight: 100;
+	color:#333;
+	height: 30px;
+}
+.directTable thead th{
+	background:none;
+	border-bottom:2px solid #eee;
+}
+.directTable tbody td{
+	border-bottom:1px solid #eee;
+}
+.directTable tbody tr{
+	width: 100%;
+	height:83px;
+	font-size: 14px;
+	font-weight: 900;
+	color:#1c6bae;
+	border:1px solid #eee;
+}
+.directTable tbody .element{
+	line-height:22px;
+	font-size: 12px;
+	font-weight: 100;
+	color:#333;
+	padding-left: 10px;
+}
+.inverterListDl{
+	position:relative;
+	height:46px;
+	float:left;
+	text-align:center;
+	color:#7e848f; 
+	margin: 20px 0;
+	border-right:1px solid #e7ecf1;
+}
+.inverterListDl i{
+	float:left;
+	position: relative;
+	width: 50px;
+    left: 35px;
+    top: -4px;
+	height:50px;
+	background:url(common/backgroundImg/inverter3.png) no-repeat left top;
+	background-size: 100% 100%;
+}
+.firstDt i{
+	background:url(common/backgroundImg/inverter1.png) no-repeat left top;
+	background-size: 100% 100%;
+}
+.secondDt i{
+	background:url(common/backgroundImg/inverter2.png) no-repeat left top;
+	background-size: 100% 100%;
+}
+.inverterListDl em{
+	font-size:23px;
+	color:#177cb0;
+	text-align: left;
+    display: inline-block;
+    min-width: 60px;
+}
+
+
+
+
+
+
+
+
+
+
+@media only screen and (min-width: 1701px) and (max-width: 1770px) {
+	.leftBox ul {
+    	margin: 20px 6px 0 18px;
+	}
+	.inverterListDl i{
+		left:10px;
+	}
+}
+@media only screen and (min-width: 1501px) and (max-width: 1700px) {
+	.leftBox .imgBgTu{
+		width: 140px;
+	}
+	.leftBox dl {
+    	margin-right: -5%;
+	}
+	.leftBox ul span {
+	    float: left;
+	    width: 120px;
+	}
+	.leftBox ul em{
+		width:40px;
+	}
+	.leftBox ul {
+    	margin: 20px 6px 0 25px;
+	}
+	.inverterListDl i{
+		left:12px;
+	}
+}
+@media only screen and (min-width: 1300px) and (max-width: 1500px) {
+	.inverterBox{
+		width: 100%;
+		padding:0 10px;
+	}
+	.leftBox .imgBgTu{
+		width:120px;
+	}
+	.directTable{
+    	width: 73%;
+    }
+	.leftBox dl{
+	    float: left;
+	    margin-right: -4%;
+	}
+	.leftBox ul {
+    	margin: 20px 6px 0 5px;
+		font-size: 12px;
+	}
+	.leftBox ul span{
+		width:100px;
+	}
+	.leftBox ul em{
+		width:30px;
+	}
+	.leftBox dd{
+		width:120px;
+	}
+	.inverterListDl i{
+		left: 8px;
+	}
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
